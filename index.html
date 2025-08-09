@@ -691,10 +691,32 @@
                 }
             });
 
-            // Ödəniş düyməsi üçün event
+            // Ödəniş düyməsi üçün event - WhatsAppa yönləndirmə
             checkoutButton.addEventListener('click', () => {
-                showMessage('Ödəniş səhifəsinə yönləndirilirsiniz...');
-                // Bura ödəniş səhifəsinə yönləndirmə kodu əlavə edilə bilər
+                // Səbət boşdursa, heç bir şey etmirik
+                if (cart.length === 0) {
+                    showMessage('Ödəniş etmək üçün səbətinizə məhsul əlavə edin.');
+                    return;
+                }
+                
+                // Sifariş məlumatlarını hazırlayırıq
+                let message = "Salam, Mubag Style mağazasından sifarişim var:\n\n";
+                let totalPrice = 0;
+
+                cart.forEach((item, index) => {
+                    message += `${index + 1}. ${item.name} - ${item.quantity} ədəd (${item.price * item.quantity} AZN)\n`;
+                    totalPrice += item.price * item.quantity;
+                });
+
+                message += `\nÜmumi məbləğ: ${totalPrice.toFixed(2)} AZN`;
+                message += "\n\nZəhmət olmasa sifarişimi tamamlayın.";
+
+                // WhatsApp telefon nömrəsi (buranı sizin verdiyiniz nömrə ilə əvəz edirik)
+                const phoneNumber = "+994504495677"; // Verilən nömrə
+                const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+                
+                // İstifadəçini WhatsAppa yönləndiririk
+                window.open(whatsappUrl, '_blank');
             });
 
             // İlk yüklənmədə səbəti yeniləyirik
