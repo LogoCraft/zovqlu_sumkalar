@@ -1,39 +1,62 @@
-
+<!DOCTYPE html>
 <html lang="az">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zövqlü Sumkalar | Qızılı və Qara Kolleksiya</title>
+    
     <!-- Tailwind CSS-i yükləyirik -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <!-- Google Fonts-dan Inter şriftini yükləyirik -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <!-- Font Awesome ikonları yükləyirik (səbət üçün) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
     <style>
+        /* Bədən üçün ümumi stillər */
         body {
             font-family: 'Inter', sans-serif;
             overflow-x: hidden;
-            background-color: #111;
+            background-color: #0d0d0d;
         }
-        /* Filtr düymələrinin ümumi stilləri */
+
+        /* Hero hissəsinin animasiyası */
+        @keyframes fadeInMoveUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInMoveUp 1s ease-out forwards;
+        }
+
+        .delay-200 { animation-delay: 0.2s; }
+
+        /* Filtr düymələrinin stilləri */
         .filter-button {
-            @apply bg-gray-800 text-white py-2 px-6 rounded-full font-medium hover:bg-yellow-500 hover:text-black transition-colors duration-300;
+            transition: all 0.3s ease-in-out;
+            @apply bg-gray-800 text-white py-2 px-6 rounded-full font-medium hover:bg-yellow-500 hover:text-black;
         }
         .filter-button.active {
             @apply bg-yellow-400 text-black;
         }
+
+        /* Məhsul kartlarının stilləri */
         .product-card {
             cursor: pointer;
-            transition: transform 0.3s ease-in-out;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
         }
         .product-card:hover {
             transform: scale(1.03);
+            box-shadow: 0 15px 30px rgba(234, 179, 8, 0.2);
         }
-        /* Məhsul detay modalının və mesaj qutusunun stilləri */
-        .message-box-overlay {
+
+        /* Mesaj qutusu stilləri */
+        .message-box-overlay, .product-detail-modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
@@ -55,12 +78,10 @@
             width: 90%;
             max-width: 400px;
             text-align: center;
+            animation: fadeInMoveUp 0.3s ease-out;
         }
-        .message-box h3 {
-            color: #eab308;
-            margin-bottom: 1rem;
-        }
-        /* Səbət paneli */
+
+        /* Səbət paneli stilləri */
         .cart-sidebar {
             position: fixed;
             top: 0;
@@ -75,6 +96,7 @@
             z-index: 1000;
             display: flex;
             flex-direction: column;
+            border-left: 1px solid #eab308;
         }
         .cart-sidebar.open {
             transform: translateX(0);
@@ -89,19 +111,8 @@
             z-index: 999;
             display: none;
         }
-        .product-detail-modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1001;
-            padding: 1rem;
-        }
+
+        /* Detay modulu stilləri */
         .product-detail-modal {
             background-color: #1a1a1a;
             color: white;
@@ -113,7 +124,10 @@
             overflow-y: auto;
             border: 1px solid #eab308;
             position: relative;
+            animation: fadeInMoveUp 0.3s ease-out;
         }
+        
+        /* Özəl scrollbar stilləri */
         .custom-scrollbar::-webkit-scrollbar {
             width: 8px;
         }
@@ -129,11 +143,17 @@
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
             background: #fde047;
         }
+
+        /* "Ödənişə keç" düyməsinin stilləri */
+        .checkout-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body class="bg-black text-white antialiased">
 
-    <!-- Navigasi Paneli -->
+    <!-- Navigasiya Paneli -->
     <nav class="p-6 md:p-8 flex justify-between items-center bg-black border-b border-gray-800">
         <a href="#" class="text-2xl md:text-3xl font-bold text-yellow-400 tracking-wider">ZÖVQLÜ SUMKALAR</a>
         <div class="hidden md:flex space-x-8 text-lg font-medium">
@@ -153,7 +173,7 @@
         </div>
     </nav>
 
-    <!-- Mobil menyu -->
+    <!-- Mobil menyu (ekran balaca olanda görünür) -->
     <div id="mobile-menu" class="hidden md:hidden bg-black text-center border-b border-gray-800">
         <a href="#" class="block py-4 hover:bg-gray-800 transition-colors duration-300">Ana Səhifə</a>
         <a href="#products" class="block py-4 hover:bg-gray-800 transition-colors duration-300">Kolleksiya</a>
@@ -164,6 +184,7 @@
     <!-- Əsas (Hero) hissə -->
     <header class="relative bg-black h-[60vh] md:h-[80vh] flex items-center justify-center text-center px-4 overflow-hidden">
         <div class="absolute inset-0">
+            <!-- Arxa fon şəkli -->
             <img src="https://images.unsplash.com/photo-1543324671-155452f1e944?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Arxa Fon" class="w-full h-full object-cover opacity-60">
         </div>
         <div class="relative z-10 p-6 md:p-12 rounded-xl bg-black bg-opacity-70 backdrop-filter backdrop-blur-sm border border-yellow-400 shadow-lg">
@@ -183,89 +204,484 @@
                     <button class="filter-button active" data-filter="all">Hamısı</button>
                     <button class="filter-button" data-filter="qadin">Qadınlar üçün</button>
                     <button class="filter-button" data-filter="kisi">Kişilər üçün</button>
-                    <button class="filter-button" data-filter="usaq">Uşaqlar üçün</button>
-                    <button class="filter-button" data-filter="mini">Mini Çantalar</button>
-                    <button class="filter-button" data-filter="boyuk">Böyük Çantalar</button>
+                    <button class="filter-button" data-filter="ciyin">Çiyin Çantası</button>
+                    <button class="filter-button" data-filter="el">Əl Çantası</button>
+                    <button class="filter-button" data-filter="sport">Sport Çantası</button>
+                    <button class="filter-button" data-filter="seyahet">Səyahət Çantası</button>
+                    <button class="filter-button" data-filter="deri">Dəri Çanta</button>
+                    <button class="filter-button" data-filter="klassik">Klassik</button>
+                    <button class="filter-button" data-filter="modern">Modern</button>
                 </div>
             </div>
+            
             <!-- Məhsul siyahısı -->
             <div class="md:w-3/4">
                 <h2 class="text-4xl md:text-5xl font-bold text-center text-yellow-400 mb-12 hidden md:block">Yeni Kolleksiya</h2>
                 <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <!-- Məhsul kartları: data-category atributu filter üçün istifadə olunur -->
-                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="usaq mini" data-name="Şirin Qız Uşağı Çantası" data-price="35" data-image="https://images.unsplash.com/photo-1577908977505-188701986427?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Balaca qızlar üçün dəbli və rahat mini çanta. Keyfiyyətli materiallardan hazırlanıb və gündəlik istifadə üçün idealdır.">
-                        <img src="https://images.unsplash.com/photo-1577908977505-188701986427?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Şirin Qız Uşağı Çantası" class="w-full h-64 object-cover">
+                    <!-- Məhsul kartları (data-category atributu filter üçün istifadə olunur) -->
+                    
+                    <!-- Məhsul 1 -->
+                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="qadin ciyin modern" data-name="Qadınlar üçün Modern Çanta" data-price="55" data-image="https://images.unsplash.com/photo-1606526154178-57d620573e34?q=80&w=1965&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Gündəlik istifadə üçün uyğun, rahat və şık dizaynlı modern çanta.">
+                        <img src="https://images.unsplash.com/photo-1606526154178-57d620573e34?q=80&w=1965&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Qadınlar üçün Modern Çanta" class="w-full h-64 object-cover">
                         <div class="p-6">
-                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Şirin Qız Uşağı Çantası</h3>
-                            <p class="text-gray-300 mb-4">Mükəmməl material və dəbli dizayn.</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-2xl font-bold text-white">35 AZN</span>
-                                <button class="add-to-cart-btn bg-yellow-400 text-black py-2 px-6 rounded-full font-medium hover:bg-yellow-500 transition-colors duration-300">Səbətə At</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="kisi boyuk" data-name="Qara Kişi Bel Çantası" data-price="45" data-image="https://images.unsplash.com/photo-1582299863417-64013149a43a?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Funksional və geniş daxili ilə kişi bel çantası. Gündəlik istifadə və səyahətlər üçün idealdır.">
-                        <img src="https://images.unsplash.com/photo-1582299863417-64013149a43a?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Qara Kişi Bel Çantası" class="w-full h-64 object-cover">
-                        <div class="p-6">
-                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Qara Kişi Bel Çantası</h3>
-                            <p class="text-gray-300 mb-4">Geniş və rahat, hər səyahət üçün ideal.</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-2xl font-bold text-white">45 AZN</span>
-                                <button class="add-to-cart-btn bg-yellow-400 text-black py-2 px-6 rounded-full font-medium hover:bg-yellow-500 transition-colors duration-300">Səbətə At</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="qadin mini" data-name="Zərif Qadın Mini Çantası" data-price="40" data-image="https://images.unsplash.com/photo-1558235213-9114f1776ce5?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Yetkin qadınlar üçün mini, amma geniş daxili ilə ideal çanta. Şıq və funksional.">
-                        <img src="https://images.unsplash.com/photo-1558235213-9114f1776ce5?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Zərif Qadın Mini Çantası" class="w-full h-64 object-cover">
-                        <div class="p-6">
-                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Zərif Qadın Mini Çantası</h3>
-                            <p class="text-gray-300 mb-4">Şıqlığı və zərifliyi sevənlər üçün.</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-2xl font-bold text-white">40 AZN</span>
-                                <button class="add-to-cart-btn bg-yellow-400 text-black py-2 px-6 rounded-full font-medium hover:bg-yellow-500 transition-colors duration-300">Səbətə At</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="kisi boyuk" data-name="Böyük Klassik Kişi Çantası" data-price="30" data-image="https://images.unsplash.com/photo-1605763953684-2195f19028a3?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Klassik görünüşü və böyük tutumu ilə fərqlənən çanta. İş və təhsil üçün ideal seçimdir.">
-                        <img src="https://images.unsplash.com/photo-1605763953684-2195f19028a3?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Böyük Klassik Kişi Çantası" class="w-full h-64 object-cover">
-                        <div class="p-6">
-                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Böyük Klassik Kişi Çantası</h3>
-                            <p class="text-gray-300 mb-4">Dizayn və keyfiyyətin birləşməsi.</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-2xl font-bold text-white">30 AZN</span>
-                                <button class="add-to-cart-btn bg-yellow-400 text-black py-2 px-6 rounded-full font-medium hover:bg-yellow-500 transition-colors duration-300">Səbətə At</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="qadin boyuk" data-name="Şıq Qadın Çantası" data-price="55" data-image="https://images.unsplash.com/photo-1604107872653-f7243c3f24ad?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Çoxfunksiyalı və şık dizaynlı böyük çanta. Bütün əşyalarınızı rahat daşıya bilərsiniz.">
-                        <img src="https://images.unsplash.com/photo-1604107872653-f7243c3f24ad?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Şıq Qadın Çantası" class="w-full h-64 object-cover">
-                        <div class="p-6">
-                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Şıq Qadın Çantası</h3>
-                            <p class="text-gray-300 mb-4">Həm şıq, həm də funksionaldır.</p>
+                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Qadınlar üçün Modern Çanta</h3>
+                            <p class="text-gray-300 mb-4">Gözəlliyinizi vurğulayacaq.</p>
                             <div class="flex justify-between items-center">
                                 <span class="text-2xl font-bold text-white">55 AZN</span>
                                 <button class="add-to-cart-btn bg-yellow-400 text-black py-2 px-6 rounded-full font-medium hover:bg-yellow-500 transition-colors duration-300">Səbətə At</button>
                             </div>
                         </div>
                     </div>
-                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="usaq boyuk" data-name="Məktəbli Bel Çantası" data-price="25" data-image="https://images.unsplash.com/photo-1549491001-c88f11b22340?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Məktəbə gedən uşaqlar üçün geniş və dayanıqlı çanta. Sağlam bel üçün ideal dizayn.">
-                        <img src="https://images.unsplash.com/photo-1549491001-c88f11b22340?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Məktəbli Bel Çantası" class="w-full h-64 object-cover">
+
+                    <!-- Məhsul 2 -->
+                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="kisi deri klassik" data-name="Klassik Kişi Dəri Çantası" data-price="60" data-image="https://images.unsplash.com/photo-1605763953684-2195f19028a3?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="İşgüzar görüşlər üçün ideal, geniş daxili olan keyfiyyətli dəri çanta.">
+                        <img src="https://images.unsplash.com/photo-1605763953684-2195f19028a3?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Klassik Kişi Dəri Çantası" class="w-full h-64 object-cover">
                         <div class="p-6">
-                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Məktəbli Bel Çantası</h3>
-                            <p class="text-gray-300 mb-4">Geniş və rahat, məktəb üçün ideal.</p>
+                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Klassik Kişi Dəri Çantası</h3>
+                            <p class="text-gray-300 mb-4">Peşəkar görünüş üçün mükəmməldir.</p>
                             <div class="flex justify-between items-center">
-                                <span class="text-2xl font-bold text-white">25 AZN</span>
+                                <span class="text-2xl font-bold text-white">60 AZN</span>
                                 <button class="add-to-cart-btn bg-yellow-400 text-black py-2 px-6 rounded-full font-medium hover:bg-yellow-500 transition-colors duration-300">Səbətə At</button>
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Məhsul 3 -->
+                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="qadin el klassik" data-name="Qadınlar üçün Zərif Əl Çantası" data-price="45" data-image="https://images.unsplash.com/photo-1596700680650-705b63013d33?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Zərif və eleqant dizaynlı əl çantası. Xüsusi günlər üçün ideal seçim.">
+                        <img src="https://images.unsplash.com/photo-1596700680650-705b63013d33?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Qadınlar üçün Zərif Əl Çantası" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Zərif Əl Çantası</h3>
+                            <p class="text-gray-300 mb-4">Şıqlığı və zərifliyi sevənlər üçün.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-white">45 AZN</span>
+                                <button class="add-to-cart-btn bg-yellow-400 text-black py-2 px-6 rounded-full font-medium hover:bg-yellow-500 transition-colors duration-300">Səbətə At</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Məhsul 4 -->
+                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="kisi sport modern" data-name="Sport Kişi Çantası" data-price="38" data-image="https://images.unsplash.com/photo-1598522659799-73d7494f15d2?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Aktiv həyat tərzi və idman üçün ideal, su keçirməyən materialdan hazırlanmış çanta.">
+                        <img src="https://images.unsplash.com/photo-1598522659799-73d7494f15d2?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Sport Kişi Çantası" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Sport Kişi Çantası</h3>
+                            <p class="text-gray-300 mb-4">Aktiv həyat tərzi üçün mükəmməl seçim.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-white">38 AZN</span>
+                                <button class="add-to-cart-btn bg-yellow-400 text-black py-2 px-6 rounded-full font-medium hover:bg-yellow-500 transition-colors duration-300">Səbətə At</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Məhsul 5 -->
+                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="qadin deri ciyin klassik" data-name="Qəhvəyi Dəri Çiyin Çantası" data-price="58" data-image="https://images.unsplash.com/photo-1598583488737-14e300d60312?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Yüksək keyfiyyətli dəridən hazırlanmış, klassik dizaynlı çiyin çantası.">
+                        <img src="https://images.unsplash.com/photo-1598583488737-14e300d60312?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Qəhvəyi Dəri Çiyin Çantası" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Qəhvəyi Dəri Çiyin Çantası</h3>
+                            <p class="text-gray-300 mb-4">Həm rahat, həm də çox şıq.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-white">58 AZN</span>
+                                <button class="add-to-cart-btn bg-yellow-400 text-black py-2 px-6 rounded-full font-medium hover:bg-yellow-500 transition-colors duration-300">Səbətə At</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Məhsul 6 -->
+                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="qadin el modern" data-name="Modern Qadın Əl Çantası" data-price="50" data-image="https://images.unsplash.com/photo-1596700680650-705b63013d33?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Minimalist dizaynlı, qara rəngdə, müasir qadınlar üçün əl çantası.">
+                        <img src="https://images.unsplash.com/photo-1596700680650-705b63013d33?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Modern Qadın Əl Çantası" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Modern Qadın Əl Çantası</h3>
+                            <p class="text-gray-300 mb-4">Həm eleqant, həm də gündəlik.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-white">50 AZN</span>
+                                <button class="add-to-cart-btn bg-yellow-400 text-black py-2 px-6 rounded-full font-medium hover:bg-yellow-500 transition-colors duration-300">Səbətə At</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Məhsul 7 -->
+                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="qadin sport ciyin" data-name="Qadınlar üçün Sport Çanta" data-price="35" data-image="https://images.unsplash.com/photo-1558235213-9114f1776ce5?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Açıq hava fəaliyyətləri və gəzintilər üçün nəzərdə tutulmuş yüngül çiyin çantası.">
+                        <img src="https://images.unsplash.com/photo-1558235213-9114f1776ce5?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Qadınlar üçün Sport Çanta" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Qadınlar üçün Sport Çanta</h3>
+                            <p class="text-gray-300 mb-4">Şıqlığı və zərifliyi sevənlər üçün.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-white">35 AZN</span>
+                                <button class="add-to-cart-btn bg-yellow-400 text-black py-2 px-6 rounded-full font-medium hover:bg-yellow-500 transition-colors duration-300">Səbətə At</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Məhsul 8 -->
+                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="kisi seyahet deri" data-name="Kişilər üçün Dəri Səyahət Çantası" data-price="59" data-image="https://images.unsplash.com/photo-1549242333-e593e32b85e0?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Geniş daxili və davamlı materialı ilə səyahətlər üçün ideal çanta.">
+                        <img src="https://images.unsplash.com/photo-1549242333-e593e32b85e0?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Kişilər üçün Dəri Səyahət Çantası" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Səyahət Dəri Çantası</h3>
+                            <p class="text-gray-300 mb-4">Stil və funksionallığı birləşdirir.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-white">59 AZN</span>
+                                <button class="add-to-cart-btn bg-yellow-400 text-black py-2 px-6 rounded-full font-medium hover:bg-yellow-500 transition-colors duration-300">Səbətə At</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Məhsul 9 -->
+                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="qadin deri ciyin modern" data-name="Modern Dəri Çiyin Çantası" data-price="52" data-image="https://images.unsplash.com/photo-1622340576307-a3a8a3e74288?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Gündəlik istifadə üçün geniş daxili və rahat kəsimi ilə dəri çanta.">
+                        <img src="https://images.unsplash.com/photo-1622340576307-a3a8a3e74288?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Modern Dəri Çiyin Çantası" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Modern Dəri Çiyin Çantası</h3>
+                            <p class="text-gray-300 mb-4">Həm rahat, həm də çox şıq.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-white">52 AZN</span>
+                                <button class="add-to-cart-btn bg-yellow-400 text-black py-2 px-6 rounded-full font-medium hover:bg-yellow-500 transition-colors duration-300">Səbətə At</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Məhsul 10 -->
+                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="qadin el klassik" data-name="Axşam Üçün Klassik Əl Çantası" data-price="47" data-image="https://images.unsplash.com/photo-1598466107384-e405f6d76442?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Ziyafətlər və xüsusi günlər üçün gümüşü parıltılı, zərif əl çantası.">
+                        <img src="https://images.unsplash.com/photo-1598466107384-e405f6d76442?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Axşam Üçün Klassik Əl Çantası" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Axşam Üçün Klassik Əl Çantası</h3>
+                            <p class="text-gray-300 mb-4">Parıltılı dizaynı ilə fərqlənin.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-white">47 AZN</span>
+                                <button class="add-to-cart-btn bg-yellow-400 text-black py-2 px-6 rounded-full font-medium hover:bg-yellow-500 transition-colors duration-300">Səbətə At</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Məhsul 11 -->
+                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="kisi sport" data-name="Gündəlik Sport Çantası" data-price="34" data-image="https://images.unsplash.com/photo-1582299863417-64013149a43a?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Yüngül materialdan hazırlanmış, hər gün üçün ideal çanta.">
+                        <img src="https://images.unsplash.com/photo-1582299863417-64013149a43a?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Gündəlik Sport Çantası" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Gündəlik Sport Çantası</h3>
+                            <p class="text-gray-300 mb-4">Rahat və funksionaldır.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-white">34 AZN</span>
+                                <button class="add-to-cart-btn bg-yellow-400 text-black py-2 px-6 rounded-full font-medium hover:bg-yellow-500 transition-colors duration-300">Səbətə At</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Məhsul 12 -->
+                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="qadin ciyin klassik" data-name="Klassik Qadın Çiyin Çantası" data-price="51" data-image="https://images.unsplash.com/photo-1604107872653-f7243c3f24ad?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Şıq və geniş daxili ilə klassik dizaynlı çiyin çantası.">
+                        <img src="https://images.unsplash.com/photo-1604107872653-f7243c3f24ad?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Klassik Qadın Çiyin Çantası" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Klassik Çiyin Çantası</h3>
+                            <p class="text-gray-300 mb-4">Həm şıq, həm də funksionaldır.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-white">51 AZN</span>
+                                <button class="add-to-cart-btn bg-yellow-400 text-black py-2 px-6 rounded-full font-medium hover:bg-yellow-500 transition-colors duration-300">Səbətə At</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Məhsul 13 -->
+                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="kisi seyahet modern" data-name="Modern Kişi Səyahət Çantası" data-price="49" data-image="https://images.unsplash.com/photo-1582299863417-64013149a43a?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Rahat və geniş, qısa səyahətlər üçün ideal seçim.">
+                        <img src="https://images.unsplash.com/photo-1582299863417-64013149a43a?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Modern Kişi Səyahət Çantası" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Modern Kişi Səyahət Çantası</h3>
+                            <p class="text-gray-300 mb-4">Geniş və rahat, səyahət üçün ideal.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-white">49 AZN</span>
+                                <button class="add-to-cart-btn bg-yellow-400 text-black py-2 px-6 rounded-full font-medium hover:bg-yellow-500 transition-colors duration-300">Səbətə At</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Məhsul 14 -->
+                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="qadin deri modern" data-name="Modern Dəri Əl Çantası" data-price="57" data-image="https://images.unsplash.com/photo-1588661646271-9653835062a4?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Müasir dizaynlı, qara dəri materialdan əl çantası.">
+                        <img src="https://images.unsplash.com/photo-1588661646271-9653835062a4?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Modern Dəri Əl Çantası" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Modern Dəri Əl Çantası</h3>
+                            <p class="text-gray-300 mb-4">Zərifliyi və keyfiyyəti birləşdirir.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-white">57 AZN</span>
+                                <button class="add-to-cart-btn bg-yellow-400 text-black py-2 px-6 rounded-full font-medium hover:bg-yellow-500 transition-colors duration-300">Səbətə At</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Məhsul 15 -->
+                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="qadin sport" data-name="Qadınlar üçün Yüngül Sport Çanta" data-price="33" data-image="https://images.unsplash.com/photo-1622340576307-a3a8a3e74288?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Açıq havada idman üçün ideal, rahat və yüngül materialdan hazırlanıb.">
+                        <img src="https://images.unsplash.com/photo-1622340576307-a3a8a3e74288?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Qadınlar üçün Yüngül Sport Çanta" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Yüngül Sport Çanta</h3>
+                            <p class="text-gray-300 mb-4">Rahatlıq və stil bir arada.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-white">33 AZN</span>
+                                <button class="add-to-cart-btn bg-yellow-400 text-black py-2 px-6 rounded-full font-medium hover:bg-yellow-500 transition-colors duration-300">Səbətə At</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Məhsul 16 -->
+                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="qadin klassik deri" data-name="Klassik Qəhvəyi Dəri Çanta" data-price="56" data-image="https://images.unsplash.com/photo-1549491001-c88f11b22340?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Zərif toxunuşları olan, klassik formada qəhvəyi dəri çanta.">
+                        <img src="https://images.unsplash.com/photo-1549491001-c88f11b22340?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Klassik Qəhvəyi Dəri Çanta" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Klassik Qəhvəyi Dəri Çanta</h3>
+                            <p class="text-gray-300 mb-4">Geniş və rahat, gündəlik üçün ideal.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-white">56 AZN</span>
+                                <button class="add-to-cart-btn bg-yellow-400 text-black py-2 px-6 rounded-full font-medium hover:bg-yellow-500 transition-colors duration-300">Səbətə At</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Məhsul 17 -->
+                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="kisi deri modern" data-name="Minimalist Kişi Dəri Çanta" data-price="53" data-image="https://images.unsplash.com/photo-1577908977505-188701986427?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Minimalist dizaynı sevənlər üçün kiçik ölçülü, amma funksional çanta.">
+                        <img src="https://images.unsplash.com/photo-1577908977505-188701986427?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Minimalist Kişi Dəri Çanta" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Minimalist Dəri Çanta</h3>
+                            <p class="text-gray-300 mb-4">Mükəmməl material və dəbli dizayn.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-white">53 AZN</span>
+                                <button class="add-to-cart-btn bg-yellow-400 text-black py-2 px-6 rounded-full font-medium hover:bg-yellow-500 transition-colors duration-300">Səbətə At</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Məhsul 18 -->
+                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="qadin ciyin klassik" data-name="Klassik Qadın Çiyin Çantası" data-price="48" data-image="https://images.unsplash.com/photo-1622340576307-a3a8a3e74288?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Qəhvəyi rəngdə, klassik və rahat çiyin çantası.">
+                        <img src="https://images.unsplash.com/photo-1622340576307-a3a8a3e74288?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Klassik Qadın Çiyin Çantası" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Klassik Qadın Çiyin Çantası</h3>
+                            <p class="text-gray-300 mb-4">Zərif dizaynı ilə fərqlənin.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-white">48 AZN</span>
+                                <button class="add-to-cart-btn bg-yellow-400 text-black py-2 px-6 rounded-full font-medium hover:bg-yellow-500 transition-colors duration-300">Səbətə At</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Məhsul 19 -->
+                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="kisi seyahet sport" data-name="Sport Səyahət Çantası" data-price="42" data-image="https://images.unsplash.com/photo-1549491001-c88f11b22340?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Qısa səyahətlər və idman üçün uyğun geniş və davamlı çanta.">
+                        <img src="https://images.unsplash.com/photo-1549491001-c88f11b22340?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Sport Səyahət Çantası" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Sport Səyahət Çantası</h3>
+                            <p class="text-gray-300 mb-4">Aktiv insanlar üçün ideal seçim.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-white">42 AZN</span>
+                                <button class="add-to-cart-btn bg-yellow-400 text-black py-2 px-6 rounded-full font-medium hover:bg-yellow-500 transition-colors duration-300">Səbətə At</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Məhsul 20 -->
+                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="qadin el modern" data-name="Qara Modern Əl Çantası" data-price="41" data-image="https://images.unsplash.com/photo-1596700680650-705b63013d33?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Hər geyimlə uyğunlaşan, kiçik və zərif qara əl çantası.">
+                        <img src="https://images.unsplash.com/photo-1596700680650-705b63013d33?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Qara Modern Əl Çantası" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Qara Modern Əl Çantası</h3>
+                            <p class="text-gray-300 mb-4">Eleganlıq və sadəlik.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-white">41 AZN</span>
+                                <button class="add-to-cart-btn bg-yellow-400 text-black py-2 px-6 rounded-full font-medium hover:bg-yellow-500 transition-colors duration-300">Səbətə At</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Məhsul 21 -->
+                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="qadin deri ciyin klassik" data-name="Gündəlik Klassik Dəri Çantası" data-price="54" data-image="https://images.unsplash.com/photo-1598583488737-14e300d60312?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Gündəlik istifadə üçün ideal ölçüdə, davamlı dəri çiyin çantası.">
+                        <img src="https://images.unsplash.com/photo-1598583488737-14e300d60312?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Gündəlik Klassik Dəri Çantası" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Gündəlik Klassik Çanta</h3>
+                            <p class="text-gray-300 mb-4">Həm eleqant, həm də rahatdır.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-white">54 AZN</span>
+                                <button class="add-to-cart-btn bg-yellow-400 text-black py-2 px-6 rounded-full font-medium hover:bg-yellow-500 transition-colors duration-300">Səbətə At</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Məhsul 22 -->
+                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="kisi sport ciyin" data-name="Kişilər üçün Sport Çiyin Çantası" data-price="39" data-image="https://images.unsplash.com/photo-1598522659799-73d7494f15d2?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="İdman zalı üçün ideal, su keçirməyən və geniş çanta.">
+                        <img src="https://images.unsplash.com/photo-1598522659799-73d7494f15d2?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Kişilər üçün Sport Çiyin Çantası" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Kişilər üçün Sport Çantası</h3>
+                            <p class="text-gray-300 mb-4">Aktiv həyat tərzi üçün mükəmməl seçim.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-white">39 AZN</span>
+                                <button class="add-to-cart-btn bg-yellow-400 text-black py-2 px-6 rounded-full font-medium hover:bg-yellow-500 transition-colors duration-300">Səbətə At</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Məhsul 23 -->
+                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="qadin ciyin modern" data-name="Moda Mətbəəsi Çiyin Çantası" data-price="46" data-image="https://images.unsplash.com/photo-1606526154178-57d620573e34?q=80&w=1965&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Müasir geyimlər üçün uyğun, dəbli və rahat çiyin çantası.">
+                        <img src="https://images.unsplash.com/photo-1606526154178-57d620573e34?q=80&w=1965&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Moda Mətbəəsi Çiyin Çantası" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Moda Mətbəəsi Çiyin Çantası</h3>
+                            <p class="text-gray-300 mb-4">Hər geyimə uyğunlaşır.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-white">46 AZN</span>
+                                <button class="add-to-cart-btn bg-yellow-400 text-black py-2 px-6 rounded-full font-medium hover:bg-yellow-500 transition-colors duration-300">Səbətə At</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Məhsul 24 -->
+                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="kisi seyahet klassik" data-name="Klassik Kişi Səyahət Çantası" data-price="58" data-image="https://images.unsplash.com/photo-1605763953684-2195f19028a3?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Davamlı materialdan hazırlanmış, klassik görünüşlü səyahət çantası.">
+                        <img src="https://images.unsplash.com/photo-1605763953684-2195f19028a3?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Klassik Kişi Səyahət Çantası" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Klassik Səyahət Çantası</h3>
+                            <p class="text-gray-300 mb-4">Stil və rahatlıq.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-white">58 AZN</span>
+                                <button class="add-to-cart-btn bg-yellow-400 text-black py-2 px-6 rounded-full font-medium hover:bg-yellow-500 transition-colors duration-300">Səbətə At</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Məhsul 25 -->
+                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="qadin deri klassik" data-name="Klassik Dəri Əl Çantası" data-price="50" data-image="https://images.unsplash.com/photo-1622340576307-a3a8a3e74288?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Qəhvəyi dəridən, klassik dizaynlı əl çantası.">
+                        <img src="https://images.unsplash.com/photo-1622340576307-a3a8a3e74288?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Klassik Dəri Əl Çantası" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Klassik Dəri Əl Çantası</h3>
+                            <p class="text-gray-300 mb-4">Zamansız dizayn.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-white">50 AZN</span>
+                                <button class="add-to-cart-btn bg-yellow-400 text-black py-2 px-6 rounded-full font-medium hover:bg-yellow-500 transition-colors duration-300">Səbətə At</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Məhsul 26 -->
+                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="kisi deri modern" data-name="Modern Qara Dəri Çanta" data-price="59" data-image="https://images.unsplash.com/photo-1549491001-c88f11b22340?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Müasir dizaynlı, funksional və zərif kişi çantası.">
+                        <img src="https://images.unsplash.com/photo-1549491001-c88f11b22340?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Modern Qara Dəri Çanta" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Modern Qara Dəri Çanta</h3>
+                            <p class="text-gray-300 mb-4">Geniş və rahat, hər səyahət üçün ideal.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-white">59 AZN</span>
+                                <button class="add-to-cart-btn bg-yellow-400 text-black py-2 px-6 rounded-full font-medium hover:bg-yellow-500 transition-colors duration-300">Səbətə At</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Məhsul 27 -->
+                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="qadin el klassik" data-name="Mini Klassik Qadın Əl Çantası" data-price="35" data-image="https://images.unsplash.com/photo-1558235213-9114f1776ce5?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Balaca ölçülü, ziyafətlər üçün ideal klassik əl çantası.">
+                        <img src="https://images.unsplash.com/photo-1558235213-9114f1776ce5?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Mini Klassik Qadın Əl Çantası" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Mini Klassik Çanta</h3>
+                            <p class="text-gray-300 mb-4">Zərifliyi sevənlər üçün.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-white">35 AZN</span>
+                                <button class="add-to-cart-btn bg-yellow-400 text-black py-2 px-6 rounded-full font-medium hover:bg-yellow-500 transition-colors duration-300">Səbətə At</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Məhsul 28 -->
+                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="kisi sport modern" data-name="Modern Sport Çantası" data-price="37" data-image="https://images.unsplash.com/photo-1598522659799-73d7494f15d2?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Müasir dizaynlı, idman və gündəlik üçün rahat çanta.">
+                        <img src="https://images.unsplash.com/photo-1598522659799-73d7494f15d2?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Modern Sport Çantası" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Modern Sport Çantası</h3>
+                            <p class="text-gray-300 mb-4">Aktiv həyat tərzi üçün mükəmməl seçim.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-white">37 AZN</span>
+                                <button class="add-to-cart-btn bg-yellow-400 text-black py-2 px-6 rounded-full font-medium hover:bg-yellow-500 transition-colors duration-300">Səbətə At</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Məhsul 29 -->
+                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="qadin ciyin klassik" data-name="Klassik Qəhvəyi Çiyin Çantası" data-price="44" data-image="https://images.unsplash.com/photo-1604107872653-f7243c3f24ad?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Gündəlik istifadə üçün geniş daxili və rahat kəsimi ilə çiyin çantası.">
+                        <img src="https://images.unsplash.com/photo-1604107872653-f7243c3f24ad?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Klassik Qəhvəyi Çiyin Çantası" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Klassik Qəhvəyi Çanta</h3>
+                            <p class="text-gray-300 mb-4">Həm rahat, həm də çox şıq.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-white">44 AZN</span>
+                                <button class="add-to-cart-btn bg-yellow-400 text-black py-2 px-6 rounded-full font-medium hover:bg-yellow-500 transition-colors duration-300">Səbətə At</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Məhsul 30 -->
+                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="kisi seyahet deri" data-name="Böyük Kişi Səyahət Çantası" data-price="60" data-image="https://images.unsplash.com/photo-1549242333-e593e32b85e0?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Geniş daxili və davamlı materialı ilə səyahətlər üçün ideal çanta.">
+                        <img src="https://images.unsplash.com/photo-1549242333-e593e32b85e0?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Böyük Kişi Səyahət Çantası" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Böyük Kişi Səyahət Çantası</h3>
+                            <p class="text-gray-300 mb-4">Stil və funksionallığı birləşdirir.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-white">60 AZN</span>
+                                <button class="add-to-cart-btn bg-yellow-400 text-black py-2 px-6 rounded-full font-medium hover:bg-yellow-500 transition-colors duration-300">Səbətə At</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Məhsul 31 -->
+                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="qadin el modern" data-name="Sadə Modern Əl Çantası" data-price="43" data-image="https://images.unsplash.com/photo-1606526154178-57d620573e34?q=80&w=1965&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Minimalist dizaynlı, sadə və zərif qadın əl çantası.">
+                        <img src="https://images.unsplash.com/photo-1606526154178-57d620573e34?q=80&w=1965&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Sadə Modern Əl Çantası" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Sadə Modern Əl Çantası</h3>
+                            <p class="text-gray-300 mb-4">Hər geyimə uyğunlaşır.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-white">43 AZN</span>
+                                <button class="add-to-cart-btn bg-yellow-400 text-black py-2 px-6 rounded-full font-medium hover:bg-yellow-500 transition-colors duration-300">Səbətə At</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Məhsul 32 -->
+                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="qadin deri klassik" data-name="Retro Klassik Dəri Çanta" data-price="52" data-image="https://images.unsplash.com/photo-1598583488737-14e300d60312?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Qədimi toxunuşlu, davamlı dəri materialından klassik çanta.">
+                        <img src="https://images.unsplash.com/photo-1598583488737-14e300d60312?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Retro Klassik Dəri Çanta" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Retro Klassik Çanta</h3>
+                            <p class="text-gray-300 mb-4">Retro stil sevənlər üçün ideal.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-white">52 AZN</span>
+                                <button class="add-to-cart-btn bg-yellow-400 text-black py-2 px-6 rounded-full font-medium hover:bg-yellow-500 transition-colors duration-300">Səbətə At</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Məhsul 33 -->
+                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="kisi seyahet modern" data-name="Modern Qara Səyahət Çantası" data-price="48" data-image="https://images.unsplash.com/photo-1582299863417-64013149a43a?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Müasir dizaynı ilə rahat səyahət çanta.">
+                        <img src="https://images.unsplash.com/photo-1582299863417-64013149a43a?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Modern Qara Səyahət Çantası" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Modern Səyahət Çantası</h3>
+                            <p class="text-gray-300 mb-4">Geniş və rahatdır.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-white">48 AZN</span>
+                                <button class="add-to-cart-btn bg-yellow-400 text-black py-2 px-6 rounded-full font-medium hover:bg-yellow-500 transition-colors duration-300">Səbətə At</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Məhsul 34 -->
+                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="qadin ciyin klassik" data-name="Zərif Klassik Çiyin Çantası" data-price="49" data-image="https://images.unsplash.com/photo-1604107872653-f7243c3f24ad?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Sadə dizaynlı, zərif və gündəlik istifadə üçün uyğun çiyin çantası.">
+                        <img src="https://images.unsplash.com/photo-1604107872653-f7243c3f24ad?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Zərif Klassik Çiyin Çantası" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Zərif Klassik Çiyin Çantası</h3>
+                            <p class="text-gray-300 mb-4">Həm şıq, həm də funksionaldır.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-white">49 AZN</span>
+                                <button class="add-to-cart-btn bg-yellow-400 text-black py-2 px-6 rounded-full font-medium hover:bg-yellow-500 transition-colors duration-300">Səbətə At</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Məhsul 35 -->
+                    <div class="product-card bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800" data-category="kisi deri klassik" data-name="Kişilər üçün Dəri Çanta" data-price="55" data-image="https://images.unsplash.com/photo-1605763953684-2195f19028a3?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Qəhvəyi rəngdə, yüksək keyfiyyətli dəri materialından iş çantası.">
+                        <img src="https://images.unsplash.com/photo-1605763953684-2195f19028a3?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Kişilər üçün Dəri Çanta" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-yellow-400 mb-2">Kişilər üçün Dəri Çanta</h3>
+                            <p class="text-gray-300 mb-4">Peşəkar və şıq görünüş.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-white">55 AZN</span>
+                                <button class="add-to-cart-btn bg-yellow-400 text-black py-2 px-6 rounded-full font-medium hover:bg-yellow-500 transition-colors duration-300">Səbətə At</button>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Footer hissəsi -->
-    <footer class="bg-gray-950 text-gray-400 py-10">
+    <footer class="bg-gray-950 text-gray-400 py-10 mt-12">
         <div class="container mx-auto px-4 text-center">
             <p>&copy; 2024 Zövqlü Sumkalar. Bütün hüquqlar qorunur.</p>
         </div>
@@ -276,7 +692,7 @@
     <div id="cart-sidebar" class="cart-sidebar p-6 bg-gray-950 text-white flex flex-col">
         <div class="flex justify-between items-center mb-6 border-b border-gray-800 pb-4">
             <h2 class="text-2xl font-bold text-yellow-400">Səbət</h2>
-            <button id="close-cart-button" class="text-gray-400 hover:text-yellow-400 text-2xl">&times;</button>
+            <button id="close-cart-button" class="text-gray-400 hover:text-yellow-400 text-3xl">&times;</button>
         </div>
         <div id="cart-items" class="flex-grow overflow-y-auto custom-scrollbar space-y-4">
             <!-- Səbətə əlavə olunan məhsullar bura daxil ediləcək -->
@@ -286,8 +702,7 @@
                 <span class="text-xl font-bold">Ümumi Qiymət:</span>
                 <span id="total-price" class="text-2xl font-extrabold text-yellow-400">0 AZN</span>
             </div>
-            <!-- WhatsApp-a yönləndirmə üçün düyməyə yeni ID əlavə edildi -->
-            <button id="checkout-button" class="w-full bg-yellow-400 text-black py-3 rounded-full font-bold text-lg hover:bg-yellow-500 transition-colors duration-300">Ödənişə Keç</button>
+            <button id="checkout-button" class="checkout-button w-full bg-yellow-400 text-black py-3 rounded-full font-bold text-lg hover:bg-yellow-500 transition-colors duration-300" disabled>Ödənişə Keç</button>
         </div>
     </div>
 
@@ -301,7 +716,7 @@
         </div>
     </div>
 
-    <!-- Mesaj Qutusu -->
+    <!-- Mesaj Qutusu (alert() yerinə istifadə olunur) -->
     <div id="message-box-overlay" class="message-box-overlay">
         <div class="message-box">
             <h3 id="message-box-title" class="text-xl font-bold">Mesaj Başlığı</h3>
@@ -313,6 +728,7 @@
     <!-- JavaScript hissəsi -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Elementləri seçirik
             const mobileMenuButton = document.getElementById('mobile-menu-button');
             const mobileMenu = document.getElementById('mobile-menu');
             const filterButtons = document.querySelectorAll('.filter-button');
@@ -327,10 +743,11 @@
             const productDetailModalOverlay = document.getElementById('product-detail-modal-overlay');
             const productDetailModalContent = document.getElementById('product-detail-content');
             const closeModalButton = document.getElementById('close-modal-button');
-            // Yeni əlavə edilmiş düyməni seçirik
             const checkoutButton = document.getElementById('checkout-button');
 
+            // Səbət məhsullarını saxlamaq üçün massiv (array)
             let cart = [];
+            const whatsappPhoneNumber = "994504495677"; // Sifarişlərin gələcəyi WhatsApp nömrəsi.
 
             // Mesaj qutusu funksiyaları
             function showMessageBox(title, text) {
@@ -338,17 +755,16 @@
                 document.getElementById('message-box-text').innerText = text;
                 document.getElementById('message-box-overlay').style.display = 'flex';
             }
-
             window.closeMessageBox = function() {
                 document.getElementById('message-box-overlay').style.display = 'none';
             };
 
-            // Mobil menyu funksiyası
+            // Mobil menyunun açılıb-bağlanması
             mobileMenuButton.addEventListener('click', () => {
                 mobileMenu.classList.toggle('hidden');
             });
 
-            // Filterləmə funksiyası
+            // Məhsulları filterləmə funksiyası
             filterButtons.forEach(button => {
                 button.addEventListener('click', () => {
                     // Bütün düymələrdən "active" sinfini silirik
@@ -370,7 +786,7 @@
                 });
             });
 
-            // Məhsul detalları modalını açma funksiyası
+            // Məhsul detalları modalını açmaq
             productCards.forEach(card => {
                 card.addEventListener('click', (e) => {
                     // Əgər "Səbətə at" düyməsinə klikləməyibsə, modulu açırıq
@@ -380,7 +796,7 @@
                         const image = card.getAttribute('data-image');
                         const description = card.getAttribute('data-description');
                         
-                        // Modalın məzmununu yaradırıq
+                        // Modalın məzmununu dinamik olaraq yaradırıq
                         productDetailModalContent.innerHTML = `
                             <img src="${image}" alt="${name}" class="w-full md:w-1/2 h-80 object-cover rounded-xl border border-gray-700">
                             <div class="flex flex-col gap-4 md:w-1/2">
@@ -389,15 +805,15 @@
                                 <div class="flex items-center gap-4">
                                     <span class="text-4xl font-extrabold text-white">${price} AZN</span>
                                 </div>
-                                <button class="add-to-cart-modal-btn w-full mt-4 bg-yellow-400 text-black py-3 rounded-full font-bold text-lg hover:bg-yellow-500 transition-colors duration-300" data-name="${name}" data-price="${price}">Səbətə At</button>
+                                <button class="add-to-cart-modal-btn w-full mt-4 bg-yellow-400 text-black py-3 rounded-full font-bold text-lg hover:bg-yellow-500 transition-colors duration-300" data-name="${name}" data-price="${price}" data-image="${image}">Səbətə At</button>
                             </div>
                         `;
 
-                        // Modal düyməsini əlavə etmək
+                        // Modalın içindəki "Səbətə At" düyməsinə klik funksiyası
                         productDetailModalContent.querySelector('.add-to-cart-modal-btn').addEventListener('click', (event) => {
                             const productName = event.target.getAttribute('data-name');
                             const productPrice = parseFloat(event.target.getAttribute('data-price'));
-                            const productImage = image;
+                            const productImage = event.target.getAttribute('data-image');
                             addToCart({ name: productName, price: productPrice, image: productImage });
                             productDetailModalOverlay.style.display = 'none'; // Əlavə edəndən sonra modulu bağlayır
                         });
@@ -417,7 +833,7 @@
                 }
             });
 
-            // Səbət funksiyası
+            // Səbət funksiyası: Səbətin məzmununu yeniləyir
             const updateCart = () => {
                 cartItemsContainer.innerHTML = '';
                 let total = 0;
@@ -438,7 +854,7 @@
                 totalPriceElement.innerText = `${total} AZN`;
                 cartCount.innerText = cart.length;
 
-                // Səbət boşdursa mesaj göstər
+                // Səbət boşdursa mesaj göstər və ödəniş düyməsini deaktiv et
                 if (cart.length === 0) {
                     cartItemsContainer.innerHTML = '<p class="text-center text-gray-400 py-8">Səbətiniz boşdur.</p>';
                     checkoutButton.disabled = true;
@@ -458,13 +874,14 @@
                 });
             };
             
-            // Səbətə məhsul əlavə etmək
+            // Səbətə məhsul əlavə etmək funksiyası
             const addToCart = (product) => {
                 cart.push(product);
                 updateCart();
                 showMessageBox("Uğurlu", `${product.name} səbətə əlavə edildi.`);
             };
 
+            // Əsas səhifədəki "Səbətə At" düymələrinə klik funksiyası
             document.querySelectorAll('.add-to-cart-btn').forEach(button => {
                 button.addEventListener('click', (e) => {
                     const card = e.target.closest('.product-card');
@@ -478,7 +895,7 @@
                 });
             });
 
-            // Səbəti açmaq/bağlamaq
+            // Səbət panelini açmaq/bağlamaq
             cartButton.addEventListener('click', () => {
                 cartSidebar.classList.add('open');
                 cartOverlay.style.display = 'block';
@@ -492,7 +909,7 @@
                 cartOverlay.style.display = 'none';
             });
 
-            // Yeni funksiya: WhatsApp-a yönləndirmə
+            // WhatsApp-a yönləndirmə funksiyası
             checkoutButton.addEventListener('click', () => {
                 if (cart.length === 0) {
                     showMessageBox("Boş Səbət", "Ödənişə keçmək üçün səbətinizə məhsul əlavə edin.");
@@ -509,16 +926,17 @@
                 message += `\nÜmumi qiymət: ${total} AZN`;
 
                 const encodedMessage = encodeURIComponent(message);
-                const phoneNumber = "994504495677"; // "+" işarəsi olmadan
-                const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+                const whatsappUrl = `https://wa.me/${whatsappPhoneNumber}?text=${encodedMessage}`;
 
                 window.open(whatsappUrl, '_blank');
                 
-                // Ödənişə keçdikdən sonra səbəti boşaltmaq istəyirsinizsə:
+                // İsteğe bağlı: sifariş göndərildikdən sonra səbəti boşaltmaq
                 // cart = [];
                 // updateCart();
-                // showMessageBox("Sifariş Göndərildi", "Sifarişiniz WhatsApp üzərindən göndərildi. Tezliklə sizinlə əlaqə saxlayacağıq.");
             });
+
+            // Səhifə yüklənərkən səbəti bir dəfə yeniləyirik
+            updateCart();
         });
     </script>
 </body>
