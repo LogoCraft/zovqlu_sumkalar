@@ -17,15 +17,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     
     <style>
-        /* Bədən üçün ümumi stillər */
+        /* General body styles */
         body {
             font-family: 'Inter', sans-serif;
             overflow-x: hidden;
-            background-color: #f7f3e9; /* Krem tonu */
-            color: #1e3a8a; /* Əsas mətn rəngi - tünd mavi */
+            background-color: #f7f3e9; /* Cream tone */
+            color: #1e3a8a; /* Main text color - dark blue */
         }
 
-        /* Hero hissəsinin animasiyası */
+        /* Hero section animation */
         @keyframes fadeInMoveUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -37,7 +37,7 @@
 
         .delay-200 { animation-delay: 0.2s; }
 
-        /* Filtr düymələrinin stilləri */
+        /* Filter button styles */
         .filter-button {
             transition: all 0.3s ease-in-out;
             @apply bg-gray-200 text-gray-800 py-2 px-6 rounded-full font-medium hover:bg-violet-400 hover:text-white;
@@ -46,18 +46,18 @@
             @apply bg-violet-500 text-white;
         }
 
-        /* Məhsul kartlarının stilləri */
+        /* Product card styles */
         .product-card {
             cursor: pointer;
             transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
         }
         .product-card:hover {
             transform: scale(1.03);
-            box-shadow: 0 15px 30px rgba(124, 58, 237, 0.2); /* Bənövşəyi kölgə */
+            box-shadow: 0 15px 30px rgba(124, 58, 237, 0.2); /* Purple shadow */
         }
 
-        /* Mesaj qutusu stilləri */
-        .message-box-overlay, .product-detail-modal-overlay {
+        /* Message box styles */
+        .message-box-overlay, .product-detail-modal-overlay, .password-modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
@@ -69,12 +69,12 @@
             align-items: center;
             z-index: 1000;
         }
-        .message-box {
+        .message-box, .password-modal {
             background-color: #ffffff;
-            color: #1e3a8a; /* Tünd mavi mətn */
+            color: #1e3a8a; /* Dark blue text */
             padding: 2rem;
             border-radius: 1rem;
-            border: 1px solid #c4b5fd; /* Açıq bənövşəyi kənar */
+            border: 1px solid #c4b5fd; /* Light purple border */
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             width: 90%;
             max-width: 400px;
@@ -82,7 +82,7 @@
             animation: fadeInMoveUp 0.3s ease-out;
         }
 
-        /* Səbət paneli stilləri */
+        /* Cart sidebar styles */
         .cart-sidebar {
             position: fixed;
             top: 0;
@@ -97,7 +97,7 @@
             z-index: 1000;
             display: flex;
             flex-direction: column;
-            border-left: 1px solid #c4b5fd; /* Açıq bənövşəyi kənar */
+            border-left: 1px solid #c4b5fd; /* Light purple border */
         }
         .cart-sidebar.open {
             transform: translateX(0);
@@ -113,22 +113,22 @@
             display: none;
         }
 
-        /* Detay modulu stilləri */
+        /* Detail modal styles */
         .product-detail-modal {
             background-color: #ffffff;
-            color: #1e3a8a; /* Tünd mavi mətn */
+            color: #1e3a8a; /* Dark blue text */
             border-radius: 1.5rem;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             max-width: 900px;
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
-            border: 1px solid #c4b5fd; /* Açıq bənövşəyi kənar */
+            border: 1px solid #c4b5fd; /* Light purple border */
             position: relative;
             animation: fadeInMoveUp 0.3s ease-out;
         }
 
-        /* Özəl scrollbar stilləri */
+        /* Custom scrollbar styles */
         .custom-scrollbar::-webkit-scrollbar {
             width: 8px;
         }
@@ -137,7 +137,7 @@
             border-radius: 10px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #c4b5fd; /* Açıq bənövşəyi scrollbar */
+            background: #c4b5fd; /* Light purple scrollbar */
             border-radius: 10px;
             border: 2px solid #e5e5e5;
         }
@@ -149,11 +149,33 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
+        
+        /* Hidden section styles */
+        #secret-content {
+            display: none;
+        }
+        
+        /* New image upload section styles */
+        .upload-container {
+            min-height: 400px;
+        }
+        .preview-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .no-products-message {
+            text-align: center;
+            font-size: 1.5rem;
+            color: #6b7280;
+            margin-top: 5rem;
+        }
     </style>
 </head>
 <body class="bg-[#f7f3e9] text-blue-800 antialiased">
 
-    <!-- Navigasiya Paneli -->
+    <!-- Navigation Bar -->
     <nav class="p-6 md:p-8 flex justify-between items-center bg-white border-b border-gray-200">
         <a href="#" class="text-2xl md:text-3xl font-bold text-violet-500 tracking-wider">MUBAG STYLE</a>
         <div class="hidden md:flex space-x-8 text-lg font-medium">
@@ -173,7 +195,7 @@
         </div>
     </nav>
 
-    <!-- Mobil menyu (ekran balaca olanda görünür) -->
+    <!-- Mobile menu -->
     <div id="mobile-menu" class="hidden md:hidden bg-white text-center border-b border-gray-200">
         <a href="#" class="block py-4 text-blue-800 hover:bg-gray-100 transition-colors duration-300">Ana Səhifə</a>
         <a href="#products" class="block py-4 text-blue-800 hover:bg-gray-100 transition-colors duration-300">Kolleksiya</a>
@@ -181,11 +203,11 @@
         <a href="#" class="block py-4 text-blue-800 hover:bg-gray-100 transition-colors duration-300">Əlaqə</a>
     </div>
 
-    <!-- Əsas (Hero) hissə -->
+    <!-- Hero section -->
     <header class="relative bg-white h-[60vh] md:h-[80vh] flex items-center justify-center text-center px-4 overflow-hidden">
         <div class="absolute inset-0">
-            <!-- Arxa fon şəkli -->
-            <img src="https://images.unsplash.com/photo-1543324671-155452f1e944?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Arxa Fon" class="w-full h-full object-cover opacity-20">
+            <!-- Background image -->
+            <img src="https://images.unsplash.com/photo-1543324671-155452f1e944?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Background Image" class="w-full h-full object-cover opacity-20">
         </div>
         <div class="relative z-10 p-6 md:p-12 rounded-xl bg-white bg-opacity-80 backdrop-filter backdrop-blur-sm border border-gray-300 shadow-lg">
             <h1 class="text-4xl md:text-6xl font-extrabold text-violet-500 mb-4 animate-fade-in-up">Zəriflik və Stil Sizinlə</h1>
@@ -194,13 +216,67 @@
         </div>
     </header>
 
-    <!-- Məhsullar və Filter hissəsi -->
+    <!-- Hidden section, visible after correct password -->
+    <section id="secret-content" class="container mx-auto px-4 my-12">
+        <div class="p-10 bg-blue-900 text-white rounded-xl shadow-2xl">
+            <h2 class="text-3xl font-bold mb-8 text-center text-white">Yeni Məhsul Əlavə Et</h2>
+            <div class="bg-white p-8 rounded-2xl shadow-xl max-w-2xl mx-auto w-full text-center upload-container">
+                <form id="product-upload-form" class="space-y-6 text-gray-800 text-left">
+                    <div>
+                        <label for="product-name" class="block text-sm font-medium text-gray-700">Məhsulun Adı</label>
+                        <input type="text" id="product-name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 focus:border-violet-500 focus:ring-violet-500">
+                    </div>
+                    <div>
+                        <label for="product-description" class="block text-sm font-medium text-gray-700">Məhsul Haqqında</label>
+                        <textarea id="product-description" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 focus:border-violet-500 focus:ring-violet-500"></textarea>
+                    </div>
+                    <div>
+                        <label for="product-price" class="block text-sm font-medium text-gray-700">Qiymət (AZN)</label>
+                        <input type="number" id="product-price" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 focus:border-violet-500 focus:ring-violet-500">
+                    </div>
+                    <div>
+                        <label for="product-category" class="block text-sm font-medium text-gray-700">Kolleksiya Seçin</label>
+                        <select id="product-category" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 focus:border-violet-500 focus:ring-violet-500">
+                            <option value="qadin">Qadınlar üçün</option>
+                            <option value="kisi">Kişilər üçün</option>
+                            <option value="ciyin">Çiyin Çantası</option>
+                            <option value="el">Əl Çantası</option>
+                            <option value="sport">Sport Çantası</option>
+                            <option value="seyahet">Səyahət Çantası</option>
+                            <option value="deri">Dəri Çanta</option>
+                            <option value="klassik">Klassik</option>
+                            <option value="modern">Modern</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="fileInput" class="block text-sm font-medium text-gray-700 mb-1">Şəkil seçin</label>
+                        <input type="file" id="fileInput" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100">
+                    </div>
+
+                    <div class="w-full h-80 bg-gray-200 rounded-xl overflow-hidden flex items-center justify-center border border-gray-300 shadow-inner">
+                        <img id="previewImage" src="https://placehold.co/400x320/e5e7eb/6b7280?text=Şəkil+yükləyin" alt="Seçilmiş şəkil burada görünəcək" class="preview-image">
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-violet-500 text-white font-bold py-3 px-6 rounded-full hover:bg-violet-600 transition duration-300 ease-in-out transform hover:scale-105">
+                        Məhsulu Yüklə
+                    </button>
+                    
+                    <button type="button" id="clear-products-btn" class="w-full bg-red-500 text-white font-bold py-3 px-6 rounded-full hover:bg-red-600 transition duration-300 ease-in-out transform hover:scale-105 mt-4">
+                        Bütün Məhsulları Sil
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products and Filter section -->
     <section id="products" class="py-16 md:py-24 bg-[#f7f3e9]">
         <div class="container mx-auto px-4 flex flex-col md:flex-row gap-8">
-            <!-- Filter Paneli -->
+            <!-- Filter Panel -->
             <div class="md:w-1/4 bg-white p-6 rounded-xl border border-gray-200 h-fit">
                 <h3 class="text-2xl font-bold text-violet-500 mb-6">Kateqoriyalar</h3>
                 <div class="flex flex-wrap md:flex-col gap-3">
+                    <!-- Filter buttons managed by JS -->
                     <button class="filter-button active" data-filter="all">Hamısı</button>
                     <button class="filter-button" data-filter="qadin">Qadınlar üçün</button>
                     <button class="filter-button" data-filter="kisi">Kişilər üçün</button>
@@ -214,528 +290,498 @@
                 </div>
             </div>
             
-            <!-- Məhsul siyahısı -->
+            <!-- Product list -->
             <div class="md:w-3/4">
                 <h2 class="text-4xl md:text-5xl font-bold text-center text-violet-500 mb-12 hidden md:block">Yeni Kolleksiya</h2>
                 <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <!-- Məhsul kartları (data-category atributu filter üçün istifadə olunur) -->
-                    
-                    <!-- Məhsul 1 -->
-                    <div class="product-card bg-white rounded-xl overflow-hidden shadow-lg border border-gray-200" data-category="qadin ciyin modern" data-name="Qadınlar üçün Modern Çanta" data-price="55" data-image="https://images.unsplash.com/photo-1606526154178-57d620573e34?q=80&w=1965&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Gündəlik istifadə üçün uyğun, rahat və şık dizaynlı modern çanta.">
-                        <img src="https://images.unsplash.com/photo-1606526154178-57d620573e34?q=80&w=1965&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Qadınlar üçün Modern Çanta" class="w-full h-64 object-cover">
-                        <div class="p-6">
-                            <h3 class="text-xl font-semibold text-blue-800 mb-2">Qadınlar üçün Modern Çanta</h3>
-                            <p class="text-gray-600 mb-4">Gözəlliyinizi vurğulayacaq.</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-2xl font-bold text-violet-500">55 AZN</span>
-                                <button class="add-to-cart-btn bg-violet-500 text-white py-2 px-6 rounded-full font-medium hover:bg-violet-600 transition-colors duration-300">Səbətə At</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Məhsul 2 -->
-                    <div class="product-card bg-white rounded-xl overflow-hidden shadow-lg border border-gray-200" data-category="kisi deri klassik" data-name="Klassik Kişi Dəri Çantası" data-price="60" data-image="https://images.unsplash.com/photo-1605763953684-2195f19028a3?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="İşgüzar görüşlər üçün ideal, geniş daxili olan keyfiyyətli dəri çanta.">
-                        <img src="https://images.unsplash.com/photo-1605763953684-2195f19028a3?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Klassik Kişi Dəri Çantası" class="w-full h-64 object-cover">
-                        <div class="p-6">
-                            <h3 class="text-xl font-semibold text-blue-800 mb-2">Klassik Kişi Dəri Çantası</h3>
-                            <p class="text-gray-600 mb-4">Peşəkar görünüş üçün mükəmməldir.</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-2xl font-bold text-violet-500">60 AZN</span>
-                                <button class="add-to-cart-btn bg-violet-500 text-white py-2 px-6 rounded-full font-medium hover:bg-violet-600 transition-colors duration-300">Səbətə At</button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Məhsul 3 -->
-                    <div class="product-card bg-white rounded-xl overflow-hidden shadow-lg border border-gray-200" data-category="qadin el klassik" data-name="Qadınlar üçün Zərif Əl Çantası" data-price="45" data-image="https://images.unsplash.com/photo-1596700680650-705b63013d33?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Zərif və eleqant dizaynlı əl çantası. Xüsusi günlər üçün ideal seçim.">
-                        <img src="https://images.unsplash.com/photo-1596700680650-705b63013d33?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Qadınlar üçün Zərif Əl Çantası" class="w-full h-64 object-cover">
-                        <div class="p-6">
-                            <h3 class="text-xl font-semibold text-blue-800 mb-2">Zərif Əl Çantası</h3>
-                            <p class="text-gray-600 mb-4">Şıqlığı və zərifliyi sevənlər üçün.</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-2xl font-bold text-violet-500">45 AZN</span>
-                                <button class="add-to-cart-btn bg-violet-500 text-white py-2 px-6 rounded-full font-medium hover:bg-violet-600 transition-colors duration-300">Səbətə At</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Məhsul 4 -->
-                    <div class="product-card bg-white rounded-xl overflow-hidden shadow-lg border border-gray-200" data-category="kisi sport modern" data-name="Sport Kişi Çantası" data-price="38" data-image="https://images.unsplash.com/photo-1598522659799-73d7494f15d2?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Aktiv həyat tərzi və idman üçün ideal, su keçirməyən materialdan hazırlanmış çanta.">
-                        <img src="https://images.unsplash.com/photo-1598522659799-73d7494f15d2?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Sport Kişi Çantası" class="w-full h-64 object-cover">
-                        <div class="p-6">
-                            <h3 class="text-xl font-semibold text-blue-800 mb-2">Sport Kişi Çantası</h3>
-                            <p class="text-gray-600 mb-4">Aktiv həyat tərzi üçün mükəmməl seçim.</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-2xl font-bold text-violet-500">38 AZN</span>
-                                <button class="add-to-cart-btn bg-violet-500 text-white py-2 px-6 rounded-full font-medium hover:bg-violet-600 transition-colors duration-300">Səbətə At</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Məhsul 5 -->
-                    <div class="product-card bg-white rounded-xl overflow-hidden shadow-lg border border-gray-200" data-category="qadin deri ciyin klassik" data-name="Qəhvəyi Dəri Çiyin Çantası" data-price="58" data-image="https://images.unsplash.com/photo-1598583488737-14e300d60312?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Yüksək keyfiyyətli dəridən hazırlanmış, klassik dizaynlı çiyin çantası.">
-                        <img src="https://images.unsplash.com/photo-1598583488737-14e300d60312?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Qəhvəyi Dəri Çiyin Çantası" class="w-full h-64 object-cover">
-                        <div class="p-6">
-                            <h3 class="text-xl font-semibold text-blue-800 mb-2">Qəhvəyi Dəri Çiyin Çantası</h3>
-                            <p class="text-gray-600 mb-4">Həm rahat, həm də çox şıq.</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-2xl font-bold text-violet-500">58 AZN</span>
-                                <button class="add-to-cart-btn bg-violet-500 text-white py-2 px-6 rounded-full font-medium hover:bg-violet-600 transition-colors duration-300">Səbətə At</button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Məhsul 6 -->
-                    <div class="product-card bg-white rounded-xl overflow-hidden shadow-lg border border-gray-200" data-category="qadin el modern" data-name="Modern Qadın Əl Çantası" data-price="50" data-image="https://images.unsplash.com/photo-1596700680650-705b63013d33?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Minimalist dizaynlı, qara rəngdə, müasir qadınlar üçün əl çantası.">
-                        <img src="https://images.unsplash.com/photo-1596700680650-705b63013d33?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Modern Qadın Əl Çantası" class="w-full h-64 object-cover">
-                        <div class="p-6">
-                            <h3 class="text-xl font-semibold text-blue-800 mb-2">Modern Qadın Əl Çantası</h3>
-                            <p class="text-gray-600 mb-4">Həm eleqant, həm də gündəlik.</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-2xl font-bold text-violet-500">50 AZN</span>
-                                <button class="add-to-cart-btn bg-violet-500 text-white py-2 px-6 rounded-full font-medium hover:bg-violet-600 transition-colors duration-300">Səbətə At</button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Məhsul 7 -->
-                    <div class="product-card bg-white rounded-xl overflow-hidden shadow-lg border border-gray-200" data-category="qadin sport ciyin" data-name="Qadınlar üçün Sport Çanta" data-price="35" data-image="https://images.unsplash.com/photo-1558235213-9114f1776ce5?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Açıq hava fəaliyyətləri və gəzintilər üçün nəzərdə tutulmuş yüngül çiyin çantası.">
-                        <img src="https://images.unsplash.com/photo-1558235213-9114f1776ce5?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Qadınlar üçün Sport Çanta" class="w-full h-64 object-cover">
-                        <div class="p-6">
-                            <h3 class="text-xl font-semibold text-blue-800 mb-2">Qadınlar üçün Sport Çanta</h3>
-                            <p class="text-gray-600 mb-4">Şıqlığı və zərifliyi sevənlər üçün.</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-2xl font-bold text-violet-500">35 AZN</span>
-                                <button class="add-to-cart-btn bg-violet-500 text-white py-2 px-6 rounded-full font-medium hover:bg-violet-600 transition-colors duration-300">Səbətə At</button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Məhsul 8 -->
-                    <div class="product-card bg-white rounded-xl overflow-hidden shadow-lg border border-gray-200" data-category="kisi seyahet deri" data-name="Kişilər üçün Dəri Səyahət Çantası" data-price="59" data-image="https://images.unsplash.com/photo-1549242333-e593e32b85e0?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Geniş daxili və davamlı materialı ilə səyahətlər üçün ideal çanta.">
-                        <img src="https://images.unsplash.com/photo-1549242333-e593e32b85e0?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Kişilər üçün Dəri Səyahət Çantası" class="w-full h-64 object-cover">
-                        <div class="p-6">
-                            <h3 class="text-xl font-semibold text-blue-800 mb-2">Səyahət Dəri Çantası</h3>
-                            <p class="text-gray-600 mb-4">Stil və funksionallığı birləşdirir.</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-2xl font-bold text-violet-500">59 AZN</span>
-                                <button class="add-to-cart-btn bg-violet-500 text-white py-2 px-6 rounded-full font-medium hover:bg-violet-600 transition-colors duration-300">Səbətə At</button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Məhsul 9 -->
-                    <div class="product-card bg-white rounded-xl overflow-hidden shadow-lg border border-gray-200" data-category="qadin deri ciyin modern" data-name="Modern Dəri Çiyin Çantası" data-price="52" data-image="https://images.unsplash.com/photo-1622340576307-a3a8a3e74288?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Gündəlik istifadə üçün geniş daxili və rahat kəsimi ilə dəri çanta.">
-                        <img src="https://images.unsplash.com/photo-1622340576307-a3a8a3e74288?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Modern Dəri Çiyin Çantası" class="w-full h-64 object-cover">
-                        <div class="p-6">
-                            <h3 class="text-xl font-semibold text-blue-800 mb-2">Modern Dəri Çiyin Çantası</h3>
-                            <p class="text-gray-600 mb-4">Həm rahat, həm də çox şıq.</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-2xl font-bold text-violet-500">52 AZN</span>
-                                <button class="add-to-cart-btn bg-violet-500 text-white py-2 px-6 rounded-full font-medium hover:bg-violet-600 transition-colors duration-300">Səbətə At</button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Məhsul 10 -->
-                    <div class="product-card bg-white rounded-xl overflow-hidden shadow-lg border border-gray-200" data-category="qadin el klassik" data-name="Axşam Üçün Klassik Əl Çantası" data-price="47" data-image="https://images.unsplash.com/photo-1598466107384-e405f6d76442?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Ziyafətlər və xüsusi günlər üçün gümüşü parıltılı, zərif əl çantası.">
-                        <img src="https://images.unsplash.com/photo-1598466107384-e405f6d76442?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Axşam Üçün Klassik Əl Çantası" class="w-full h-64 object-cover">
-                        <div class="p-6">
-                            <h3 class="text-xl font-semibold text-blue-800 mb-2">Axşam Üçün Klassik Əl Çantası</h3>
-                            <p class="text-gray-600 mb-4">Parıltılı dizaynı ilə fərqlənin.</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-2xl font-bold text-violet-500">47 AZN</span>
-                                <button class="add-to-cart-btn bg-violet-500 text-white py-2 px-6 rounded-full font-medium hover:bg-violet-600 transition-colors duration-300">Səbətə At</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Məhsul 11 -->
-                    <div class="product-card bg-white rounded-xl overflow-hidden shadow-lg border border-gray-200" data-category="kisi sport" data-name="Gündəlik Sport Çantası" data-price="34" data-image="https://images.unsplash.com/photo-1582299863417-64013149a43a?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Yüngül materialdan hazırlanmış, hər gün üçün ideal çanta.">
-                        <img src="https://images.unsplash.com/photo-1582299863417-64013149a43a?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Gündəlik Sport Çantası" class="w-full h-64 object-cover">
-                        <div class="p-6">
-                            <h3 class="text-xl font-semibold text-blue-800 mb-2">Gündəlik Sport Çantası</h3>
-                            <p class="text-gray-600 mb-4">Rahat və funksionaldır.</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-2xl font-bold text-violet-500">34 AZN</span>
-                                <button class="add-to-cart-btn bg-violet-500 text-white py-2 px-6 rounded-full font-medium hover:bg-violet-600 transition-colors duration-300">Səbətə At</button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Məhsul 12 -->
-                    <div class="product-card bg-white rounded-xl overflow-hidden shadow-lg border border-gray-200" data-category="qadin ciyin klassik" data-name="Klassik Qadın Çiyin Çantası" data-price="51" data-image="https://images.unsplash.com/photo-1604107872653-f7243c3f24ad?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Şıq və geniş daxili ilə klassik dizaynlı çiyin çantası.">
-                        <img src="https://images.unsplash.com/photo-1604107872653-f7243c3f24ad?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Klassik Qadın Çiyin Çantası" class="w-full h-64 object-cover">
-                        <div class="p-6">
-                            <h3 class="text-xl font-semibold text-blue-800 mb-2">Klassik Çiyin Çantası</h3>
-                            <p class="text-gray-600 mb-4">Həm şıq, həm də funksionaldır.</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-2xl font-bold text-violet-500">51 AZN</span>
-                                <button class="add-to-cart-btn bg-violet-500 text-white py-2 px-6 rounded-full font-medium hover:bg-violet-600 transition-colors duration-300">Səbətə At</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Məhsul 13 -->
-                    <div class="product-card bg-white rounded-xl overflow-hidden shadow-lg border border-gray-200" data-category="kisi seyahet modern" data-name="Modern Kişi Səyahət Çantası" data-price="49" data-image="https://images.unsplash.com/photo-1582299863417-64013149a43a?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Rahat və geniş, qısa səyahətlər üçün ideal seçim.">
-                        <img src="https://images.unsplash.com/photo-1582299863417-64013149a43a?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Modern Kişi Səyahət Çantası" class="w-full h-64 object-cover">
-                        <div class="p-6">
-                            <h3 class="text-xl font-semibold text-blue-800 mb-2">Modern Kişi Səyahət Çantası</h3>
-                            <p class="text-gray-600 mb-4">Geniş və rahat, səyahət üçün ideal.</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-2xl font-bold text-violet-500">49 AZN</span>
-                                <button class="add-to-cart-btn bg-violet-500 text-white py-2 px-6 rounded-full font-medium hover:bg-violet-600 transition-colors duration-300">Səbətə At</button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Məhsul 14 -->
-                    <div class="product-card bg-white rounded-xl overflow-hidden shadow-lg border border-gray-200" data-category="qadin deri modern" data-name="Modern Dəri Əl Çantası" data-price="57" data-image="https://images.unsplash.com/photo-1588661646271-9653835062a4?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Müasir dizaynlı, qara dəri materialdan əl çantası.">
-                        <img src="https://images.unsplash.com/photo-1588661646271-9653835062a4?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Modern Dəri Əl Çantası" class="w-full h-64 object-cover">
-                        <div class="p-6">
-                            <h3 class="text-xl font-semibold text-blue-800 mb-2">Modern Dəri Əl Çantası</h3>
-                            <p class="text-gray-600 mb-4">Zərifliyi və keyfiyyəti birləşdirir.</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-2xl font-bold text-violet-500">57 AZN</span>
-                                <button class="add-to-cart-btn bg-violet-500 text-white py-2 px-6 rounded-full font-medium hover:bg-violet-600 transition-colors duration-300">Səbətə At</button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Məhsul 15 -->
-                    <div class="product-card bg-white rounded-xl overflow-hidden shadow-lg border border-gray-200" data-category="qadin sport" data-name="Qadınlar üçün Yüngül Sport Çanta" data-price="33" data-image="https://images.unsplash.com/photo-1622340576307-a3a8a3e74288?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-description="Açıq havada idman üçün ideal, rahat və yüngül materialdan hazırlanıb.">
-                        <img src="https://images.unsplash.com/photo-1622340576307-a3a8a3e74288?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Qadınlar üçün Yüngül Sport Çanta" class="w-full h-64 object-cover">
-                        <div class="p-6">
-                            <h3 class="text-xl font-semibold text-blue-800 mb-2">Yüngül Sport Çanta</h3>
-                            <p class="text-gray-600 mb-4">Rahatlıq və stil bir arada.</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-2xl font-bold text-violet-500">33 AZN</span>
-                                <button class="add-to-cart-btn bg-violet-500 text-white py-2 px-6 rounded-full font-medium hover:bg-violet-600 transition-colors duration-300">Səbətə At</button>
-                            </div>
-                        </div>
-                    </div>
-
+                    <!-- Product cards will be dynamically filled here by JavaScript -->
+                    <p id="no-products-message" class="no-products-message hidden">Hələ heç bir məhsul əlavə edilməyib.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="bg-gray-100 text-blue-800 py-12">
-        <div class="container mx-auto px-4 text-center">
-            <div class="flex flex-col md:flex-row justify-center items-center md:justify-between space-y-4 md:space-y-0">
-                <p>&copy; 2024 Mubag Style. Bütün hüquqlar qorunur.</p>
-                <div class="flex space-x-6 text-xl">
-                    <a href="#" class="text-blue-800 hover:text-violet-500 transition-colors duration-300"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="text-blue-800 hover:text-violet-500 transition-colors duration-300"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="text-blue-800 hover:text-violet-500 transition-colors duration-300"><i class="fab fa-twitter"></i></a>
-                </div>
-            </div>
+    <!-- Footer section -->
+    <footer class="bg-blue-900 text-white py-12 px-4">
+        <div class="container mx-auto text-center">
+            <h4 class="text-2xl font-bold mb-2">
+                Mubag Style
+            </h4>
+            <a href="#" id="private-access-link" class="text-sm text-gray-400 hover:text-gray-200 transition-colors duration-300">Özəl Giriş</a>
+            <p class="text-gray-300 mt-2">&copy; 2024 Bütün hüquqlar qorunur.</p>
         </div>
     </footer>
 
-
-    <!-- Mesaj qutusu (bildiriş üçün) -->
-    <div id="message-box-overlay" class="message-box-overlay">
-        <div class="message-box">
-            <h4 class="text-2xl font-bold text-violet-500 mb-4">Bildiriş</h4>
-            <p id="message-box-text" class="text-lg text-blue-700 mb-6"></p>
-            <button id="message-box-close" class="bg-violet-500 text-white py-2 px-6 rounded-full font-medium hover:bg-violet-600 transition-colors duration-300">Bağla</button>
-        </div>
-    </div>
-
-
-    <!-- Səbət paneli -->
+    <!-- Cart sidebar -->
     <div id="cart-overlay" class="cart-overlay"></div>
-    <div id="cart-sidebar" class="cart-sidebar p-6 custom-scrollbar">
-        <div class="flex justify-between items-center mb-6 border-b pb-4 border-gray-200">
-            <h3 class="text-3xl font-bold text-violet-500">Səbətiniz</h3>
-            <button id="cart-close-button" class="text-blue-700 text-2xl hover:text-violet-500 transition-colors duration-300 focus:outline-none">&times;</button>
+    <div id="cart-sidebar" class="cart-sidebar custom-scrollbar">
+        <div class="p-6 flex items-center justify-between border-b border-gray-200">
+            <h3 class="text-2xl font-bold text-violet-500">Səbət</h3>
+            <button id="close-cart-button" class="text-gray-500 hover:text-gray-800 focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
         </div>
-        <div id="cart-items-list" class="flex-grow overflow-y-auto space-y-4">
-            <!-- Səbətə əlavə olunan məhsullar bura gələcək -->
-            <div id="empty-cart-message" class="text-center text-gray-400 text-lg py-8 hidden">
-                <p>Səbətiniz boşdur.</p>
-                <p>Bir az alış-veriş edin! 🛍️</p>
-            </div>
+        <div id="cart-items" class="p-6 flex-grow overflow-y-auto">
+            <!-- Cart items will be added here -->
+            <p id="empty-cart-message" class="text-center text-gray-500 italic">Səbətiniz boşdur.</p>
         </div>
-        <div class="mt-auto border-t pt-4 border-gray-200">
-            <div class="flex justify-between items-center text-xl font-bold text-blue-900 mb-4">
-                <span>Ümumi məbləğ:</span>
-                <span id="cart-total-price" class="text-violet-500">0 AZN</span>
+        <div class="p-6 border-t border-gray-200">
+            <div class="flex justify-between items-center mb-4 text-xl font-bold">
+                <span>Ümumi Qiymət:</span>
+                <span id="cart-total" class="text-violet-500">0 AZN</span>
             </div>
-            <button id="checkout-button" class="checkout-button w-full bg-violet-500 text-white py-3 px-6 rounded-full font-bold text-lg hover:bg-violet-600 transition-colors duration-300" disabled>Ödənişə Keç</button>
+            <button id="checkout-button" class="checkout-button w-full bg-violet-500 text-white py-4 rounded-full font-bold text-lg hover:bg-violet-600 transition-colors duration-300" disabled>Sifarişi Tamamla</button>
         </div>
     </div>
 
-    <!-- Məhsul detalları modulu -->
+    <!-- Product Detail Modal -->
     <div id="product-detail-modal-overlay" class="product-detail-modal-overlay">
-        <div id="product-detail-modal" class="product-detail-modal p-8 md:p-12 custom-scrollbar">
-            <button id="product-detail-close-button" class="absolute top-4 right-4 text-blue-700 text-3xl hover:text-violet-500 transition-colors duration-300 focus:outline-none">&times;</button>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-start">
-                <img id="modal-product-image" src="" alt="" class="w-full h-auto rounded-xl border border-gray-200 shadow-xl">
-                <div>
-                    <h3 id="modal-product-name" class="text-3xl md:text-4xl font-extrabold text-violet-500 mb-4"></h3>
-                    <p id="modal-product-description" class="text-lg text-blue-700 mb-6"></p>
-                    <div class="flex items-center space-x-2 text-xl font-medium text-blue-700 mb-4">
-                        <span>Kateqoriya:</span>
-                        <span id="modal-product-category" class="text-blue-900"></span>
+        <div id="product-detail-modal" class="product-detail-modal">
+            <div class="p-8">
+                <button id="close-detail-button" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 focus:outline-none">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <img id="modal-image" src="" alt="" class="w-full h-auto rounded-lg shadow-xl">
+                    <div>
+                        <h3 id="modal-name" class="text-4xl font-extrabold text-violet-500 mb-4"></h3>
+                        <p id="modal-description" class="text-gray-700 mb-6"></p>
+                        <span id="modal-price" class="text-3xl font-bold text-violet-500"></span>
+                        <div class="mt-8">
+                            <button id="modal-add-to-cart-btn" class="bg-violet-500 text-white py-4 px-10 rounded-full font-bold text-lg hover:bg-violet-600 transition-colors duration-300">Səbətə Əlavə Et</button>
+                        </div>
                     </div>
-                    <div class="text-4xl font-bold text-blue-900 mb-6">
-                        <span id="modal-product-price"></span>
-                        <span class="text-violet-500">AZN</span>
-                    </div>
-                    <button id="modal-add-to-cart-btn" class="w-full md:w-auto bg-violet-500 text-white py-3 px-8 rounded-full font-bold text-lg hover:bg-violet-600 transition-colors duration-300">Səbətə At</button>
                 </div>
             </div>
         </div>
     </div>
+    
+    <!-- Password Modal -->
+    <div id="password-modal-overlay" class="password-modal-overlay">
+        <div id="password-modal" class="password-modal">
+            <h4 class="text-2xl font-bold mb-4">Gizli Bölməyə Giriş</h4>
+            <p class="text-gray-600 mb-6">Davam etmək üçün şifrəni daxil edin:</p>
+            <input type="password" id="password-input" class="w-full p-3 rounded-lg border border-gray-300 mb-4 text-center focus:outline-none focus:ring-2 focus:ring-violet-500 text-blue-800" placeholder="Şifrəni yazın...">
+            <button id="submit-password-btn" class="w-full bg-violet-500 text-white py-3 rounded-full font-medium hover:bg-violet-600 transition-colors duration-300">Daxil Ol</button>
+            <p id="password-error" class="text-red-500 mt-2 hidden">Şifrə yanlışdır!</p>
+        </div>
+    </div>
 
+    <!-- Custom message box -->
+    <div id="message-box-overlay" class="message-box-overlay">
+        <div id="message-box" class="message-box">
+            <p id="message-box-text" class="text-lg mb-6"></p>
+            <button id="message-box-close-button" class="bg-violet-500 text-white py-3 px-8 rounded-full font-medium hover:bg-violet-600 transition-colors duration-300">Bağla</button>
+        </div>
+    </div>
 
-    <!-- JavaScript hissəsi -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // DOM elementlərini seçirik
+            // Accessing DOM elements
             const mobileMenuButton = document.getElementById('mobile-menu-button');
             const mobileMenu = document.getElementById('mobile-menu');
+            const cartButton = document.getElementById('cart-button');
+            const cartSidebar = document.getElementById('cart-sidebar');
+            const closeCartButton = document.getElementById('close-cart-button');
+            const cartOverlay = document.getElementById('cart-overlay');
             const productList = document.getElementById('product-list');
             const filterButtons = document.querySelectorAll('.filter-button');
-            const cartButton = document.getElementById('cart-button');
-            const cartCloseButton = document.getElementById('cart-close-button');
-            const cartSidebar = document.getElementById('cart-sidebar');
-            const cartOverlay = document.getElementById('cart-overlay');
-            const cartItemsList = document.getElementById('cart-items-list');
+            const cartItemsContainer = document.getElementById('cart-items');
+            const cartTotalSpan = document.getElementById('cart-total');
             const cartCountSpan = document.getElementById('cart-count');
-            const cartTotalPriceSpan = document.getElementById('cart-total-price');
-            const emptyCartMessage = document.getElementById('empty-cart-message');
             const checkoutButton = document.getElementById('checkout-button');
-            
+            const emptyCartMessage = document.getElementById('empty-cart-message');
+            const productDetailModalOverlay = document.getElementById('product-detail-modal-overlay');
+            const productDetailModal = document.getElementById('product-detail-modal');
+            const closeDetailButton = document.getElementById('close-detail-button');
+            const modalImage = document.getElementById('modal-image');
+            const modalName = document.getElementById('modal-name');
+            const modalDescription = document.getElementById('modal-description');
+            const modalPrice = document.getElementById('modal-price');
+            const modalAddToCartBtn = document.getElementById('modal-add-to-cart-btn');
             const messageBoxOverlay = document.getElementById('message-box-overlay');
             const messageBoxText = document.getElementById('message-box-text');
-            const messageBoxCloseButton = document.getElementById('message-box-close');
+            const messageBoxCloseButton = document.getElementById('message-box-close-button');
+            const noProductsMessage = document.getElementById('no-products-message');
 
-            const productDetailModalOverlay = document.getElementById('product-detail-modal-overlay');
-            const productDetailCloseButton = document.getElementById('product-detail-close-button');
-            const modalProductImage = document.getElementById('modal-product-image');
-            const modalProductName = document.getElementById('modal-product-name');
-            const modalProductDescription = document.getElementById('modal-product-description');
-            const modalProductCategory = document.getElementById('modal-product-category');
-            const modalProductPrice = document.getElementById('modal-product-price');
-            const modalAddToCartBtn = document.getElementById('modal-add-to-cart-btn');
+            // New password-related elements
+            const privateAccessLink = document.getElementById('private-access-link');
+            const passwordModalOverlay = document.getElementById('password-modal-overlay');
+            const passwordModal = document.getElementById('password-modal');
+            const passwordInput = document.getElementById('password-input');
+            const submitPasswordBtn = document.getElementById('submit-password-btn');
+            const passwordError = document.getElementById('password-error');
+            const secretContent = document.getElementById('secret-content');
+            
+            // New image upload-related elements
+            const fileInput = document.getElementById('fileInput');
+            const previewImage = document.getElementById('previewImage');
+            const uploadForm = document.getElementById('product-upload-form');
+            const productNameInput = document.getElementById('product-name');
+            const productDescriptionInput = document.getElementById('product-description');
+            const productPriceInput = document.getElementById('product-price');
+            const productCategorySelect = document.getElementById('product-category');
+            const clearProductsButton = document.getElementById('clear-products-btn');
 
-            let cart = [];
+            // Map to store cart items
+            const cart = new Map();
+            const correctPassword = "1975"; // Secret password
 
-            // Mesaj qutusunu göstərən funksiya
-            const showMessage = (message) => {
-                messageBoxText.textContent = message;
-                messageBoxOverlay.style.display = 'flex';
-            };
+            // Array to store product data, initialized as empty
+            let products = [];
 
-            // Mesaj qutusunu bağlayan funksiya
-            messageBoxCloseButton.addEventListener('click', () => {
-                messageBoxOverlay.style.display = 'none';
-            });
-            messageBoxOverlay.addEventListener('click', (event) => {
-                if (event.target === messageBoxOverlay) {
-                    messageBoxOverlay.style.display = 'none';
+            // Loads product data from Local Storage
+            function loadProducts() {
+                const storedProducts = localStorage.getItem('mubagProducts');
+                if (storedProducts) {
+                    products = JSON.parse(storedProducts);
+                } else {
+                    products = [];
                 }
-            });
+            }
 
-            // Mobil menyunu aç/bağla
-            mobileMenuButton.addEventListener('click', () => {
-                mobileMenu.classList.toggle('hidden');
-            });
+            // Saves product data to Local Storage
+            function saveProducts() {
+                localStorage.setItem('mubagProducts', JSON.stringify(products));
+            }
 
-            // Səbət panelini aç
-            cartButton.addEventListener('click', () => {
+            // Dynamically creates product cards
+            function renderProducts(filteredProducts = products) {
+                productList.innerHTML = ''; // Clear previous products
+                if (filteredProducts.length === 0) {
+                    noProductsMessage.classList.remove('hidden');
+                } else {
+                    noProductsMessage.classList.add('hidden');
+                    filteredProducts.forEach(product => {
+                        const productCard = document.createElement('div');
+                        productCard.className = `product-card bg-white rounded-xl overflow-hidden shadow-lg border border-gray-200`;
+                        
+                        // Convert categories array to a string for data-attribute
+                        const categoryString = product.categories.join(' ');
+                        productCard.dataset.id = product.id;
+                        productCard.dataset.category = categoryString;
+                        productCard.dataset.name = product.name;
+                        productCard.dataset.price = product.price;
+                        productCard.dataset.image = product.image;
+                        productCard.dataset.description = product.description;
+
+                        productCard.innerHTML = `
+                            <img src="${product.image}" alt="${product.name}" class="w-full h-64 object-cover">
+                            <div class="p-6">
+                                <h3 class="text-xl font-semibold text-blue-800 mb-2">${product.name}</h3>
+                                <p class="text-gray-600 mb-4">${product.description.substring(0, 50)}...</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-2xl font-bold text-violet-500">${product.price} AZN</span>
+                                    <button class="add-to-cart-btn bg-violet-500 text-white py-2 px-6 rounded-full font-medium hover:bg-violet-600 transition-colors duration-300">Səbətə At</button>
+                                </div>
+                            </div>
+                        `;
+                        productList.appendChild(productCard);
+                    });
+                }
+            }
+
+            // Opens the cart sidebar
+            function openCart() {
                 cartSidebar.classList.add('open');
                 cartOverlay.style.display = 'block';
-            });
+            }
 
-            // Səbət panelini bağla
-            const closeCart = () => {
+            // Closes the cart sidebar
+            function closeCart() {
                 cartSidebar.classList.remove('open');
                 cartOverlay.style.display = 'none';
-            };
-            cartCloseButton.addEventListener('click', closeCart);
-            cartOverlay.addEventListener('click', closeCart);
-            
-            // Məhsul detalı modulunu aç
-            const openProductDetailModal = (product) => {
-                modalProductImage.src = product.image;
-                modalProductImage.alt = product.name;
-                modalProductName.textContent = product.name;
-                modalProductDescription.textContent = product.description;
-                modalProductCategory.textContent = product.category.split(' ').map(c => c.charAt(0).toUpperCase() + c.slice(1)).join(', ');
-                modalProductPrice.textContent = product.price;
+            }
 
-                // Səbətə at düyməsinə click eventi əlavə edirik
-                modalAddToCartBtn.onclick = () => {
-                    addToCart(product);
-                    productDetailModalOverlay.style.display = 'none';
-                };
+            // Opens the product detail modal
+            function openProductDetailModal(productData) {
+                modalImage.src = productData.image;
+                modalImage.alt = productData.name;
+                modalName.textContent = productData.name;
+                modalDescription.textContent = productData.description;
+                modalPrice.textContent = `${productData.price} AZN`;
+                
+                // Add data to button for adding to cart
+                modalAddToCartBtn.dataset.name = productData.name;
+                modalAddToCartBtn.dataset.price = productData.price;
+                modalAddToCartBtn.dataset.image = productData.image;
 
                 productDetailModalOverlay.style.display = 'flex';
-            };
+                productDetailModal.classList.add('open');
+            }
 
-            // Məhsul detalı modulunu bağla
-            const closeProductDetailModal = () => {
+            // Closes the product detail modal
+            function closeProductDetailModal() {
                 productDetailModalOverlay.style.display = 'none';
-            };
-            productDetailCloseButton.addEventListener('click', closeProductDetailModal);
-            productDetailModalOverlay.addEventListener('click', (event) => {
-                if (event.target === productDetailModalOverlay) {
-                    closeProductDetailModal();
-                }
-            });
+            }
 
-            // Məhsulları filterləyən funksiya
-            filterButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    // Aktiv düymə stilini dəyişdir
-                    filterButtons.forEach(btn => btn.classList.remove('active'));
-                    button.classList.add('active');
+            // Shows the info message box
+            function showMessageBox(message) {
+                messageBoxText.textContent = message;
+                messageBoxOverlay.style.display = 'flex';
+            }
 
-                    const filter = button.dataset.filter;
-                    const productCards = document.querySelectorAll('.product-card');
-                    
-                    productCards.forEach(card => {
-                        const categories = card.dataset.category.split(' ');
-                        if (filter === 'all' || categories.includes(filter)) {
-                            card.style.display = 'block';
-                        } else {
-                            card.style.display = 'none';
-                        }
-                    });
-                });
-            });
+            // Closes the info message box
+            function closeMessageBox() {
+                messageBoxOverlay.style.display = 'none';
+            }
 
-            // Səbətə məhsul əlavə edən funksiya
-            const addToCart = (product) => {
-                const existingItem = cart.find(item => item.name === product.name);
-                if (existingItem) {
-                    existingItem.quantity += 1;
-                } else {
-                    cart.push({ ...product, quantity: 1 });
-                }
-                updateCartUI();
-                showMessage(`${product.name} səbətə əlavə olundu!`);
-            };
+            // Updates the cart display
+            function updateCartDisplay() {
+                let total = 0;
+                let itemCount = 0;
+                cartItemsContainer.innerHTML = '';
 
-            // Səbətdən məhsul silən funksiya
-            const removeFromCart = (productName) => {
-                cart = cart.filter(item => item.name !== productName);
-                updateCartUI();
-            };
-
-            // Səbəti yeniləyən funksiya
-            const updateCartUI = () => {
-                cartItemsList.innerHTML = '';
-                let totalPrice = 0;
-
-                if (cart.length === 0) {
+                if (cart.size === 0) {
                     emptyCartMessage.style.display = 'block';
                     checkoutButton.disabled = true;
                 } else {
                     emptyCartMessage.style.display = 'none';
                     checkoutButton.disabled = false;
                     
-                    cart.forEach(item => {
-                        totalPrice += item.price * item.quantity;
-                        const cartItemDiv = document.createElement('div');
-                        cartItemDiv.classList.add('flex', 'items-center', 'space-x-4', 'p-4', 'bg-gray-100', 'rounded-lg', 'shadow-sm');
-                        
-                        cartItemDiv.innerHTML = `
-                            <img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded-md">
-                            <div class="flex-grow">
-                                <p class="text-lg font-semibold text-blue-900">${item.name}</p>
-                                <p class="text-sm text-gray-500">${item.price} AZN x ${item.quantity}</p>
+                    cart.forEach((item) => {
+                        const cartItemElement = document.createElement('div');
+                        cartItemElement.className = 'flex items-center justify-between py-4 border-b border-gray-100';
+                        cartItemElement.innerHTML = `
+                            <div class="flex items-center">
+                                <img src="${item.image}" alt="${item.name}" class="w-16 h-16 rounded-md object-cover mr-4">
+                                <div>
+                                    <h4 class="font-semibold text-blue-800">${item.name}</h4>
+                                    <p class="text-gray-500">${item.price} AZN</p>
+                                </div>
                             </div>
-                            <button class="remove-from-cart-btn text-red-500 hover:text-red-700 transition-colors duration-300" data-name="${item.name}"><i class="fas fa-trash"></i></button>
+                            <div class="flex items-center">
+                                <button class="remove-item text-gray-500 hover:text-red-500 transition-colors duration-300" data-name="${item.name}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
                         `;
-                        cartItemsList.appendChild(cartItemDiv);
+                        cartItemsContainer.appendChild(cartItemElement);
+                        total += parseFloat(item.price);
+                        itemCount++;
                     });
                 }
+                
+                cartTotalSpan.textContent = `${total.toFixed(2)} AZN`;
+                cartCountSpan.textContent = itemCount;
+            }
 
-                cartCountSpan.textContent = cart.reduce((total, item) => total + item.quantity, 0);
-                cartTotalPriceSpan.textContent = `${totalPrice.toFixed(2)} AZN`;
+            // Adds a product to the cart
+            function addToCart(productName, productPrice, productImage) {
+                // Check if the product is already in the cart
+                if (cart.has(productName)) {
+                    showMessageBox(`"${productName}" artıq səbətdədir.`);
+                } else {
+                    const newItem = {
+                        name: productName,
+                        price: productPrice,
+                        image: productImage
+                    };
+                    cart.set(productName, newItem);
+                    updateCartDisplay();
+                    showMessageBox(`"${productName}" məhsulu səbətə əlavə olundu.`);
+                }
+            }
 
-                // Səbətdən silmə düyməsinə click eventi əlavə et
-                document.querySelectorAll('.remove-from-cart-btn').forEach(button => {
-                    button.addEventListener('click', (event) => {
-                        const productName = event.currentTarget.dataset.name;
-                        removeFromCart(productName);
-                        showMessage(`${productName} səbətdən silindi.`);
+            // Removes a product from the cart
+            function removeFromCart(productName) {
+                cart.delete(productName);
+                updateCartDisplay();
+                showMessageBox(`"${productName}" səbətdən silindi.`);
+            }
+
+            // Event listeners
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            cartButton.addEventListener('click', openCart);
+            closeCartButton.addEventListener('click', closeCart);
+            cartOverlay.addEventListener('click', closeCart);
+            closeDetailButton.addEventListener('click', closeProductDetailModal);
+            productDetailModalOverlay.addEventListener('click', (e) => {
+                if (e.target.id === 'product-detail-modal-overlay') {
+                    closeProductDetailModal();
+                }
+            });
+            messageBoxCloseButton.addEventListener('click', closeMessageBox);
+            messageBoxOverlay.addEventListener('click', (e) => {
+                if (e.target.id === 'message-box-overlay' || e.target.id === 'message-box-close-button') {
+                    closeMessageBox();
+                }
+            });
+            
+            // Filter button functionality
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Change the active class
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+
+                    const filter = button.dataset.filter;
+                    const filteredProducts = products.filter(product => {
+                        return filter === 'all' || product.categories.includes(filter);
                     });
+                    renderProducts(filteredProducts);
                 });
-            };
+            });
 
-            // Məhsul kartları üçün eventlər
-            productList.addEventListener('click', (event) => {
-                const target = event.target;
-                const card = target.closest('.product-card');
-                if (!card) return;
-
-                const product = {
-                    name: card.dataset.name,
-                    price: parseFloat(card.dataset.price),
-                    image: card.dataset.image,
-                    description: card.dataset.description,
-                    category: card.dataset.category
-                };
-
-                if (target.classList.contains('add-to-cart-btn')) {
-                    addToCart(product);
-                } else if (card) {
-                    openProductDetailModal(product);
+            // Event listener for product cards (event delegation)
+            productList.addEventListener('click', (e) => {
+                const productCard = e.target.closest('.product-card');
+                const addToCartBtn = e.target.closest('.add-to-cart-btn');
+                
+                if (addToCartBtn) {
+                    const productName = productCard.dataset.name;
+                    const productPrice = productCard.dataset.price;
+                    const productImage = productCard.dataset.image;
+                    addToCart(productName, productPrice, productImage);
+                } else if (productCard) {
+                    const productData = {
+                        name: productCard.dataset.name,
+                        price: productCard.dataset.price,
+                        image: productCard.dataset.image,
+                        description: productCard.dataset.description
+                    };
+                    openProductDetailModal(productData);
                 }
             });
 
-            // Ödəniş düyməsi üçün event - WhatsAppa yönləndirmə
+            // "Add to Cart" button in the product detail modal
+            modalAddToCartBtn.addEventListener('click', () => {
+                const productName = modalAddToCartBtn.dataset.name;
+                const productPrice = modalAddToCartBtn.dataset.price;
+                const productImage = modalAddToCartBtn.dataset.image;
+                addToCart(productName, productPrice, productImage);
+                closeProductDetailModal();
+            });
+
+            // "Remove" button in the cart sidebar
+            cartItemsContainer.addEventListener('click', (e) => {
+                const removeButton = e.target.closest('.remove-item');
+                if (removeButton) {
+                    const productName = removeButton.dataset.name;
+                    removeFromCart(productName);
+                }
+            });
+
+            // Checkout button click
             checkoutButton.addEventListener('click', () => {
-                // Səbət boşdursa, heç bir şey etmirik
-                if (cart.length === 0) {
-                    showMessage('Ödəniş etmək üçün səbətinizə məhsul əlavə edin.');
+                if (!checkoutButton.disabled) {
+                    showMessageBox('Təşəkkür edirik! Sifarişiniz qəbul edildi. Tezliklə sizinlə əlaqə saxlanılacaq.');
+                    // Clear the cart after checkout
+                    cart.clear();
+                    updateCartDisplay();
+                    closeCart();
+                }
+            });
+
+            // Open password modal when "Private Access" link is clicked
+            privateAccessLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                passwordModalOverlay.style.display = 'flex';
+                passwordInput.value = '';
+                passwordError.style.display = 'none';
+            });
+
+            // Close password modal when clicking on the overlay
+            passwordModalOverlay.addEventListener('click', (e) => {
+                if (e.target.id === 'password-modal-overlay') {
+                    passwordModalOverlay.style.display = 'none';
+                }
+            });
+
+            // Password submission button
+            submitPasswordBtn.addEventListener('click', () => {
+                if (passwordInput.value === correctPassword) {
+                    passwordModalOverlay.style.display = 'none';
+                    secretContent.style.display = 'block'; // Show the hidden section
+                    showMessageBox('Şifrə düzgündür! Məhsul yükləmə bölməsi açıldı.');
+                } else {
+                    passwordError.style.display = 'block'; // Show error message
+                }
+            });
+
+            // Check password on Enter key press
+            passwordInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    submitPasswordBtn.click();
+                }
+            });
+            
+            // Image upload event listener
+            fileInput.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImage.src = e.target.result;
+                        previewImage.alt = file.name;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Form to add a new product
+            uploadForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const name = productNameInput.value.trim();
+                const description = productDescriptionInput.value.trim();
+                const price = parseFloat(productPriceInput.value);
+                const category = productCategorySelect.value;
+                const file = fileInput.files[0];
+                const image = previewImage.src;
+
+                // Check for empty fields
+                if (!name || !description || isNaN(price) || price <= 0 || !file || image.includes('placehold.co')) {
+                    showMessageBox('Zəhmət olmasa, bütün sahələri doldurun və bir şəkil seçin.');
                     return;
                 }
+
+                // Create a new product object
+                const newProduct = {
+                    id: Date.now(), // Create a unique ID
+                    name: name,
+                    description: description,
+                    price: price,
+                    image: image,
+                    categories: [category]
+                };
+
+                // Add the new product to the array
+                products.push(newProduct);
+                saveProducts(); // Save products to local storage
                 
-                // Sifariş məlumatlarını hazırlayırıq
-                let message = "Salam, Mubag Style mağazasından sifarişim var:\n\n";
-                let totalPrice = 0;
-
-                cart.forEach((item, index) => {
-                    message += `${index + 1}. ${item.name} - ${item.quantity} ədəd (${item.price * item.quantity} AZN)\n`;
-                    totalPrice += item.price * item.quantity;
-                });
-
-                message += `\nÜmumi məbləğ: ${totalPrice.toFixed(2)} AZN`;
-                message += "\n\nZəhmət olmasa sifarişimi tamamlayın.";
-
-                // WhatsApp telefon nömrəsi (buranı sizin verdiyiniz nömrə ilə əvəz edirik)
-                const phoneNumber = "+994504495677"; // Verilən nömrə
-                const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+                // Update the product list display
+                renderProducts();
                 
-                // İstifadəçini WhatsAppa yönləndiririk
-                window.open(whatsappUrl, '_blank');
+                // Reset the form
+                uploadForm.reset();
+                previewImage.src = "https://placehold.co/400x320/e5e7eb/6b7280?text=Şəkil+yükləyin";
+                
+                // Inform the user of successful upload
+                showMessageBox('Yeni məhsul uğurla əlavə edildi!');
+            });
+            
+            // "Clear All Products" button functionality
+            clearProductsButton.addEventListener('click', () => {
+                // Clear the products array
+                products = [];
+                // Clear localStorage
+                localStorage.removeItem('mubagProducts');
+                // Re-render the product list
+                renderProducts();
+                // Show confirmation message
+                showMessageBox('Bütün məhsullar silindi.');
             });
 
-            // İlk yüklənmədə səbəti yeniləyirik
-            updateCartUI();
-
-            // Məhsul kartlarının animasiyası
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('animate-fade-in-up');
-                    }
-                });
-            }, {
-                threshold: 0.1
-            });
-            document.querySelectorAll('.product-card').forEach(card => {
-                observer.observe(card);
-            });
+            // On page load, load and render products
+            loadProducts();
+            renderProducts();
+            updateCartDisplay();
         });
     </script>
 </body>
 </html>
+
