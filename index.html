@@ -219,9 +219,10 @@
     <!-- Hidden section, visible after correct password -->
     <section id="secret-content" class="container mx-auto px-4 my-12">
         <div class="p-10 bg-blue-900 text-white rounded-xl shadow-2xl">
-            <h2 class="text-3xl font-bold mb-8 text-center text-white">Yeni Məhsul Əlavə Et</h2>
+            <h2 class="text-3xl font-bold mb-8 text-center text-white">Yeni Məhsul İdarəçiliyi</h2>
             <div class="bg-white p-8 rounded-2xl shadow-xl max-w-2xl mx-auto w-full text-center upload-container">
                 <form id="product-upload-form" class="space-y-6 text-gray-800 text-left">
+                    <h3 class="text-2xl font-bold text-violet-500 mb-4">Yeni Məhsul Əlavə Et</h3>
                     <div>
                         <label for="product-name" class="block text-sm font-medium text-gray-700">Məhsulun Adı</label>
                         <input type="text" id="product-name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 focus:border-violet-500 focus:ring-violet-500">
@@ -260,11 +261,16 @@
                     <button type="submit" class="w-full bg-violet-500 text-white font-bold py-3 px-6 rounded-full hover:bg-violet-600 transition duration-300 ease-in-out transform hover:scale-105">
                         Məhsulu Yüklə
                     </button>
-                    
-                    <button type="button" id="clear-products-btn" class="w-full bg-red-500 text-white font-bold py-3 px-6 rounded-full hover:bg-red-600 transition duration-300 ease-in-out transform hover:scale-105 mt-4">
-                        Bütün Məhsulları Sil
-                    </button>
                 </form>
+
+                <div class="mt-10 pt-6 border-t border-gray-200 text-left">
+                    <h3 class="text-2xl font-bold text-violet-500 mb-4">Məhsulları Toplu Sil</h3>
+                    <div class="flex flex-col space-y-4 items-center">
+                        <button type="button" id="clear-products-btn" class="w-full bg-red-500 text-white font-bold py-3 px-6 rounded-full hover:bg-red-600 transition duration-300 ease-in-out transform hover:scale-105">
+                            Bütün Məhsulları Sil
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -275,18 +281,38 @@
             <!-- Filter Panel -->
             <div class="md:w-1/4 bg-white p-6 rounded-xl border border-gray-200 h-fit">
                 <h3 class="text-2xl font-bold text-violet-500 mb-6">Kateqoriyalar</h3>
-                <div class="flex flex-wrap md:flex-col gap-3">
+                <div id="filter-buttons-container" class="flex flex-wrap md:flex-col gap-3">
                     <!-- Filter buttons managed by JS -->
-                    <button class="filter-button active" data-filter="all">Hamısı</button>
-                    <button class="filter-button" data-filter="qadin">Qadınlar üçün</button>
-                    <button class="filter-button" data-filter="kisi">Kişilər üçün</button>
-                    <button class="filter-button" data-filter="ciyin">Çiyin Çantası</button>
-                    <button class="filter-button" data-filter="el">Əl Çantası</button>
-                    <button class="filter-button" data-filter="sport">Sport Çantası</button>
-                    <button class="filter-button" data-filter="seyahet">Səyahət Çantası</button>
-                    <button class="filter-button" data-filter="deri">Dəri Çanta</button>
-                    <button class="filter-button" data-filter="klassik">Klassik</button>
-                    <button class="filter-button" data-filter="modern">Modern</button>
+                    <div class="flex items-center gap-2" id="filter-wrapper-all">
+                        <button class="filter-button active" data-filter="all">Hamısı</button>
+                    </div>
+                    <div class="flex items-center gap-2" id="filter-wrapper-qadin">
+                        <button class="filter-button" data-filter="qadin">Qadınlar üçün</button>
+                    </div>
+                    <div class="flex items-center gap-2" id="filter-wrapper-kisi">
+                        <button class="filter-button" data-filter="kisi">Kişilər üçün</button>
+                    </div>
+                    <div class="flex items-center gap-2" id="filter-wrapper-ciyin">
+                        <button class="filter-button" data-filter="ciyin">Çiyin Çantası</button>
+                    </div>
+                    <div class="flex items-center gap-2" id="filter-wrapper-el">
+                        <button class="filter-button" data-filter="el">Əl Çantası</button>
+                    </div>
+                    <div class="flex items-center gap-2" id="filter-wrapper-sport">
+                        <button class="filter-button" data-filter="sport">Sport Çantası</button>
+                    </div>
+                    <div class="flex items-center gap-2" id="filter-wrapper-seyahet">
+                        <button class="filter-button" data-filter="seyahet">Səyahət Çantası</button>
+                    </div>
+                    <div class="flex items-center gap-2" id="filter-wrapper-deri">
+                        <button class="filter-button" data-filter="deri">Dəri Çanta</button>
+                    </div>
+                    <div class="flex items-center gap-2" id="filter-wrapper-klassik">
+                        <button class="filter-button" data-filter="klassik">Klassik</button>
+                    </div>
+                    <div class="flex items-center gap-2" id="filter-wrapper-modern">
+                        <button class="filter-button" data-filter="modern">Modern</button>
+                    </div>
                 </div>
             </div>
             
@@ -347,8 +373,10 @@
                         <h3 id="modal-name" class="text-4xl font-extrabold text-violet-500 mb-4"></h3>
                         <p id="modal-description" class="text-gray-700 mb-6"></p>
                         <span id="modal-price" class="text-3xl font-bold text-violet-500"></span>
-                        <div class="mt-8">
-                            <button id="modal-add-to-cart-btn" class="bg-violet-500 text-white py-4 px-10 rounded-full font-bold text-lg hover:bg-violet-600 transition-colors duration-300">Səbətə Əlavə Et</button>
+                        <div class="mt-8 flex flex-col sm:flex-row gap-4">
+                            <button id="modal-add-to-cart-btn" class="flex-grow bg-violet-500 text-white py-4 px-10 rounded-full font-bold text-lg hover:bg-violet-600 transition-colors duration-300">Səbətə Əlavə Et</button>
+                            <!-- New delete button, visible only in secret mode -->
+                            <button id="modal-delete-btn" class="flex-grow bg-red-500 text-white py-4 px-10 rounded-full font-bold text-lg hover:bg-red-600 transition-colors duration-300 hidden">Sil</button>
                         </div>
                     </div>
                 </div>
@@ -375,9 +403,21 @@
         </div>
     </div>
 
+    <!-- Confirmation Modal -->
+    <div id="confirmation-modal-overlay" class="message-box-overlay">
+        <div id="confirmation-modal" class="message-box">
+            <p id="confirmation-text" class="text-lg mb-6 font-semibold"></p>
+            <div class="flex justify-around space-x-4">
+                <button id="confirm-yes-button" class="bg-red-500 text-white py-3 px-8 rounded-full font-medium hover:bg-red-600 transition-colors duration-300">Bəli, sil</button>
+                <button id="confirm-no-button" class="bg-gray-400 text-white py-3 px-8 rounded-full font-medium hover:bg-gray-500 transition-colors duration-300">Ləğv et</button>
+            </div>
+        </div>
+    </div>
+
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Accessing DOM elements
+            // DOM elementlərinə müraciət
             const mobileMenuButton = document.getElementById('mobile-menu-button');
             const mobileMenu = document.getElementById('mobile-menu');
             const cartButton = document.getElementById('cart-button');
@@ -385,7 +425,7 @@
             const closeCartButton = document.getElementById('close-cart-button');
             const cartOverlay = document.getElementById('cart-overlay');
             const productList = document.getElementById('product-list');
-            const filterButtons = document.querySelectorAll('.filter-button');
+            const filterButtonsContainer = document.getElementById('filter-buttons-container');
             const cartItemsContainer = document.getElementById('cart-items');
             const cartTotalSpan = document.getElementById('cart-total');
             const cartCountSpan = document.getElementById('cart-count');
@@ -399,21 +439,17 @@
             const modalDescription = document.getElementById('modal-description');
             const modalPrice = document.getElementById('modal-price');
             const modalAddToCartBtn = document.getElementById('modal-add-to-cart-btn');
+            const modalDeleteBtn = document.getElementById('modal-delete-btn'); // Yeni silmə düyməsi
             const messageBoxOverlay = document.getElementById('message-box-overlay');
             const messageBoxText = document.getElementById('message-box-text');
             const messageBoxCloseButton = document.getElementById('message-box-close-button');
             const noProductsMessage = document.getElementById('no-products-message');
-
-            // New password-related elements
             const privateAccessLink = document.getElementById('private-access-link');
             const passwordModalOverlay = document.getElementById('password-modal-overlay');
-            const passwordModal = document.getElementById('password-modal');
             const passwordInput = document.getElementById('password-input');
             const submitPasswordBtn = document.getElementById('submit-password-btn');
             const passwordError = document.getElementById('password-error');
             const secretContent = document.getElementById('secret-content');
-            
-            // New image upload-related elements
             const fileInput = document.getElementById('fileInput');
             const previewImage = document.getElementById('previewImage');
             const uploadForm = document.getElementById('product-upload-form');
@@ -422,15 +458,18 @@
             const productPriceInput = document.getElementById('product-price');
             const productCategorySelect = document.getElementById('product-category');
             const clearProductsButton = document.getElementById('clear-products-btn');
+            const confirmationModalOverlay = document.getElementById('confirmation-modal-overlay');
+            const confirmationText = document.getElementById('confirmation-text');
+            const confirmYesButton = document.getElementById('confirm-yes-button');
+            const confirmNoButton = document.getElementById('confirm-no-button');
 
-            // Map to store cart items
+            // Global dəyişənlər
             const cart = new Map();
-            const correctPassword = "1975"; // Secret password
-
-            // Array to store product data, initialized as empty
+            const correctPassword = "1975"; // Gizli şifrə
             let products = [];
+            let secretMode = false; // Gizli idarəetmə rejiminin vəziyyəti
 
-            // Loads product data from Local Storage
+            // Məhsulları Local Storage-dan yükləyir
             function loadProducts() {
                 const storedProducts = localStorage.getItem('mubagProducts');
                 if (storedProducts) {
@@ -440,14 +479,14 @@
                 }
             }
 
-            // Saves product data to Local Storage
+            // Məhsulları Local Storage-a yadda saxlayır
             function saveProducts() {
                 localStorage.setItem('mubagProducts', JSON.stringify(products));
             }
 
-            // Dynamically creates product cards
+            // Məhsul kartlarını dinamik şəkildə yaradır
             function renderProducts(filteredProducts = products) {
-                productList.innerHTML = ''; // Clear previous products
+                productList.innerHTML = '';
                 if (filteredProducts.length === 0) {
                     noProductsMessage.classList.remove('hidden');
                 } else {
@@ -456,7 +495,6 @@
                         const productCard = document.createElement('div');
                         productCard.className = `product-card bg-white rounded-xl overflow-hidden shadow-lg border border-gray-200`;
                         
-                        // Convert categories array to a string for data-attribute
                         const categoryString = product.categories.join(' ');
                         productCard.dataset.id = product.id;
                         productCard.dataset.category = categoryString;
@@ -480,20 +518,42 @@
                     });
                 }
             }
+            
+            // Gizli rejimdə kolleksiya filter düymələrini yeniləyir
+            function updateFilterButtons() {
+                // Əvvəlki "Sil" düymələrini təmizlə
+                document.querySelectorAll('.delete-collection-btn').forEach(btn => btn.remove());
 
-            // Opens the cart sidebar
+                // Bütün filter düymələrini gətir
+                const filterButtons = document.querySelectorAll('.filter-button');
+                filterButtons.forEach(button => {
+                    const filter = button.dataset.filter;
+                    const wrapper = document.getElementById(`filter-wrapper-${filter}`);
+                    
+                    // Aktiv düyməyə və gizli rejimə görə "Sil" düyməsi əlavə et
+                    if (secretMode && button.classList.contains('active') && filter !== 'all') {
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                        deleteBtn.className = 'delete-collection-btn text-white bg-red-500 p-2 rounded-full hover:bg-red-600 transition-colors duration-300';
+                        deleteBtn.dataset.filter = filter;
+                        wrapper.appendChild(deleteBtn);
+                    }
+                });
+            }
+
+            // Səbət sidebar-ı açır
             function openCart() {
                 cartSidebar.classList.add('open');
                 cartOverlay.style.display = 'block';
             }
 
-            // Closes the cart sidebar
+            // Səbət sidebar-ı bağlayır
             function closeCart() {
                 cartSidebar.classList.remove('open');
                 cartOverlay.style.display = 'none';
             }
 
-            // Opens the product detail modal
+            // Məhsul detalları modalını açır
             function openProductDetailModal(productData) {
                 modalImage.src = productData.image;
                 modalImage.alt = productData.name;
@@ -501,32 +561,56 @@
                 modalDescription.textContent = productData.description;
                 modalPrice.textContent = `${productData.price} AZN`;
                 
-                // Add data to button for adding to cart
+                modalAddToCartBtn.dataset.id = productData.id;
                 modalAddToCartBtn.dataset.name = productData.name;
                 modalAddToCartBtn.dataset.price = productData.price;
                 modalAddToCartBtn.dataset.image = productData.image;
+
+                // Gizli rejimdə silmə düyməsini göstərir, əks halda gizlədir
+                if (secretMode) {
+                    modalDeleteBtn.classList.remove('hidden');
+                    modalDeleteBtn.dataset.id = productData.id;
+                    modalDeleteBtn.dataset.name = productData.name;
+                } else {
+                    modalDeleteBtn.classList.add('hidden');
+                }
 
                 productDetailModalOverlay.style.display = 'flex';
                 productDetailModal.classList.add('open');
             }
 
-            // Closes the product detail modal
+            // Məhsul detalları modalını bağlayır
             function closeProductDetailModal() {
                 productDetailModalOverlay.style.display = 'none';
             }
 
-            // Shows the info message box
+            // Məlumat mesaj qutusunu göstərir
             function showMessageBox(message) {
                 messageBoxText.textContent = message;
                 messageBoxOverlay.style.display = 'flex';
             }
 
-            // Closes the info message box
+            // Məlumat mesaj qutusunu bağlayır
             function closeMessageBox() {
                 messageBoxOverlay.style.display = 'none';
             }
 
-            // Updates the cart display
+            // Təsdiq modalını göstərir
+            function showConfirmation(message, onConfirm) {
+                confirmationText.textContent = message;
+                confirmationModalOverlay.style.display = 'flex';
+
+                confirmYesButton.onclick = () => {
+                    onConfirm();
+                    confirmationModalOverlay.style.display = 'none';
+                };
+                
+                confirmNoButton.onclick = () => {
+                    confirmationModalOverlay.style.display = 'none';
+                };
+            }
+
+            // Səbətin görünüşünü yeniləyir
             function updateCartDisplay() {
                 let total = 0;
                 let itemCount = 0;
@@ -566,9 +650,8 @@
                 cartCountSpan.textContent = itemCount;
             }
 
-            // Adds a product to the cart
+            // Səbətə məhsul əlavə edir
             function addToCart(productName, productPrice, productImage) {
-                // Check if the product is already in the cart
                 if (cart.has(productName)) {
                     showMessageBox(`"${productName}" artıq səbətdədir.`);
                 } else {
@@ -583,18 +666,17 @@
                 }
             }
 
-            // Removes a product from the cart
+            // Səbətdən məhsul silir
             function removeFromCart(productName) {
                 cart.delete(productName);
                 updateCartDisplay();
                 showMessageBox(`"${productName}" səbətdən silindi.`);
             }
 
-            // Event listeners
+            // Hadisə dinləyiciləri
             mobileMenuButton.addEventListener('click', () => {
                 mobileMenu.classList.toggle('hidden');
             });
-
             cartButton.addEventListener('click', openCart);
             closeCartButton.addEventListener('click', closeCart);
             cartOverlay.addEventListener('click', closeCart);
@@ -611,11 +693,13 @@
                 }
             });
             
-            // Filter button functionality
-            filterButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    // Change the active class
-                    filterButtons.forEach(btn => btn.classList.remove('active'));
+            // Filter düymələri üçün ümumi dinləyici
+            filterButtonsContainer.addEventListener('click', (e) => {
+                const button = e.target.closest('.filter-button');
+                const deleteButton = e.target.closest('.delete-collection-btn');
+
+                if (button) {
+                    document.querySelectorAll('.filter-button').forEach(btn => btn.classList.remove('active'));
                     button.classList.add('active');
 
                     const filter = button.dataset.filter;
@@ -623,10 +707,27 @@
                         return filter === 'all' || product.categories.includes(filter);
                     });
                     renderProducts(filteredProducts);
-                });
+                    
+                    // Gizli rejimdəyiksə, "Sil" düyməsini yenilə
+                    if (secretMode) {
+                        updateFilterButtons();
+                    }
+                }
+
+                if (deleteButton) {
+                    const filter = deleteButton.dataset.filter;
+                    const filterName = deleteButton.parentElement.querySelector('.filter-button').textContent;
+                    showConfirmation(`"${filterName}" kolleksiyasına aid bütün məhsulları silmək istədiyinizdən əminsiniz?`, () => {
+                        products = products.filter(product => !product.categories.includes(filter));
+                        saveProducts();
+                        renderProducts();
+                        updateFilterButtons();
+                        showMessageBox(`"${filterName}" kolleksiyası uğurla silindi.`);
+                    });
+                }
             });
 
-            // Event listener for product cards (event delegation)
+            // Məhsul kartları üçün dinləyici (event delegation)
             productList.addEventListener('click', (e) => {
                 const productCard = e.target.closest('.product-card');
                 const addToCartBtn = e.target.closest('.add-to-cart-btn');
@@ -638,6 +739,7 @@
                     addToCart(productName, productPrice, productImage);
                 } else if (productCard) {
                     const productData = {
+                        id: productCard.dataset.id,
                         name: productCard.dataset.name,
                         price: productCard.dataset.price,
                         image: productCard.dataset.image,
@@ -647,7 +749,7 @@
                 }
             });
 
-            // "Add to Cart" button in the product detail modal
+            // "Add to Cart" düyməsi
             modalAddToCartBtn.addEventListener('click', () => {
                 const productName = modalAddToCartBtn.dataset.name;
                 const productPrice = modalAddToCartBtn.dataset.price;
@@ -656,7 +758,21 @@
                 closeProductDetailModal();
             });
 
-            // "Remove" button in the cart sidebar
+            // Yeni əlavə olunmuş fərdi silmə düyməsi
+            modalDeleteBtn.addEventListener('click', () => {
+                const productId = parseInt(modalDeleteBtn.dataset.id);
+                const productName = modalDeleteBtn.dataset.name;
+                
+                showConfirmation(`"${productName}" məhsulunu silmək istədiyinizdən əminsiniz?`, () => {
+                    products = products.filter(product => product.id !== productId);
+                    saveProducts();
+                    renderProducts();
+                    closeProductDetailModal();
+                    showMessageBox(`"${productName}" məhsulu uğurla silindi.`);
+                });
+            });
+
+            // Səbətdən silmə düyməsi
             cartItemsContainer.addEventListener('click', (e) => {
                 const removeButton = e.target.closest('.remove-item');
                 if (removeButton) {
@@ -665,18 +781,17 @@
                 }
             });
 
-            // Checkout button click
+            // Sifarişi tamamla düyməsi
             checkoutButton.addEventListener('click', () => {
                 if (!checkoutButton.disabled) {
                     showMessageBox('Təşəkkür edirik! Sifarişiniz qəbul edildi. Tezliklə sizinlə əlaqə saxlanılacaq.');
-                    // Clear the cart after checkout
                     cart.clear();
                     updateCartDisplay();
                     closeCart();
                 }
             });
 
-            // Open password modal when "Private Access" link is clicked
+            // Özəl giriş linkinə klik
             privateAccessLink.addEventListener('click', (e) => {
                 e.preventDefault();
                 passwordModalOverlay.style.display = 'flex';
@@ -684,32 +799,34 @@
                 passwordError.style.display = 'none';
             });
 
-            // Close password modal when clicking on the overlay
+            // Şifrə modalını bağlayır
             passwordModalOverlay.addEventListener('click', (e) => {
                 if (e.target.id === 'password-modal-overlay') {
                     passwordModalOverlay.style.display = 'none';
                 }
             });
 
-            // Password submission button
+            // Şifrəni təsdiqlə
             submitPasswordBtn.addEventListener('click', () => {
                 if (passwordInput.value === correctPassword) {
                     passwordModalOverlay.style.display = 'none';
-                    secretContent.style.display = 'block'; // Show the hidden section
-                    showMessageBox('Şifrə düzgündür! Məhsul yükləmə bölməsi açıldı.');
+                    secretContent.style.display = 'block';
+                    secretMode = true; // Gizli rejimi aktivləşdir
+                    updateFilterButtons(); // "Sil" düymələrini göstər
+                    showMessageBox('Şifrə düzgündür! Məhsul idarəetmə bölməsi açıldı.');
                 } else {
-                    passwordError.style.display = 'block'; // Show error message
+                    passwordError.style.display = 'block';
                 }
             });
 
-            // Check password on Enter key press
+            // Enter düyməsi ilə şifrəni yoxla
             passwordInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
                     submitPasswordBtn.click();
                 }
             });
             
-            // Image upload event listener
+            // Şəkil yükləmə
             fileInput.addEventListener('change', function(event) {
                 const file = event.target.files[0];
                 if (file) {
@@ -722,7 +839,7 @@
                 }
             });
 
-            // Form to add a new product
+            // Yeni məhsul əlavə etmək üçün form
             uploadForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 
@@ -733,15 +850,13 @@
                 const file = fileInput.files[0];
                 const image = previewImage.src;
 
-                // Check for empty fields
                 if (!name || !description || isNaN(price) || price <= 0 || !file || image.includes('placehold.co')) {
                     showMessageBox('Zəhmət olmasa, bütün sahələri doldurun və bir şəkil seçin.');
                     return;
                 }
 
-                // Create a new product object
                 const newProduct = {
-                    id: Date.now(), // Create a unique ID
+                    id: Date.now(),
                     name: name,
                     description: description,
                     price: price,
@@ -749,34 +864,28 @@
                     categories: [category]
                 };
 
-                // Add the new product to the array
                 products.push(newProduct);
-                saveProducts(); // Save products to local storage
+                saveProducts();
                 
-                // Update the product list display
                 renderProducts();
                 
-                // Reset the form
                 uploadForm.reset();
                 previewImage.src = "https://placehold.co/400x320/e5e7eb/6b7280?text=Şəkil+yükləyin";
                 
-                // Inform the user of successful upload
                 showMessageBox('Yeni məhsul uğurla əlavə edildi!');
             });
             
-            // "Clear All Products" button functionality
+            // "Bütün Məhsulları Sil" düyməsi
             clearProductsButton.addEventListener('click', () => {
-                // Clear the products array
-                products = [];
-                // Clear localStorage
-                localStorage.removeItem('mubagProducts');
-                // Re-render the product list
-                renderProducts();
-                // Show confirmation message
-                showMessageBox('Bütün məhsullar silindi.');
+                showConfirmation('Bütün məhsulları silmək istədiyinizdən əminsiniz? Bu əməliyyat geri qaytarıla bilməz.', () => {
+                    products = [];
+                    localStorage.removeItem('mubagProducts');
+                    renderProducts();
+                    showMessageBox('Bütün məhsullar silindi.');
+                });
             });
 
-            // On page load, load and render products
+            // Səhifə yüklənəndə məhsulları yüklə və render et
             loadProducts();
             renderProducts();
             updateCartDisplay();
@@ -784,4 +893,3 @@
     </script>
 </body>
 </html>
-
