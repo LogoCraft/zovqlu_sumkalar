@@ -3,240 +3,428 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nova Yapay Zeka Asistanı (Local)</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- LZ-String (sıkıştırma için) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
+  <title>Nova Yapay Zeka Asistanı</title>
+  <!-- Tailwind CSS yüklemesi --><script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
     :root { font-family: 'Inter', sans-serif; }
-    body, html { height: 100%; overflow: hidden; background:#0f172a; color:#e6eef8; }
-    /* kısa stiller (orijinalinden hafifçe sadeleştirildi) */
-    .chat { height: calc(100vh - 160px); overflow:auto; padding:16px; }
-    .msg { max-width:85%; padding:12px; border-radius:12px; margin-bottom:8px; box-shadow:0 2px 6px rgba(0,0,0,.6); }
-    .user { margin-left:auto; background:#4f46e5; color:#fff; border-bottom-right-radius:2px; }
-    .ai { margin-right:auto; background:#1f2937; color:#e6eef8; border-top-left-radius:2px; }
-    .loading { display:inline-block; width:12px; height:12px; border:2px solid rgba(255,255,255,.3); border-top-color:#fff; border-radius:50%; animation:spin 1s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    img.result { max-width:320px; border-radius:8px; display:block; margin-top:8px; border:1px solid #374151; }
-    footer { position:relative; padding:12px; background:#0b1220; border-top:1px solid #111827; }
-    .share-link { font-size:12px; color:#93c5fd; word-break:break-all; }
+
+    body, html { height: 100%; overflow: hidden; }
+    
+    /* Özel kaydırma çubuğu stilleri */
+    #chat-container::-webkit-scrollbar,
+    #sidebar-content::-webkit-scrollbar { width: 6px; }
+    #chat-container::-webkit-scrollbar-thumb,
+    #sidebar-content::-webkit-scrollbar-thumb { background-color: #4b5563; border-radius: 3px; }
+    #chat-container::-webkit-scrollbar-track,
+    #sidebar-content::-webkit-scrollbar-track { background-color: #1f2937; }
+
+    /* Sidebar geçiş stilleri */
+    .sidebar {
+      transform: translateX(-100%);
+      transition: transform 0.3s ease-in-out;
+    }
+    .sidebar.open { transform: translateX(0); }
+    @media (min-width: 640px) {
+      .sidebar { transform: translateX(0); }
+    }
+    .overlay {
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+    }
+    .overlay.open {
+      visibility: visible;
+      opacity: 1;
+    }
+    .ai-message a { color: #818cf8; text-decoration: underline; }
+    /* Yüklenme animasyonu stilleri */
+    .loading-animation {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
   </style>
 </head>
-<body class="flex">
+<body class="bg-gray-900 text-gray-100 flex">
 
-  <main style="flex:1; display:flex; flex-direction:column;">
-    <header style="padding:12px; background:#071029; border-bottom:1px solid #0b1220;">
-      <h1 style="font-weight:700; color:#60a5fa;">Nova (Local) - StableDiffusion Ready</h1>
+  <!-- Sidebar --><aside id="sidebar" class="sidebar fixed inset-y-0 left-0 z-40 w-64 bg-gray-800 shadow-xl flex flex-col sm:relative">
+    <header class="p-4 bg-gray-900 border-b border-gray-700">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-bold text-indigo-400">Konuşmalar</h2>
+        <button onclick="toggleSidebar()" class="sm:hidden text-gray-400 hover:text-white p-1">
+          ✕
+        </button>
+      </div>
+      <button id="new-chat-button" onclick="startNewConversation()" class="mt-3 w-full bg-indigo-600 text-white p-2 rounded-lg hover:bg-indigo-700 transition">
+        + Yeni Konu Başlat
+      </button>
+    </header>
+    <div id="sidebar-content" class="flex-grow overflow-y-auto p-2 space-y-2">
+      <p id="loading-conversations" class="text-sm text-gray-400 text-center mt-4">Konuşmalar yükleniyor...</p>
+    </div>
+  </aside>
+
+  <!-- Overlay --><div id="overlay" class="overlay fixed inset-0 bg-black bg-opacity-50 z-30 sm:hidden" onclick="toggleSidebar()"></div>
+
+  <!-- Ana Alan --><main class="flex-grow flex flex-col bg-gray-800">
+    <header class="p-4 bg-gray-900 flex items-center border-b border-gray-700 shadow-md">
+      <button onclick="toggleSidebar()" class="sm:hidden text-gray-400 hover:text-white mr-3">☰</button>
+      <h1 class="text-xl font-extrabold text-indigo-400 flex-grow" id="current-topic-title">Nova Asistan (Local Storage)</h1>
     </header>
 
-    <div id="chat" class="chat"></div>
+    <div id="chat-container" class="flex-grow p-4 space-y-4 overflow-y-auto">
+      <div id="loading-history" class="text-center text-sm text-gray-400 mt-4">Lütfen bekleyin, oturum başlatılıyor...</div>
+    </div>
 
-    <footer>
-      <div style="display:flex; gap:8px;">
-        <input id="input" type="text" placeholder="Örnek: 'Bakü'de kırmızı bir spor araba fotoğrafı oluştur' " style="flex:1;padding:10px;border-radius:8px;background:#0f172a;border:1px solid #1f2937;color:#e6eef8;" />
-        <button id="send" style="padding:10px 14px;border-radius:8px;background:#2563eb;color:white;">Gönder</button>
+    <footer class="p-4 bg-gray-900 border-t border-gray-700">
+      <div id="status-message" class="text-sm text-red-400 mb-2 hidden"></div>
+      <div class="flex space-x-2">
+        <input id="user-input" type="text" placeholder="Nova'ya bir şeyler sor veya görsel oluşturmasını iste..."
+          class="flex-grow p-3 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:border-indigo-500"
+          onkeydown="if(event.key==='Enter')sendMessage()">
+        <button id="send-button" onclick="sendMessage()" class="bg-indigo-600 text-white p-3 rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition" disabled>
+          ➤
+        </button>
       </div>
-      <div id="status" style="margin-top:8px;color:#fca5a5;display:none;"></div>
-      <div id="share" style="margin-top:8px;"></div>
+      <p class="text-xs text-gray-500 mt-2 text-center">Not: Tüm veriler tarayıcınızın yerel depolama alanında (localStorage) saklanır.</p>
     </footer>
   </main>
 
-<script>
-/* ---------- AYARLAR (burayı kendi ortamına göre değiştir) ---------- */
-// Eğer local Automatic1111 / sd-webui kullanıyorsan LOCAL_SD_API'i ayarla.
-// Örnek: 'http://127.0.0.1:7860'  (Automatic1111 sd-webui varsayılan)
-const USE_SD_API = true;                // true -> local SD endpoint'e istek atar; false -> fallback canvas üretimi
-const LOCAL_SD_API = 'http://127.0.0.1:7860'; // kendi local SD adresin
-/* ------------------------------------------------------------------ */
+  <script>
+    // --- Local Storage Sabitleri ve Yardımcı Fonksiyonlar ---
+    const PREFIX = 'nova_ls_';
+    
+    function getConvs() { return JSON.parse(localStorage.getItem(PREFIX + 'convs') || '[]'); }
+    function saveConvs(c) { localStorage.setItem(PREFIX + 'convs', JSON.stringify(c)); }
+    function getMsgs(id) { return JSON.parse(localStorage.getItem(PREFIX + 'msgs_' + id) || '[]'); }
+    function saveMsgs(id, m) { localStorage.setItem(PREFIX + 'msgs_' + id, JSON.stringify(m)); }
 
-const chat = document.getElementById('chat');
-const input = document.getElementById('input');
-const sendBtn = document.getElementById('send');
-const status = document.getElementById('status');
-const share = document.getElementById('share');
+    // --- API ve Sistem Ayarları ---
+    const API_KEY = "";
+    const TEXT_API_URL = https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${API_KEY};
+    const IMAGE_API_URL = https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${API_KEY};
 
-function addMsg(text, cls='ai') {
-  const d = document.createElement('div');
-  d.className = 'msg ' + (cls==='user' ? 'user' : 'ai');
-  if (typeof text === 'string') d.innerHTML = text;
-  else d.appendChild(text);
-  chat.appendChild(d);
-  chat.scrollTop = chat.scrollHeight;
-}
+    const NOVA_PROMPT = Sen Nova'sın, kısa, samimi ve faydalı Türkçe cevaplar ver. Yanıtlarını okunabilir kılmak için hafif **markdown** (**kalın** ve *italik*) kullanabilirsin. Görsel oluşturma taleplerinde sadece görselin içeriğini anlatan metin üret, herhangi bir URL veya özel bir işaret ekleme.;
 
-/* Basit markdown (kalın/italik) */
-function mdToHtml(s){ return s.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*(.+?)\*/g,'<em>$1</em>').replace(/\n/g,'<br>'); }
+    let currentId = null;
+    let conversationCache = [];
 
-/* Shareable link oluştur: base64 -> sıkıştır -> URL hash */
-function makeShareLinkFromBase64(b64) {
-  const compressed = LZString.compressToEncodedURIComponent(b64);
-  const url = location.origin + location.pathname + '#img=' + compressed;
-  return url;
-}
+    // --- DOM Elemanları ---
+    const chat = document.getElementById('chat-container');
+    const input = document.getElementById('user-input');
+    const sendBtn = document.getElementById('send-button');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const sideContent = document.getElementById('sidebar-content');
+    const loadConv = document.getElementById('loading-conversations');
+    const title = document.getElementById('current-topic-title');
+    const loadHist = document.getElementById('loading-history');
+    
+    // --- Yardımcı UI Fonksiyonları ---
+    function toggleSidebar() {
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('open');
+    }
+    window.toggleSidebar = toggleSidebar;
 
-/* Sayfa açıldığında eğer hash'te img varsa göster */
-function tryLoadFromHash() {
-  if (!location.hash) return;
-  const m = location.hash.match(/#img=(.+)/);
-  if (!m) return;
-  try {
-    const b64 = LZString.decompressFromEncodedURIComponent(m[1]);
-    if (!b64) return;
-    const img = document.createElement('img');
-    img.className = 'result';
-    img.src = 'data:image/png;base64,' + b64;
-    const wrapper = document.createElement('div');
-    wrapper.innerHTML = '<div style="font-size:13px;color:#9ca3af;margin-bottom:6px">Paylaşılan görsel</div>';
-    wrapper.appendChild(img);
-    addMsg(wrapper, 'ai');
-  } catch (e) {
-    console.error(e);
-  }
-}
-tryLoadFromHash();
-
-/* Canvas fallback (pseudo-photorealistic değil, fakat makul kompozitler üretir) */
-function generateCanvasImage(prompt) {
-  // Basit kompozit: gradient arka plan + SVG araba silhouette (basitleştirilmiş) + şehir adı metni
-  const w = 1024, h = 640;
-  const c = document.createElement('canvas');
-  c.width = w; c.height = h;
-  const ctx = c.getContext('2d');
-
-  // background gradient (şehir havası)
-  const g = ctx.createLinearGradient(0,0,0,h);
-  g.addColorStop(0, '#0f172a'); g.addColorStop(1, '#0b1220');
-  ctx.fillStyle = g; ctx.fillRect(0,0,w,h);
-
-  // basit "fotoğraf efekti" gürültü
-  const imgd = ctx.getImageData(0,0,w,h);
-  for (let i=0;i<imgd.data.length;i+=4){
-    const v = (Math.random()-0.5)*8;
-    imgd.data[i]+=v; imgd.data[i+1]+=v; imgd.data[i+2]+=v;
-  }
-  ctx.putImageData(imgd,0,0);
-
-  // basit araba silhouette as overlay (SVG yolu yerine şekil)
-  ctx.fillStyle = '#111827';
-  ctx.beginPath();
-  ctx.moveTo(200,420); ctx.lineTo(300,360); ctx.lineTo(500,360); ctx.lineTo(620,420);
-  ctx.lineTo(820,420); ctx.lineTo(780,480); ctx.lineTo(240,480);
-  ctx.closePath(); ctx.fill();
-
-  // wheels
-  ctx.fillStyle = '#0b1220';
-  ctx.beginPath(); ctx.arc(320,480,34,0,Math.PI*2); ctx.fill();
-  ctx.beginPath(); ctx.arc(700,480,34,0,Math.PI*2); ctx.fill();
-
-  // şehir adı ve prompt kısa yazısı
-  ctx.fillStyle = '#e6eef8';
-  ctx.font = '36px Inter, sans-serif';
-  ctx.fillText(prompt.slice(0,60), 40, 80);
-
-  // dönüştür + base64
-  const b64 = c.toDataURL('image/png').split(',')[1];
-  return b64;
-}
-
-/* Automatic1111 sd-webui ile uyumlu request (txt2img) */
-async function callLocalSD(prompt) {
-  // Örnek minimal payload; senin kurulumuna göre params ekleyebilirsin.
-  const url = (LOCAL_SD_API||'http://127.0.0.1:7860').replace(/\/$/,'') + '/sdapi/v1/txt2img';
-  const payload = {
-    prompt: prompt,
-    negative_prompt: '',
-    steps: 20,
-    cfg_scale: 7,
-    width: 1024,
-    height: 640,
-    sampler_index: "Euler a",
-    restore_faces: false
-  };
-
-  const resp = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
-
-  if (!resp.ok) {
-    const txt = await resp.text();
-    throw new Error('SD API hata: ' + resp.status + ' - ' + txt);
-  }
-  const json = await resp.json();
-  // sd-webui returns images (base64) in json.images array
-  const b64 = json.images?.[0];
-  if (!b64) throw new Error('SD API dönışı beklenmedik.');
-  return b64;
-}
-
-/* Ana gönderme fonksiyonu */
-sendBtn.onclick = async () => {
-  const text = input.value.trim();
-  if (!text) return;
-  input.value = '';
-  addMsg(mdToHtml(text), 'user');
-
-  // loading placeholder
-  const loading = document.createElement('div');
-  loading.innerHTML = 'Nova üretiyor... <span class="loading"></span>';
-  addMsg(loading, 'ai');
-
-  try {
-    let base64;
-    if (USE_SD_API) {
-      status.style.display = 'block';
-      status.textContent = 'Local SD API ile oluşturuluyor...';
-      try {
-        base64 = await callLocalSD(text);
-      } catch (e) {
-        // eğer SD çağrısı başarısızsa fallback olarak canvas üretimi uygula
-        console.warn('SD çağrısı başarısız, fallback canvas üretiliyor:', e);
-        status.textContent = 'Local SD erişimi başarısız — fallback canvas ile üretildi.';
-        base64 = generateCanvasImage(text);
-      }
-    } else {
-      status.style.display = 'block';
-      status.textContent = 'Canvas ile üretiliyor (offline)...';
-      base64 = generateCanvasImage(text);
+    function showStatus(msg, ok = false, t = 5000) {
+      const el = document.getElementById('status-message');
+      el.textContent = msg;
+      el.classList.remove('hidden', 'text-red-400', 'text-green-400');
+      el.classList.add(ok ? 'text-green-400' : 'text-red-400');
+      setTimeout(() => el.classList.add('hidden'), t);
+    }
+    
+    function markdownToHtml(text) {
+        let html = text.replace(/\\(.?)\\*/g, '<strong>$1</strong>');
+        html = html.replace(/\(.?)\*/g, '<em>$1</em>');
+        html = html.replace(/\n/g, '<br>');
+        return html;
     }
 
-    // placeholder'ı kaldır ve resmi göster
-    if (loading && loading.parentNode) loading.parentNode.remove();
+    // --- Sidebar ve Konuşma Yönetimi ---
+    function updateConv(id, name = null, ts = Date.now()) {
+      let convs = getConvs();
+      let c = convs.find(x => x.id === id);
+      if (!c) {
+        convs.push({ id, title: name || "Yeni Konuşma", last: ts });
+      } else {
+        if (name) c.title = name;
+        c.last = ts;
+      }
+      saveConvs(convs);
+      loadConvsUI();
+    }
 
-    const img = document.createElement('img');
-    img.className = 'result';
-    img.src = 'data:image/png;base64,' + base64;
+    function loadConvsUI() {
+      loadConv.classList.add('hidden');
+      sideContent.innerHTML = '';
+      const convs = getConvs().sort((a, b) => b.last - a.last);
+      
+      if (!convs.length) {
+        sideContent.innerHTML = '<p class="text-sm text-gray-500 p-2">Henüz konuşma yok.</p>';
+        return;
+      }
+      
+      convs.forEach(c => {
+        const b = document.createElement('button');
+        b.className = w-full text-left p-3 rounded-lg transition ${c.id === currentId ? 'bg-indigo-700 font-semibold' : 'bg-gray-700 hover:bg-gray-600'};
+        
+        const titleSpan = document.createElement('span');
+        titleSpan.className = 'truncate block'; 
+        titleSpan.textContent = c.title;
 
-    const wrapper = document.createElement('div');
-    wrapper.appendChild(img);
+        b.appendChild(titleSpan);
+        b.onclick = () => { switchConv(c.id, c.title); if (window.innerWidth < 640) toggleSidebar(); };
+        sideContent.appendChild(b);
+      });
+    }
 
-    // Açıklama ve indirme butonu
-    const dl = document.createElement('a');
-    dl.href = img.src;
-    dl.download = 'nova_image.png';
-    dl.textContent = 'İndir';
-    dl.style.cssText = 'display:inline-block;margin-top:8px;padding:6px 8px;background:#111827;color:#e6eef8;border-radius:6px;text-decoration:none;font-size:13px';
-    wrapper.appendChild(dl);
+    function startNewConversation() {
+      const id = Date.now().toString();
+      switchConv(id, "Yeni Konuşma", true);
+      if (window.innerWidth < 640) toggleSidebar();
+    }
+    window.startNewConversation = startNewConversation;
 
-    addMsg(wrapper, 'ai');
+    function switchConv(id, name, isNew = false) {
+      currentId = id;
+      title.textContent = name;
+      loadHist.classList.remove('hidden');
+      loadHist.textContent = "Mesajlar yükleniyor...";
+      sendBtn.disabled = true;
 
-    // share link oluştur
-    const shareUrl = makeShareLinkFromBase64(base64);
-    share.innerHTML = `<div style="color:#9ca3af;font-size:13px">Paylaşılabilir link (kopyala & paylaş):</div>
-                       <div class="share-link">${shareUrl}</div>`;
+      conversationCache = getMsgs(id);
+      
+      if (isNew || !conversationCache.length) {
+        const msg = { sender: 'ai', text: "Merhaba! Ben Nova. Sana görsel oluşturabilir veya her konuda öneriler verebilirim. Nasıl yardımcı olabilirim?", ts: Date.now() };
+        conversationCache.push(msg);
+        saveMsgs(id, conversationCache);
+        updateConv(id, "Yeni Konuşma", msg.ts);
+      }
+      
+      renderChat();
+      loadConvsUI();
+    }
+    window.switchConv = switchConv;
 
-    status.style.display = 'none';
-  } catch (err) {
-    console.error(err);
-    status.style.display = 'block';
-    status.textContent = 'Hata: ' + (err.message || err);
-  }
-};
+    // --- Sohbet Ekranı Yönetimi ---
 
-input.addEventListener('keydown', (e)=>{ if(e.key==='Enter') sendBtn.click(); });
+    /**
+     * Mesajı sohbete ekler. PlaceholderRef 'image-loading' ise div referansını döndürür.
+     */
+    function appendMsg(sender, data, placeholderRef = null) {
+        const user = sender === 'user';
+        const isImgData = typeof data === 'string' && data.startsWith('data:image/');
+        const text = isImgData ? "İşte istediğiniz görsel:" : data;
 
-</script>
+        const div = document.createElement('div');
+        div.className = flex ${user ? 'justify-end' : 'justify-start'};
+
+        const content = document.createElement('div');
+        content.className = max-w-[85%] p-3 rounded-xl shadow-lg ${user ? 'bg-indigo-600 text-white rounded-br-none' : 'bg-gray-700 text-gray-100 rounded-tl-none ai-message'};
+        
+        if (placeholderRef === 'image-loading') {
+            content.innerHTML = Görsel oluşturuluyor... <span class="loading-animation ml-2"></span>;
+        } else if (placeholderRef === 'text-thinking') {
+            content.innerHTML = Nova düşünüyor... <span class="loading-animation ml-2"></span>;
+        } else if (isImgData) {
+            const p = document.createElement('p');
+            p.textContent = text;
+            
+            const img = document.createElement('img');
+            img.src = data; // Base64 Data URL
+            img.className = 'rounded-lg mt-2 w-full max-w-xs h-auto object-cover border border-gray-600';
+            content.append(p, img);
+        } else {
+            content.innerHTML = markdownToHtml(text);
+        }
+
+        div.appendChild(content);
+        chat.appendChild(div);
+        chat.scrollTop = chat.scrollHeight;
+        
+        if (placeholderRef) {
+            return div; // Placeholder ise referansı döndür
+        }
+    }
+
+    function renderChat() {
+      chat.innerHTML = '';
+      conversationCache.forEach(m => appendMsg(m.sender, m.text));
+      sendBtn.disabled = false;
+      loadHist.classList.add('hidden');
+    }
+    
+    // --- API Çağrıları ---
+
+    async function callAPI(url, payload) {
+        let response;
+        const MAX_RETRIES = 3;
+        let delay = 1000;
+
+        for (let i = 0; i < MAX_RETRIES; i++) {
+            try {
+                response = await fetch(url, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify(payload) 
+                });
+
+                if (response.ok) break;
+
+                if (i < MAX_RETRIES - 1) {
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    delay *= 2;
+                    continue;
+                }
+                throw new Error(API hatası: ${response.status});
+            } catch (error) {
+                if (i === MAX_RETRIES - 1) throw error; 
+                await new Promise(resolve => setTimeout(resolve, delay));
+                delay *= 2;
+            }
+        }
+        
+        if (!response || !response.ok) throw new Error("API'dan cevap alınamadı.");
+        return response.json();
+    }
+
+    async function callTextAPI(prompt) {
+      const chatHistory = conversationCache.slice(-10).map(m => ({
+        role: m.sender === 'user' ? 'user' : 'model',
+        parts: [{ text: m.text }] 
+      }));
+      
+      const contents = [...chatHistory, { role: 'user', parts: [{ text: prompt }] }];
+      const payload = { contents, systemInstruction: { parts: [{ text: NOVA_PROMPT }] } };
+
+      const json = await callAPI(TEXT_API_URL, payload);
+      const text = json.candidates?.[0]?.content?.parts?.[0]?.text || "Cevap alınamadı.";
+      return { text };
+    }
+
+    async function callImageAPI(prompt) {
+      // Imagen 3.0, prompt'un ilk 20 kelimesini kullanır.
+      const imagePrompt = prompt.split(/\s+/).slice(0, 20).join(' ');
+      const payload = { instances: { prompt: imagePrompt }, parameters: { "sampleCount": 1 } };
+      
+      const json = await callAPI(IMAGE_API_URL, payload);
+      const base64Data = json.predictions?.[0]?.bytesBase64Encoded;
+      
+      if (!base64Data) {
+          throw new Error("Görsel oluşturulamadı. Lütfen isteminizi netleştirin.");
+      }
+      return data:image/png;base64,${base64Data}; // Base64 Data URL döndür
+    }
+    
+    // --- Ana Mesaj Gönderme Mantığı ---
+
+    async function sendMessage() {
+      const text = input.value.trim();
+      if (!text || !currentId) return;
+      
+      sendBtn.disabled = true;
+      input.value = '';
+
+      const isImageRequest = text.toLowerCase().includes('görsel oluştur') || 
+                             text.toLowerCase().includes('resim yap') ||
+                             text.toLowerCase().includes('fotoğraf çiz') ||
+                             text.toLowerCase().includes('görsel çiz');
+
+      const userMsg = { sender: 'user', text, ts: Date.now() };
+      conversationCache.push(userMsg);
+      saveMsgs(currentId, conversationCache);
+      
+      // Konuşma başlığını ve zaman damgasını güncelle
+      if (conversationCache.length === 2) { 
+         updateConv(currentId, text.slice(0, 50) + '...', userMsg.ts);
+      } else {
+         updateConv(currentId, null, userMsg.ts);
+      }
+      
+      renderChat(); // Kullanıcı mesajını göster
+
+      let thinkingDiv = null;
+      try {
+        if (isImageRequest) {
+          
+          // 1. Görsel yükleme placeholder'ını ekle ve referansı al
+          thinkingDiv = appendMsg('ai', null, 'image-loading');
+          
+          // 2. Görsel API çağrısı
+          const imageUrl = await callImageAPI(text);
+
+          // 3. Yükleme mesajını DOM'dan kaldır
+          if(thinkingDiv) thinkingDiv.remove();
+          
+          // 4. Görsel verisini (Base64 URL) cache'e ekle
+          const aiMsg = { sender: 'ai', text: imageUrl, ts: Date.now() };
+          conversationCache.push(aiMsg);
+          saveMsgs(currentId, conversationCache);
+
+          // 5. Nihai görseli/mesajı DOM'a ekle
+          appendMsg('ai', imageUrl); 
+
+        } else {
+          
+          // 1. Metin API çağrısı için kısa bir düşünme placeholder'ı ekle
+          thinkingDiv = appendMsg('ai', null, 'text-thinking');
+          
+          // 2. Metin API çağrısı
+          const res = await callTextAPI(text);
+          const aiText = res.text;
+
+          // 3. Düşünme placeholder'ını DOM'dan kaldır
+          if(thinkingDiv) thinkingDiv.remove();
+
+          // 4. Cache'e ekle ve kaydet
+          const aiMsg = { sender: 'ai', text: aiText, ts: Date.now() };
+          conversationCache.push(aiMsg);
+          saveMsgs(currentId, conversationCache);
+
+          // 5. Nihai mesajı DOM'a ekle
+          appendMsg('ai', aiText); 
+        }
+
+        updateConv(currentId, null, Date.now()); // Zamanı güncelle
+      } catch (e) {
+        console.error("İşlem sırasında hata:", e);
+        // Hata durumunda yükleme mesajını kaldır
+        if (thinkingDiv) thinkingDiv.remove();
+        showStatus("Bir hata oluştu, görsel/cevap oluşturulamadı.");
+      } finally {
+        sendBtn.disabled = false;
+        input.focus();
+        chat.scrollTop = chat.scrollHeight;
+      }
+    }
+    window.sendMessage = sendMessage;
+
+
+    // --- Uygulama Başlatma ---
+
+    function init() {
+      loadConvsUI();
+      const convs = getConvs().sort((a, b) => b.last - a.last);
+      
+      if (convs.length) {
+        switchConv(convs[0].id, convs[0].title);
+      } else {
+        startNewConversation();
+      }
+      input.focus();
+    }
+    
+    window.onload = init;
+  </script>
 </body>
 </html>
