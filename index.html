@@ -1,378 +1,137 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>MuLink — Tamamen Offline Asistan</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MuWeb Tarayıcı Deneyimi</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-    :root{font-family:'Inter',sans-serif}
-    body,html{height:100%}
-    .scrollbar::-webkit-scrollbar{width:8px;height:8px}
-    .scrollbar::-webkit-scrollbar-thumb{background:#374151;border-radius:6px}
-    .scrollbar::-webkit-scrollbar-track{background:#111827}
-    pre code{white-space:pre-wrap;word-break:break-word}
-    .mode-btn.active{box-shadow:0 8px 24px rgba(99,102,241,0.12)}
-    .loading-dot{display:inline-block;width:6px;height:6px;margin:0 2px;border-radius:999px;background:currentColor;opacity:.25;animation:blink 1s infinite}
-    .loading-dot:nth-child(2){animation-delay:.15s}.loading-dot:nth-child(3){animation-delay:.3s}
-    @keyframes blink{50%{opacity:1}}
+    body { font-family: 'Inter', sans-serif; }
+    #browserView { position: fixed; top:0; left:0; width:100vw; height:100vh; z-index:50; display:none; flex-direction:column; }
+    #browserFrame { border:none; flex:1; width:100%; }
   </style>
 </head>
-<body class="bg-slate-900 text-slate-100 h-screen flex">
+<body class="bg-gray-50 min-h-screen flex flex-col">
 
-  <!-- LEFT SIDEBAR -->
-  <aside class="w-72 bg-gray-800 border-r border-gray-700 p-4 flex flex-col">
-    <h2 class="text-indigo-400 font-bold text-lg">MuLink — Offline</h2>
-    <p class="text-xs text-gray-400 mt-1">Tüm veriler tarayıcıda saklanır. Hiçbir dışa bağlantı yok.</p>
-
-    <div class="mt-4">
-      <button id="newChat" class="w-full bg-indigo-600 hover:bg-indigo-700 p-2 rounded">+ Yeni Konuşma</button>
+  <header class="flex justify-between items-center p-4 border-b border-gray-200 bg-white shadow-md z-10">
+    <h1 class="text-3xl font-extrabold select-none">
+      <span class="text-blue-600">M</span>
+      <span class="text-red-600">u</span>
+      <span class="text-yellow-600">W</span>
+      <span class="text-blue-600">e</span>
+      <span class="text-green-600">b</span>
+    </h1>
+    <div class="flex items-center gap-3">
+        <button id="langBtn" class="px-3 py-1 text-sm rounded hover:bg-gray-100 transition text-gray-700">Türkçe</button>
     </div>
+  </header>
 
-    <div class="mt-4 flex flex-col gap-2 overflow-y-auto scrollbar" id="conversations" style="flex:1"></div>
-
-    <div class="mt-3 text-xs text-gray-400">MuLink Modları</div>
-    <div class="mt-2 grid grid-cols-1 gap-2">
-      <button class="mode-btn p-2 rounded bg-gray-700 text-sm text-left" data-mode="chat">💬 Sohbet (Samimi)</button>
-      <button class="mode-btn p-2 rounded bg-gray-700 text-sm text-left" data-mode="code">💻 Kod Yazma</button>
-      <button class="mode-btn p-2 rounded bg-gray-700 text-sm text-left" data-mode="visual">🎨 Görsel & Önizleme</button>
+  <section id="searchPage" class="flex-1 flex flex-col items-center justify-start pt-16 px-4">
+    <h1 class="text-7xl font-extrabold mb-10 select-none">
+      <span class="text-blue-600">M</span>
+      <span class="text-red-600">u</span>
+      <span class="text-yellow-600">W</span>
+      <span class="text-blue-600">e</span>
+      <span class="text-green-600">b</span>
+    </h1>
+    <div class="w-full max-w-xl">
+      <div class="flex items-center shadow-lg rounded-xl overflow-hidden border border-blue-500">
+        <input id="searchInput" type="text" placeholder="MuWeb'de ara veya bir URL yaz"
+          class="flex-1 h-12 px-5 py-3 text-lg focus:outline-none border-none" />
+        <button id="searchBtn" class="h-12 w-20 bg-blue-600 hover:bg-blue-700 text-white font-medium flex items-center justify-center">
+            🔍
+        </button>
+      </div>
+      <div class="flex justify-center gap-4 mt-4">
+        <button id="luckyBtn" class="px-4 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg">Kendimi Şanslı Hissediyorum</button>
+      </div>
     </div>
+  </section>
 
-    <div class="mt-4 text-xs text-gray-500">Ayarlar</div>
-    <div class="mt-2 text-sm text-gray-300">
-      <label class="flex items-center gap-2"><input id="personaToggle" type="checkbox" checked class="accent-indigo-500"> Samimi Ton</label>
-      <label class="flex items-center gap-2 mt-2"><input id="saveConvs" type="checkbox" checked class="accent-indigo-500"> Konuşmaları Kaydet</label>
+  <section id="browserView" class="bg-white flex flex-col">
+    <div id="browserControls" class="flex items-center p-2 border-b border-gray-300 bg-gray-200 flex-shrink-0 gap-2">
+      <button id="browserBack">◀</button>
+      <button id="browserForward">▶</button>
+      <button id="browserRefresh">⟳</button>
+      <input id="browserAddressBar" type="text" placeholder="Web adresi veya arama terimi" class="flex-1 h-9 px-4 rounded-full border border-gray-400" />
+      <button id="browserExit">X</button>
     </div>
-  </aside>
+    <iframe id="browserFrame" src="about:blank"></iframe>
+  </section>
 
-  <!-- MAIN -->
-  <main class="flex-1 flex flex-col">
-    <header class="p-4 bg-gray-900 border-b border-gray-800 flex items-center justify-between">
-      <div>
-        <h1 id="title" class="text-xl font-semibold text-indigo-300">MuLink</h1>
-        <div id="subtitle" class="text-xs text-gray-400">Tamamen offline — kod yazabilir, görsel tasvirleri önizleyebilir.</div>
+  <footer id="mainFooter" class="bg-gray-100 border-t border-gray-300 mt-auto p-4 text-sm text-gray-600 w-full">
+    <div class="max-w-7xl mx-auto flex justify-between px-4">
+      <div class="flex gap-6">
+        <a href="#" class="hover:underline">Hakkında</a>
+        <a href="#" class="hover:underline">Reklam</a>
+        <a href="#" class="hover:underline">İş</a>
       </div>
-      <div class="flex items-center gap-3">
-        <div id="currentMode" class="text-sm text-gray-300 px-3 py-1 bg-gray-800 rounded">Mod: <span class="font-semibold text-indigo-300">Sohbet</span></div>
-        <button id="clearStorage" class="text-sm text-red-400">LocalStorage Temizle</button>
+      <div class="flex gap-6">
+        <a href="#" class="hover:underline">Gizlilik</a>
+        <a href="#" class="hover:underline">Şartlar</a>
+        <a href="#" class="hover:underline">Ayarlar</a>
       </div>
-    </header>
+    </div>
+  </footer>
 
-    <section class="flex-1 grid grid-cols-4 gap-4 p-4">
-      <!-- Chat area -->
-      <div class="col-span-3 bg-gray-800 p-4 rounded-lg flex flex-col">
-        <div id="chat" class="flex-1 overflow-y-auto scrollbar pr-2 space-y-3" style="min-height:0"></div>
+<script>
+  const searchPage = document.getElementById('searchPage');
+  const searchInput = document.getElementById('searchInput');
+  const searchBtn = document.getElementById('searchBtn');
+  const luckyBtn = document.getElementById('luckyBtn');
+  const browserView = document.getElementById('browserView');
+  const browserFrame = document.getElementById('browserFrame');
+  const browserAddressBar = document.getElementById('browserAddressBar');
+  const browserBack = document.getElementById('browserBack');
+  const browserForward = document.getElementById('browserForward');
+  const browserRefresh = document.getElementById('browserRefresh');
+  const browserExit = document.getElementById('browserExit');
+  const langBtn = document.getElementById('langBtn');
+  const mainFooter = document.getElementById('mainFooter');
 
-        <div class="mt-3">
-          <div class="flex gap-2">
-            <input id="input" type="text" placeholder="MuLink'e bir şeyler yaz..." class="flex-1 p-3 rounded bg-gray-700 border border-gray-600 focus:outline-none" />
-            <button id="send" class="bg-indigo-600 p-3 rounded disabled:opacity-50">Gönder</button>
-          </div>
-          <div class="mt-2 flex items-center justify-between text-xs text-gray-400">
-            <div id="hint">İpucu: Kod yazmasını istiyorsan "kod: python" gibi başla.</div>
-            <div id="status"></div>
-          </div>
-        </div>
-      </div>
+  let currentLang = 'tr';
+  const translations = {
+    tr: { langBtn: 'English', searchPlaceholder: "MuWeb'de ara veya bir URL yaz", feelingLucky: 'Kendimi Şanslı Hissediyorum', addressBar: 'Web adresi veya arama terimi' },
+    en: { langBtn: 'Türkçe', searchPlaceholder: 'Search MuWeb or type URL', feelingLucky: "I'm Feeling Lucky", addressBar: 'Enter web address or search term' }
+  };
+  function updateTexts() {
+    langBtn.innerText = translations[currentLang].langBtn;
+    searchInput.placeholder = translations[currentLang].searchPlaceholder;
+    luckyBtn.innerText = translations[currentLang].feelingLucky;
+    browserAddressBar.placeholder = translations[currentLang].addressBar;
+  }
+  langBtn.addEventListener('click',()=>{currentLang=currentLang==='tr'?'en':'tr';updateTexts()});
+  window.onload = updateTexts;
 
-      <!-- Right column: options / preview / utilities -->
-      <aside class="col-span-1 bg-gray-800 p-4 rounded-lg flex flex-col">
-        <div id="modeOptions">
-          <!-- Dinamik içerik -->
-        </div>
+  function resolveUrl(query) {
+    let url=query.trim();
+    if(!url) return 'about:blank';
+    if(url.startsWith('http://')||url.startsWith('https://')) return url;
+    if(url.includes('.')&&!url.includes(' ')) return 'https://'+url;
+    if(url.toLowerCase().includes('transfer')||url.toLowerCase().includes('futbolcu')) url+=' transfermarkt';
+    if(url.toLowerCase().includes('youtube')) url='https://www.youtube.com/results?search_query='+encodeURIComponent(url);
+    return 'https://www.google.com/search?q='+encodeURIComponent(url);
+  }
 
-        <div class="mt-4 text-sm text-gray-400">Hızlı Şablonlar</div>
-        <div class="mt-2 grid gap-2">
-          <button class="template bg-gray-700 p-2 rounded text-sm" data-t="Kısa açıklama: *{topic}* için 2-3 cümle">Kısa Açıklama</button>
-          <button class="template bg-gray-700 p-2 rounded text-sm" data-t="Kod örneği: python, hakkında {topic}">Kod Örneği (Python)</button>
-          <button class="template bg-gray-700 p-2 rounded text-sm" data-t="Görsel tasviri: {topic}, stil: minimal, renk paleti: mavi, alt detaylar: yüksek">Görsel Tasviri</button>
-        </div>
+  function loadBrowser(url){
+    if(!url) return;
+    searchPage.classList.add('hidden');
+    mainFooter.classList.add('hidden');
+    browserView.style.display='flex';
+    browserFrame.src=url;
+    browserAddressBar.value=url;
+  }
 
-        <div class="mt-4 text-xs text-gray-500">Sistem</div>
-        <div class="mt-2 text-sm text-gray-300">MuLink simülasyonu — dış bağlantı yok. Gelişmiş kurallar ve şablon motoru kullanır.</div>
-      </aside>
-    </section>
-  </main>
+  const handleSearch=e=>{const query=e.value.trim();if(query){const url=resolveUrl(query);loadBrowser(url)}};
+  searchBtn.addEventListener('click',()=>handleSearch(searchInput));
+  searchInput.addEventListener('keypress',e=>{if(e.key==='Enter') handleSearch(searchInput)});
+  browserAddressBar.addEventListener('keypress',e=>{if(e.key==='Enter') handleSearch(browserAddressBar)});
+  luckyBtn.addEventListener('click',()=>{const q=searchInput.value.trim()||'rastgele popüler site';loadBrowser(resolveUrl(q))});
 
-  <script>
-    // ---------- Basit Storage & Konuşma Yönetimi ----------
-    const LS_PREF = 'mulink_v2_';
-    function saveConvs(list){ localStorage.setItem(LS_PREF+'convs', JSON.stringify(list)); }
-    function loadConvs(){ return JSON.parse(localStorage.getItem(LS_PREF+'convs')||'[]'); }
-    function saveMsgs(id, msgs){ if(document.getElementById('saveConvs').checked) localStorage.setItem(LS_PREF+'msgs_'+id, JSON.stringify(msgs)); }
-    function loadMsgs(id){ return JSON.parse(localStorage.getItem(LS_PREF+'msgs_'+id)||'[]'); }
-    function clearAll(){ Object.keys(localStorage).filter(k=>k.startsWith(LS_PREF)).forEach(k=>localStorage.removeItem(k)); location.reload(); }
-
-    // ---------- MuLink "Gelişmiş" Motoru (Tamamen Local, Kurallar + Şablonlar) ----------
-    // Bu motor bir LLM değildir; fakat bir dizi akıllı kural, şablon ve mini-örüntü tanıma kullanır.
-    const MuLinkEngine = {
-      persona: { name: 'MuLink', tone: 'samimi' },
-
-      // Kısa ve uzun cevap şablonları
-      templates: {
-        chat_short: [
-          'Tabii! *{answer}*',
-          'Tamam, şöyle yapabilirsin: {answer}',
-          'Harika soru — {answer}'
-        ],
-        code_header: (lang,desc)=>`// ${lang} örneği — ${desc}\n// MuLink tarafından oluşturuldu (offline)`
-      },
-
-      // Basit sınıflandırma: kod isteği, görsel isteği veya sohbet
-      classify(input){
-        const s = input.toLowerCase();
-        if(/^(kod:|code:)|\b(python|js|javascript|c#|csharp|html|css|sql)\b/.test(s)) return 'code';
-        if(/(görsel|resim|fotoğraf|tasvir|illustration|image|draw|gif)/.test(s)) return 'visual';
-        return 'chat';
-      },
-
-      // Kod üretimi için basit şablonlar
-      generateCode(input){
-        // input örnek: "kod: python fibonacci" veya "python: http server"
-        const langMatch = input.match(/^(kod:|code:)?\s*(python|js|javascript|html|css|c#|csharp|sql)?/i);
-        let lang = langMatch && langMatch[2] ? langMatch[2].toLowerCase() : (input.includes('python')?'python':'javascript');
-        if(lang==='js') lang='javascript';
-        if(lang==='csharp') lang='c#';
-
-        const topic = input.replace(/^(kod:|code:)/i,'').replace(/(python|javascript|js|html|css|c#|csharp|sql)/i,'').trim() || 'örnek';
-
-        if(lang==='python'){
-          return MuLinkEngine.templates.code_header('Python',topic)+"\ndef main():\n    # MuLink basit örnek\n    print('Merhaba, MuLink!')\n\nif __name__ == '__main__':\n    main()";
-        }
-        if(lang==='javascript'){
-          return MuLinkEngine.templates.code_header('JavaScript',topic)+"\nfunction main(){\n    console.log('Merhaba, MuLink!');\n}\nmain();";
-        }
-        if(lang==='html'){
-          return MuLinkEngine.templates.code_header('HTML',topic)+"\n<!doctype html>\n<html><head><meta charset=\"utf-8\"><title>MuLink Örneği</title></head><body><h1>Merhaba, MuLink!</h1></body></html>";
-        }
-        if(lang==='c#'){
-          return MuLinkEngine.templates.code_header('C#',topic)+"\nusing System;\nclass Program{\n  static void Main(){\n    Console.WriteLine(\"Merhaba, MuLink!\");\n  }\n}";
-        }
-        // Default
-        return MuLinkEngine.templates.code_header('Text',topic)+"\n// Basit örnek: '"+topic+"'\nMerhaba from MuLink";
-      },
-
-      // Görsel tasviri + SVG küçük önizleme üretme
-      generateVisual(input){
-        // Basit anahtar kelime çıkarımı
-        const colors = ['mavi','kırmızı','yeşil','sarı','mor','turuncu','siyah','beyaz'];
-        const foundColor = colors.find(c=>input.toLowerCase().includes(c)) || 'indigo';
-        const subjectMatch = input.match(/(?:görsel tasviri:|görsel:|resim:|tasvir:)?\s*(.*)/i);
-        const subject = subjectMatch?subjectMatch[1].split(',')[0].trim()||'manzara':'manzara';
-
-        const desc = `Detaylı tasvir: ${subject}. Stil: minimal, renk teması: ${foundColor}. Yüksek detay, fotogerçekçi his veren ışık.`;
-
-        // Basit SVG önizleme (dinamik) — offline, gerçek görsel üretmez ama fikir verir
-        const svg = `<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"800\" height=\"480\" viewBox=\"0 0 800 480\"><defs><linearGradient id=\"g\" x1=\"0\" x2=\"1\"><stop offset=\"0\" stop-color=\"#1e293b\"/><stop offset=\"1\" stop-color=\"#0f172a\"/></linearGradient></defs><rect width=\"100%\" height=\"100%\" fill=\"url(#g)\"/><text x=\"50%\" y=\"45%\" fill=\"#e2e8f0\" font-size=\"28\" text-anchor=\"middle\">${escapeHtml(subject)}</text><text x=\"50%\" y=\"55%\" fill=\"#9ca3af\" font-size=\"14\" text-anchor=\"middle\">${escapeHtml(foundColor)} tema — MuLink önizlemesi</text></svg>`;
-
-        const dataUrl = 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
-        return { desc, dataUrl };
-      },
-
-      // Sohbet cevap üretici (kural tabanlı + şablon)
-      generateChat(input){
-        // Basit Q/A düğümleri
-        const s = input.trim();
-        if(/(merhaba|selam|hey)\b/i.test(s)) return 'Selam! Ben MuLink 😊 Sana nasıl yardımcı olabilirim?';
-        if(/(nasıl|ne haber)\b/i.test(s)) return 'İyiyim, teşekkürler! Sen nasılsın?';
-        if(/(yardım|yardımcı) et/i.test(s)) return 'Elbette, ne istiyorsan söyle: kod, görsel tasviri veya genel sohbet olabilir.';
-
-        // Eğer soru işareti varsa daha açıklayıcı cevap ver
-        if(s.includes('?')){
-          return 'Güzel soru — bunu adım adım cevaplayacağım:\n1) Konuyu özetle\n2) İpuçları\n3) Örnek\n
-Önce sana kısa bir özet: ' + summarizeText(s);
-        }
-
-        // Fallback: yaratıcı uzun cevap üret
-        return 'Anladım — ' + s + ' hakkında detaylı bir açıklama istiyorsan, bana "detay" diye yaz. Kısaca: ' + summarizeText(s);
-      }
-    };
-
-    // ---------- Yardımcı Fonksiyonlar ----------
-    function escapeHtml(str){ return String(str).replace(/[&<>\"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]); }
-
-    function summarizeText(s){
-      // Çok basit özetleyici: cümleleri kısalt
-      const parts = s.split(/[.,!?]\s*/).filter(Boolean);
-      return parts.slice(0,2).join('. ') + (parts.length>2? '...' : '');
-    }
-
-    // ---------- UI & Event Wiring ----------
-    const chatEl = document.getElementById('chat');
-    const inputEl = document.getElementById('input');
-    const sendBtn = document.getElementById('send');
-    const modeBtns = Array.from(document.querySelectorAll('.mode-btn'));
-    const currentModeEl = document.getElementById('currentMode');
-    const modeOptions = document.getElementById('modeOptions');
-    const convListEl = document.getElementById('conversations');
-
-    let currentMode = 'chat';
-    let currentConv = null;
-
-    // Mode button logic
-    function setMode(m){
-      currentMode = m;
-      modeBtns.forEach(b=>{ b.classList.toggle('active', b.dataset.mode===m); b.classList.toggle('bg-indigo-600', b.dataset.mode===m); b.classList.toggle('bg-gray-700', b.dataset.mode!==m); });
-      document.querySelector('#currentMode span').textContent = ({chat:'Sohbet',code:'Kod Yazma',visual:'Görsel Önizleme'})[m];
-      renderModeOptions();
-    }
-
-    modeBtns.forEach(b=>b.addEventListener('click', e=> setMode(b.dataset.mode)));
-    setMode('chat');
-
-    // Render right-side mode options
-    function renderModeOptions(){
-      modeOptions.innerHTML = '';
-      if(currentMode==='chat'){
-        modeOptions.innerHTML = `<div class="text-sm font-semibold text-gray-200">Sohbet Ayarları</div>
-          <div class="mt-2 text-xs text-gray-400">MuLink, samimi ve kısa cevaplar verir (ayarlı).</div>
-          <div class="mt-3"><button id=detailBtn class='w-full p-2 rounded bg-gray-700'>Detaylı Açıklama İste</button></div>`;
-        document.getElementById('detailBtn').onclick = ()=>{ inputEl.value='detay'; sendAction(); };
-      }
-      if(currentMode==='code'){
-        modeOptions.innerHTML = `<div class="text-sm font-semibold text-gray-200">Kod Modu</div>
-          <div class="mt-2 text-xs text-gray-400">Örnek: "kod: python fibonacci" veya "javascript: basit http server"</div>
-          <div class="mt-3 grid gap-2">
-            <button class='p-2 rounded bg-gray-700' onclick="insertTemplate('kod: python fibonacci')">Python Fibonacci</button>
-            <button class='p-2 rounded bg-gray-700' onclick="insertTemplate('kod: javascript http server')">JS HTTP Server</button>
-            <button class='p-2 rounded bg-gray-700' onclick="insertTemplate('kod: html basit sayfa')">HTML Sayfa</button>
-          </div>`;
-      }
-      if(currentMode==='visual'){
-        modeOptions.innerHTML = `<div class="text-sm font-semibold text-gray-200">Görsel Modu</div>
-          <div class="mt-2 text-xs text-gray-400">Açıklama gir: örn. "görsel: sakin göl, sabah, mavi ton"</div>
-          <div class="mt-3 grid gap-2">
-            <button class='p-2 rounded bg-gray-700' onclick="insertTemplate('görsel: şehir silueti, gün batımı, mor ton')">Şehir Silueti</button>
-            <button class='p-2 rounded bg-gray-700' onclick="insertTemplate('görsel: minimalist dağ, sis, mavi ton')">Dağ</button>
-          </div>`;
-      }
-    }
-
-    window.insertTemplate = (t)=>{ inputEl.value = t; inputEl.focus(); }
-
-    // Conversations list
-    function renderConvs(){
-      convListEl.innerHTML = '';
-      const list = loadConvs();
-      list.forEach(c=>{
-        const btn = document.createElement('button');
-        btn.className='w-full text-left p-2 rounded bg-gray-700 mb-2';
-        btn.textContent = c.title || ('Konuşma '+c.id);
-        btn.onclick = ()=>{ openConv(c.id); };
-        convListEl.appendChild(btn);
-      });
-    }
-
-    function openConv(id){
-      currentConv = id;
-      const msgs = loadMsgs(id);
-      chatEl.innerHTML = '';
-      msgs.forEach(m=>renderMessage(m));
-    }
-
-    document.getElementById('newChat').onclick = ()=>{
-      const id = Date.now().toString();
-      const convs = loadConvs();
-      convs.unshift({id, title:'Yeni Konuşma'});
-      saveConvs(convs);
-      saveMsgs(id, [{sender:'ai',text:'Merhaba! Ben MuLink — offline, kod yazabilen ve görsel tasvirleri önizleyen asistanın.'}]);
-      renderConvs();
-      openConv(id);
-    };
-
-    // Initial load
-    if(!loadConvs().length){ document.getElementById('newChat').click(); } else { renderConvs(); openConv(loadConvs()[0].id); }
-
-    function pushMsg(id, sender, text){
-      const msgs = loadMsgs(id);
-      msgs.push({sender,text,ts:Date.now()});
-      saveMsgs(id,msgs);
-      renderMessage({sender,text});
-    }
-
-    function renderMessage(m){
-      const wrap = document.createElement('div');
-      wrap.className = 'p-2';
-      const bubble = document.createElement('div');
-      bubble.className = (m.sender==='user')? 'bg-indigo-600 text-white p-3 rounded-lg max-w-[80%] ml-auto':'bg-gray-700 text-gray-100 p-3 rounded-lg max-w-[80%]';
-      // render code blocks if present
-      if(m.text.startsWith('//') || m.text.includes('\n')){
-        bubble.innerHTML = '<pre class="rounded bg-slate-800 p-3"><code>'+escapeHtml(m.text)+'</code></pre>';
-      } else {
-        bubble.innerHTML = nl2br(escapeHtml(m.text));
-      }
-      wrap.appendChild(bubble);
-      chatEl.appendChild(wrap);
-      chatEl.scrollTop = chatEl.scrollHeight;
-    }
-
-    function nl2br(s){ return s.replace(/\n/g,'<br>'); }
-
-    // Send action
-    async function sendAction(){
-      const txt = inputEl.value.trim();
-      if(!txt || !currentConv) return;
-      pushMsg(currentConv,'user',txt);
-      inputEl.value='';
-      setStatus('MuLink düşünür' , true);
-
-      try{
-        // decide mode: explicit or currentMode
-        const explicit = MuLinkEngine.classify(txt);
-        let modeToUse = currentMode;
-        // If user explicitly prefixed with kod:/görsel: use that
-        if(['code','visual','chat'].includes(explicit)) modeToUse = (explicit==='code'?'code':(explicit==='visual'?'visual':'chat'));
-
-        if(modeToUse==='code'){
-          await sleep(500);
-          const code = MuLinkEngine.generateCode(txt);
-          pushMsg(currentConv,'ai',code);
-        } else if(modeToUse==='visual'){
-          await sleep(600);
-          const v = MuLinkEngine.generateVisual(txt);
-          // show description + svg preview
-          pushMsg(currentConv,'ai', v.desc);
-          // append image
-          const wrap = document.createElement('div');
-          wrap.className='p-2';
-          const img = document.createElement('img');
-          img.src = v.dataUrl;
-          img.className='rounded w-full border border-gray-600 mt-2';
-          wrap.appendChild(img);
-          chatEl.appendChild(wrap);
-          chatEl.scrollTop = chatEl.scrollHeight;
-          // also offer download
-          const dl = document.createElement('a');
-          dl.textContent = 'SVG olarak indir';
-          dl.href = v.dataUrl; dl.download = 'mulink_preview.svg'; dl.className='text-xs text-indigo-300 block mt-1';
-          chatEl.appendChild(dl);
-        } else {
-          await sleep(300);
-          const resp = MuLinkEngine.generateChat(txt);
-          pushMsg(currentConv,'ai', resp);
-        }
-      }catch(e){
-        pushMsg(currentConv,'ai','Üzgünüm, bir hata oldu: '+e.message);
-      }finally{
-        setStatus('', false);
-      }
-    }
-
-    sendBtn.onclick = sendAction;
-    inputEl.onkeydown = (e)=>{ if(e.key==='Enter') sendAction(); };
-
-    function setStatus(t,inline){ const s=document.getElementById('status'); s.innerHTML = inline ? (`<span class="text-sm text-indigo-300">${t}</span> <span class="loading-dot"></span><span class="loading-dot"></span><span class="loading-dot"></span>`) : t; }
-
-    function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
-
-    document.getElementById('clearStorage').onclick = ()=>{ if(confirm('Tüm MuLink verilerini silmek istiyor musun?')) clearAll(); };
-
-    document.querySelectorAll('.template').forEach(b=> b.addEventListener('click', e=>{ const t = b.dataset.t; inputEl.value = t.replace('{topic}','örnek konu'); inputEl.focus(); }));
-
-    // Small helpers
-    window.escapeHtml = escapeHtml;
-    window.insertTemplate = insertTemplate;
-  </script>
+  browserBack.addEventListener('click',()=>{try{browserFrame.contentWindow.history.back()}catch(e){console.warn("Geri gitme engellendi")}});
+  browserForward.addEventListener('click',()=>{try{browserFrame.contentWindow.history.forward()}catch(e){console.warn("İleri gitme engellendi")}});
+  browserRefresh.addEventListener('click',()=>{browserFrame.src=browserFrame.src});
+  browserExit.addEventListener('click',()=>{browserView.style.display='none';searchPage.classList.remove('hidden');mainFooter.classList.remove('hidden');browserFrame.src='about:blank';searchInput.value='';});
+</script>
 </body>
 </html>
