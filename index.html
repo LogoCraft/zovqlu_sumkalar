@@ -110,7 +110,7 @@ body { font-family: 'Inter', sans-serif; background-color: #f4f7f9; }
 
 <script>
 // --- Sabitler ve Global Durum ---
-const API_KEY = "";
+const API_KEY = ""; // Canvas tarafından otomatik sağlanacaktır.
 const TEXT_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${API_KEY}`;
 const TTS_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${API_KEY}`;
 
@@ -385,7 +385,7 @@ window.startNewChat = async function() {
     
     const newChatMeta = {
         id: newChatId,
-        title: 'Yeni Sohbet (MuAi)', // Başlangıç başlığı MuAi olarak güncellendi
+        title: 'Yeni Sohbet (MuAi)', 
         lastUpdated: Date.now()
     };
 
@@ -432,7 +432,6 @@ window.switchChat = async function(chatId) {
 async function getGeminiResponse(prompt, history) {
     const chatHistoryForApi = [...history]; 
 
-    // Sistem talimatı MuAi adını içeriyor
     const systemInstruction = "Sen, Türkiye'den bir kullanıcıya destek veren, samimi, kibar ve çok yönlü bir yapay zeka asistanı olan MuAi'sin. Yanıtlarını Türkçe ve anlaşılır bir dille, markdown formatında vermelisin. Yanıtların 500 kelimeyi geçmemelidir. Akademik konular dışında teknik olmayan, samimi bir ton kullan.";
     
     chatHistoryForApi.push({ role: "user", parts: [{ text: prompt }] });
@@ -466,11 +465,13 @@ async function getGeminiResponse(prompt, history) {
                 console.warn(`Rate limit uyarısı (429). ${delay}ms bekleyip tekrar deneniyor...`);
                 await new Promise(resolve => setTimeout(resolve, delay));
             } else {
-                throw new Error(`API hatası: ${fetchResponse.statusText}`);
+                // API'dan HTTP hata kodu gelirse (400, 500 vb.) hata fırlat
+                const errorBody = await fetchResponse.text();
+                throw new Error(`API HTTP Hatası: ${fetchResponse.status} - ${fetchResponse.statusText}. Yanıt gövdesi: ${errorBody.substring(0, 200)}...`);
             }
         } catch (error) {
-            console.error("API çağrısı sırasında hata:", error);
-            if (attempts === maxRetries) throw error;
+            console.error("API çağrısı sırasında genel hata:", error.message || error);
+            if (attempts === maxRetries) throw error; // Maksimum denemeden sonra hatayı fırlat
         }
     }
 
@@ -512,15 +513,24 @@ window.sendMessage = async function() {
                 saveData();
             }
         } else {
-            const errorMsg = "Üzgünüm, yanıt alınamadı. Lütfen daha sonra tekrar deneyin.";
+            // API yanıt verdi ancak içerik beklenmiyor veya boş geldi.
+            console.error("API'dan geçerli metin alınamadı. Yanıt yapısı bozuk olabilir.", { apiResponse, chatHistory });
+            const errorMsg = "Üzgünüm, yanıt alınamadı veya yapısal bir sorun oluştu. Lütfen konsolu kontrol edin.";
             displayMessage(errorMsg, 'model');
             chatHistory.push({ role: "model", parts: [{ text: errorMsg }] });
             saveHistory(activeChatId, chatHistory);
         }
 
     } catch (error) {
-        console.error("Mesaj gönderme hatası:", error);
-        displayMessage("Bir hata oluştu. Lütfen konsolu kontrol edin.", 'model');
+        // Ağ hatası veya getGeminiResponse içinden fırlatılan hata
+        console.error("Mesaj gönderme hatası (Detay):", error.message || error);
+        console.error("Tam Hata Objesi:", error);
+        displayMessage("Bir bağlantı veya işlem hatası oluştu. Konsolu kontrol ediniz.", 'model');
+        
+        // Hata mesajını history'e ekle (opsiyonel)
+        chatHistory.push({ role: "model", parts: [{ text: "İşlem sırasında kritik hata oluştu." }] });
+        saveHistory(activeChatId, chatHistory);
+        
     } finally {
         typingIndicator.classList.add('hidden'); 
         setUILoading(false);
@@ -531,7 +541,6 @@ window.sendMessage = async function() {
 async function generateTitleFromFirstMessage(firstPrompt) {
     if (!activeChatId) return;
 
-    // Başlığı MuAi adı geçmeyecek şekilde 5 kelimeyle özetleme
     const titlePrompt = `Aşağıdaki ilk sohbet mesajına dayanarak, 5 kelimeyi geçmeyen, ilgi çekici ve özet bir başlık önerin. Yalnızca başlığı döndürün, başka hiçbir şey söylemeyin: "${firstPrompt}"`;
 
     try {
@@ -551,7 +560,9 @@ async function generateTitleFromFirstMessage(firstPrompt) {
         }
 
     } catch (error) {
-        console.error("Başlık oluşturulamadı:", error);
+        // Başlık oluşturma hatası için detaylı loglama
+        console.error("Başlık oluşturulamadı (Detay):", error.message || error);
+        
         // Hata durumunda varsayılan başlık kullan
         const chatIndex = chatsMeta.findIndex(c => c.id === activeChatId);
         if (chatIndex !== -1) {
@@ -697,7 +708,8 @@ window.speakLastAiMessage = async function() {
                 const delay = Math.pow(2, attempts) * 1000 + Math.random() * 1000;
                 await new Promise(resolve => setTimeout(resolve, delay));
             } else {
-                throw new Error(`TTS API hatası: ${response.statusText}`);
+                const errorBody = await response.text();
+                throw new Error(`TTS API HTTP Hatası: ${response.status} - ${response.statusText}. Yanıt gövdesi: ${errorBody.substring(0, 200)}...`);
             }
         }
 
@@ -723,7 +735,7 @@ window.speakLastAiMessage = async function() {
 
     } catch (error) {
         console.error("TTS hatası:", error);
-        showModal("Seslendirme Başarısız", "Ses dosyası oluşturulamadı veya oynatılamadı.", 'Tamam');
+        showModal("Seslendirme Başarısız", "Ses dosyası oluşturulamadı veya oynatılamadı. Konsolu kontrol edin.", 'Tamam');
         setTtsLoading(false);
     }
 }
