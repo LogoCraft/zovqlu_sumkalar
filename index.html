@@ -35,19 +35,40 @@
             margin: 0;
             padding: 0;
             display: flex;
+            position: relative; /* Sidebar'ın konumlandırılması için */
+        }
+        /* Sidebar'ın geçiş ayarları */
+        #sidebar {
+            transition: transform 0.3s ease-in-out;
+            position: absolute;
+            height: 100%;
+            z-index: 50; /* Ana içeriğin üzerinde kalması için */
+        }
+        /* Custom spinner for TTS loading */
+        .tts-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #fff;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body class="full-screen-app">
 
-    <!-- Sidebar - Sohbet Listesi -->
-    <div id="sidebar" class="w-64 bg-gray-900 text-white flex flex-col shadow-xl">
+    <!-- Sidebar - Sohbet Listesi. Başlangıçta gizli. -->
+    <div id="sidebar" class="w-64 bg-gray-900 text-white flex flex-col shadow-xl transform -translate-x-full"> 
         <div class="p-4 border-b border-gray-700">
             <h2 class="text-2xl font-bold">💬 Sohbetler</h2>
         </div>
         
         <!-- Yeni Sohbet Butonu -->
-        <button onclick="startNewChat()" class="m-3 p-3 bg-indigo-600 rounded-lg text-lg font-semibold hover:bg-indigo-700 transition duration-150 shadow-md">
+        <button onclick="startNewChat(); toggleSidebar()" class="m-3 p-3 bg-indigo-600 rounded-lg text-lg font-semibold hover:bg-indigo-700 transition duration-150 shadow-md">
             + Yeni Sohbet Başlat
         </button>
 
@@ -59,13 +80,41 @@
     </div>
 
     <!-- Main Chat Window -->
-    <div id="main-chat-window" class="flex-grow flex flex-col bg-gray-50 max-w-full">
+    <div id="main-chat-window" class="flex-grow flex flex-col bg-gray-50 max-w-full w-full">
         
         <!-- Header -->
-        <header class="p-4 bg-white border-b border-gray-200 shadow-md flex justify-between items-center">
-            <h1 id="chat-title" class="text-xl font-bold text-gray-800 truncate">Sohbet Başlığı Yükleniyor...</h1>
+        <header class="p-4 bg-white border-b border-gray-200 shadow-md flex items-center">
+            
+            <!-- Sidebar Toggle Button (Sol Üst Köşe) -->
+            <button id="menu-toggle" onclick="toggleSidebar()" class="p-2 mr-4 text-gray-600 hover:text-indigo-600 focus:outline-none">
+                <!-- Hamburger İkonu -->
+                <svg id="menu-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+                <!-- Kapatma İkonu (Çapraz) -->
+                <svg id="close-icon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+
+            <h1 id="chat-title" class="text-xl font-bold text-gray-800 truncate flex-grow">Sohbet Başlığı Yükleniyor...</h1>
+
+            <!-- Yeni Özellikler Butonları -->
+            <button id="summarize-button" onclick="summarizeChat()"
+                    class="ml-4 p-2 bg-purple-500 text-white rounded-lg shadow-md hover:bg-purple-600 transition duration-150 focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm font-medium disabled:opacity-50 flex items-center">
+                <span id="summarize-text">Özetle ✨</span>
+                <div id="summarize-spinner" class="tts-spinner hidden ml-2 border-t-white"></div>
+            </button>
+            
+            <button id="tts-button" onclick="speakLastAiMessage()"
+                    class="ml-2 p-2 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition duration-150 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm font-medium disabled:opacity-50 flex items-center">
+                <span id="tts-text">Seslendir 🔊</span>
+                <div id="tts-spinner" class="tts-spinner hidden ml-2 border-t-white"></div>
+            </button>
+
+            <!-- Sohbet Sil Butonu -->
             <button id="delete-button" onclick="confirmAndDeleteChat()"
-                    class="bg-red-500 text-white p-2 rounded-lg shadow-md hover:bg-red-600 transition duration-150 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm font-medium disabled:opacity-50">
+                    class="bg-red-500 text-white p-2 ml-4 rounded-lg shadow-md hover:bg-red-600 transition duration-150 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm font-medium disabled:opacity-50">
                 Sohbeti Sil
             </button>
         </header>
@@ -91,13 +140,29 @@
         </div>
         
     </div>
+    
+    <!-- Custom Confirmation Modal (Confirm() yerine kullanılır) -->
+    <div id="confirmation-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center">
+        <div class="bg-white p-6 rounded-lg shadow-2xl max-w-sm w-full">
+            <h3 class="text-lg font-bold mb-4 text-gray-800">Sohbeti Silme Onayı</h3>
+            <p id="modal-message" class="mb-6 text-gray-700"></p>
+            <div class="flex justify-end space-x-3">
+                <button onclick="hideModal(false)" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition duration-150">İptal</button>
+                <button id="modal-confirm-button" onclick="hideModal(true)" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-150">Sil</button>
+            </div>
+        </div>
+    </div>
 
+    <!-- Ses Oynatıcı (Görünmez) -->
+    <audio id="tts-audio" style="display: none;"></audio>
+    
     <script>
         // --- Sabitler ve Global Değişkenler ---
         const API_KEY = "";
-        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${API_KEY}`;
+        const TEXT_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${API_KEY}`;
+        const TTS_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${API_KEY}`;
         
-        // Yeni depolama anahtarları
+        // Depolama anahtarları
         const CHATS_META_KEY = 'aiChatMetadata';
         const ACTIVE_CHAT_KEY = 'activeAiChatId';
 
@@ -109,18 +174,175 @@
         const loadingSpinner = document.getElementById('loading-spinner');
         const chatListElement = document.getElementById('chat-list');
         const chatTitleElement = document.getElementById('chat-title');
+        const sidebar = document.getElementById('sidebar');
+        const menuIcon = document.getElementById('menu-icon');
+        const closeIcon = document.getElementById('close-icon');
+        const summarizeButton = document.getElementById('summarize-button');
+        const summarizeSpinner = document.getElementById('summarize-spinner');
+        const summarizeText = document.getElementById('summarize-text');
+        const ttsButton = document.getElementById('tts-button');
+        const ttsSpinner = document.getElementById('tts-spinner');
+        const ttsText = document.getElementById('tts-text');
+        const ttsAudio = document.getElementById('tts-audio');
+
+        // Modal Elementleri
+        const confirmationModal = document.getElementById('confirmation-modal');
+        const modalMessage = document.getElementById('modal-message');
+        let modalCallback = null; // Modal onaylandığında çağrılacak fonksiyon
 
         // Durum Değişkenleri
         let chatsMeta = [];      // Tüm sohbetlerin listesi: [{ id: '...', title: '...' }]
         let activeChatId = null; // Şu anda aktif olan sohbetin ID'si
         let chatHistory = [];    // Aktif sohbetin mesaj geçmişi
         let isProcessing = false;
+        let isTtsProcessing = false;
+        let isSummarizing = false;
+
+        // --- Utility Functions for TTS (PCM to WAV conversion) ---
+
+        /**
+         * Base64 string'i ArrayBuffer'a dönüştürür.
+         */
+        function base64ToArrayBuffer(base64) {
+            const binary_string = window.atob(base64);
+            const len = binary_string.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binary_string.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        /**
+         * Signed 16-bit PCM verisini bir WAV dosyası Blob'una dönüştürür.
+         */
+        function pcmToWav(pcm16, sampleRate) {
+            const buffer = new ArrayBuffer(44 + pcm16.length * 2);
+            const view = new DataView(buffer);
+            
+            /* RIFF identifier */
+            writeString(view, 0, 'RIFF');
+            /* file length */
+            view.setUint32(4, 36 + pcm16.length * 2, true);
+            /* RIFF type */
+            writeString(view, 8, 'WAVE');
+            /* format chunk identifier */
+            writeString(view, 12, 'fmt ');
+            /* format chunk length */
+            view.setUint32(16, 16, true);
+            /* sample format (1: PCM) */
+            view.setUint16(20, 1, true);
+            /* channel count */
+            view.setUint16(22, 1, true);
+            /* sample rate */
+            view.setUint32(24, sampleRate, true);
+            /* byte rate (sample rate * block align) */
+            view.setUint32(28, sampleRate * 2, true);
+            /* block align (channels * bytes per sample) */
+            view.setUint16(32, 2, true);
+            /* bits per sample */
+            view.setUint16(34, 16, true);
+            /* data chunk identifier */
+            writeString(view, 36, 'data');
+            /* data chunk length */
+            view.setUint32(40, pcm16.length * 2, true);
+
+            // PCM verisini yaz
+            let offset = 44;
+            for (let i = 0; i < pcm16.length; i++) {
+                view.setInt16(offset, pcm16[i], true);
+                offset += 2;
+            }
+
+            return new Blob([buffer], { type: 'audio/wav' });
+        }
+
+        function writeString(view, offset, string) {
+            for (let i = 0; i < string.length; i++) {
+                view.setUint8(offset + i, string.charCodeAt(i));
+            }
+        }
+
+        // --- YENİ Fonksiyonlar: Sidebar ve Modal ---
+        
+        /**
+         * Sidebar'ı gösterir veya gizler.
+         */
+        function toggleSidebar() {
+            // translate-x-full: gizli, translate-x-0: açık
+            const isOpen = sidebar.classList.toggle('-translate-x-full');
+            
+            if (isOpen) {
+                // Açıldı: Kapatma ikonunu göster
+                menuIcon.classList.remove('hidden');
+                closeIcon.classList.add('hidden');
+                sidebar.classList.add('-translate-x-full'); // Gizli
+            } else {
+                // Gizlendi: Menü ikonunu göster
+                menuIcon.classList.add('hidden');
+                closeIcon.classList.remove('hidden');
+                sidebar.classList.remove('-translate-x-full'); // Açık
+            }
+
+            // Hata: Yanlış mantık. Doğrusu:
+            // -translate-x-full varsa: GİZLİ, menü ikonunu göster
+            // -translate-x-full yoksa: AÇIK, kapatma ikonunu göster
+             
+            if (sidebar.classList.contains('-translate-x-full')) {
+                // Gizli: Menü ikonunu göster, Kapatma ikonunu gizle
+                menuIcon.classList.remove('hidden');
+                closeIcon.classList.add('hidden');
+            } else {
+                // Açık: Menü ikonunu gizle, Kapatma ikonunu göster
+                menuIcon.classList.add('hidden');
+                closeIcon.classList.remove('hidden');
+            }
+        }
+        
+        /**
+         * Basit, geçici bir bildirim gösterir (alert() yerine).
+         */
+        function showTemporaryMessage(message, bgColor) {
+            const tempMessage = document.createElement('div');
+            tempMessage.className = `fixed top-4 right-4 ${bgColor} text-white p-3 rounded-lg shadow-xl z-50 transition-opacity duration-300 opacity-0`;
+            tempMessage.textContent = message;
+            document.body.appendChild(tempMessage);
+
+            // Opaklığı sıfırdan bire çıkar
+            requestAnimationFrame(() => {
+                tempMessage.style.opacity = '1';
+            });
+
+            setTimeout(() => {
+                tempMessage.style.opacity = '0';
+                tempMessage.addEventListener('transitionend', () => tempMessage.remove());
+            }, 3000);
+        }
+
+        /**
+         * Özel onay modalını gösterir.
+         */
+        function showModal(message, onConfirm) {
+            modalMessage.textContent = message;
+            modalCallback = onConfirm;
+            confirmationModal.classList.remove('hidden');
+        }
+
+        /**
+         * Özel onay modalını gizler ve geri çağrıyı (callback) tetikler.
+         */
+        function hideModal(confirmed) {
+            confirmationModal.classList.add('hidden');
+            if (confirmed && modalCallback) {
+                modalCallback();
+            }
+            modalCallback = null;
+        }
 
         // --- Yardımcı Fonksiyonlar ---
 
         /**
          * Mesajları ve kaynakları ekrana basar.
-         * ... (displayMessage fonksiyonu öncekiyle aynı)
          */
         function displayMessage(text, role, sources = []) {
             const messageWrapper = document.createElement('div');
@@ -166,12 +388,39 @@
             isProcessing = loading;
             userInput.disabled = loading;
             sendButton.disabled = loading;
+            summarizeButton.disabled = loading || isSummarizing || isTtsProcessing;
+            ttsButton.disabled = loading || isSummarizing || isTtsProcessing;
+
             if (loading) {
                 sendIcon.classList.add('hidden');
                 loadingSpinner.classList.remove('hidden');
             } else {
                 sendIcon.classList.remove('hidden');
                 loadingSpinner.classList.add('hidden');
+            }
+        }
+
+        function setSummarizeLoading(loading) {
+            isSummarizing = loading;
+            summarizeButton.disabled = loading || isProcessing || isTtsProcessing;
+            if (loading) {
+                summarizeText.classList.add('hidden');
+                summarizeSpinner.classList.remove('hidden');
+            } else {
+                summarizeText.classList.remove('hidden');
+                summarizeSpinner.classList.add('hidden');
+            }
+        }
+        
+        function setTtsLoading(loading) {
+            isTtsProcessing = loading;
+            ttsButton.disabled = loading || isProcessing || isSummarizing;
+            if (loading) {
+                ttsText.textContent = "Ses Yükleniyor...";
+                ttsSpinner.classList.remove('hidden');
+            } else {
+                ttsText.textContent = "Seslendir 🔊";
+                ttsSpinner.classList.add('hidden');
             }
         }
         
@@ -241,9 +490,10 @@
 
                 if (chatMeta) {
                     chatMeta.title = newTitle;
+                    // En son kullanılanı en üste taşımak için zaman damgasını güncelle
+                    chatMeta.timestamp = Date.now(); 
                 } else {
-                    // Bu, startNewChat tarafından yapılmalıydı, ama garanti olsun.
-                    chatsMeta.push({ id: activeChatId, title: newTitle });
+                    chatsMeta.push({ id: activeChatId, title: newTitle, timestamp: Date.now() });
                 }
                 saveChatsMeta();
             }
@@ -254,9 +504,8 @@
          * Belirtilen sohbete geçer ve UI'ı günceller.
          */
         function switchChat(chatId) {
-            if (isProcessing) {
-                // Modalsız uyarı
-                alert("Lütfen önceki işlemin bitmesini bekleyin.");
+            if (isProcessing || isSummarizing || isTtsProcessing) {
+                showTemporaryMessage("Lütfen önceki işlemin bitmesini bekleyin.", 'bg-yellow-500');
                 return;
             }
             
@@ -292,6 +541,9 @@
 
             saveChatsMeta(); // Aktif sohbet ID'sini kaydet
             userInput.focus();
+            
+            // Yeni sohbete geçerken TTS/Summarize buton durumlarını sıfırla
+            setUILoading(false); 
         }
 
         /**
@@ -319,12 +571,11 @@
         function renderChatList() {
             chatListElement.innerHTML = '';
             
-            // En son ekleneni veya güncelleneni üste taşımak için sıralama yapabiliriz.
+            // En son kullanılanı üste taşımak için sıralama yap
             chatsMeta.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
             if (chatsMeta.length === 0) {
                  // İlk çalıştırmada veya tümü silindiğinde yeni bir sohbet başlat.
-                 startNewChat(); 
                  return; 
             }
 
@@ -339,18 +590,19 @@
         }
         
         /**
-         * Sohbeti silmeyi onaylar ve işlemi gerçekleştirir.
+         * Sohbeti silmeyi onaylar ve işlemi gerçekleştirir. (Özel Modal kullanılır)
          */
         function confirmAndDeleteChat() {
-            // Modalsız onay için geçici uyarı
             if (!activeChatId) return;
 
             const chatMeta = chatsMeta.find(meta => meta.id === activeChatId);
             const title = chatMeta ? chatMeta.title : 'Bu Sohbeti';
             
-            if (confirm(`${title} silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.`)) {
-                deleteChat(activeChatId);
-            }
+            // Özel modalı göster
+            showModal(
+                `"${title}" sohbetini silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.`,
+                () => deleteChat(activeChatId)
+            );
         }
         
         /**
@@ -383,23 +635,23 @@
         }
         
 
-        // --- Gemini API Çağrısı (Öncekiyle aynı, geçmiş entegrasyonu hariç) ---
+        // --- Gemini API Çağrıları ---
         
-        async function getGeminiResponse(userQuery) {
-            const systemPrompt = "Sen, kullanıcının sorularına Türkçe olarak doğru, güncel ve ayrıntılı cevaplar veren, profesyonel bir yapay zeka asistanısın. Yanıtlarını verirken her zaman Google Arama sonuçlarını kullan ve Markdown formatını koru.";
+        // Gemini Text Generation API Call (Mevcut sohbet ve özetleme için)
+        async function getGeminiResponse(userQuery, history = chatHistory, systemPrompt = "Sen, kullanıcının sorularına Türkçe olarak doğru, güncel ve ayrıntılı cevaplar veren, profesyonel bir yapay zeka asistanısın. Yanıtlarını verirken her zaman Google Arama sonuçlarını kullan ve Markdown formatını koru.", useSearch = true) {
             
-            // Mevcut sohbet geçmişini (sadece role ve parts) API'a gönder
-            const conversationHistoryForApi = chatHistory.map(msg => ({
+            const conversationHistoryForApi = history.map(msg => ({
                 role: msg.role, 
-                parts: msg.parts // { text: "..." }
+                parts: msg.parts
             }));
-            
-            // Kullanıcı sorgusunu geçmişin sonuna ekle
-            conversationHistoryForApi.push({ role: 'user', parts: [{ text: userQuery }] });
 
+            if (userQuery) {
+                conversationHistoryForApi.push({ role: 'user', parts: [{ text: userQuery }] });
+            }
+            
             const payload = {
-                contents: conversationHistoryForApi, // Tüm geçmişi gönder
-                tools: [{ "google_search": {} }], 
+                contents: conversationHistoryForApi,
+                tools: useSearch ? [{ "google_search": {} }] : [], 
                 systemInstruction: {
                     parts: [{ text: systemPrompt }]
                 },
@@ -410,7 +662,7 @@
 
             for (let i = 0; i < maxRetries; i++) {
                 try {
-                    const response = await fetch(API_URL, {
+                    const response = await fetch(TEXT_API_URL, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload)
@@ -461,6 +713,176 @@
             }
         }
 
+        // Gemini TTS API Call
+        async function getGeminiTtsAudio(textToSpeak) {
+            
+            const payload = {
+                contents: [{ parts: [{ text: textToSpeak }] }],
+                generationConfig: {
+                    responseModalities: ["AUDIO"],
+                    speechConfig: {
+                        // Türkçe'ye uygun bir ses seçimi: Leda (Youthful)
+                        voiceConfig: { prebuiltVoiceConfig: { voiceName: "Leda" } }
+                    }
+                },
+                model: "gemini-2.5-flash-preview-tts"
+            };
+
+            const maxRetries = 5;
+            let currentDelay = 1000;
+
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fetch(TTS_API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (response.status === 429) {
+                        await new Promise(resolve => setTimeout(resolve, currentDelay));
+                        currentDelay *= 2;
+                        continue;
+                    }
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(`TTS API Hatası: ${response.status} - ${errorText}`);
+                    }
+
+                    const result = await response.json();
+                    const part = result?.candidates?.[0]?.content?.parts?.[0];
+                    const audioData = part?.inlineData?.data;
+                    const mimeType = part?.inlineData?.mimeType;
+
+                    if (audioData && mimeType && mimeType.startsWith("audio/L16")) {
+                        const sampleRateMatch = mimeType.match(/rate=(\d+)/);
+                        const sampleRate = sampleRateMatch ? parseInt(sampleRateMatch[1], 10) : 16000;
+                        
+                        const pcmData = base64ToArrayBuffer(audioData);
+                        const pcm16 = new Int16Array(pcmData);
+                        const wavBlob = pcmToWav(pcm16, sampleRate);
+                        return URL.createObjectURL(wavBlob);
+                    } else {
+                        throw new Error("Geçerli ses verisi veya mimeType alınamadı.");
+                    }
+                } catch (error) {
+                    console.error("TTS API çağrısı sırasında hata:", error);
+                    if (i < maxRetries - 1) {
+                        await new Promise(resolve => setTimeout(resolve, currentDelay));
+                        currentDelay *= 2;
+                    } else {
+                        throw new Error(`TTS ile iletişim kurulamadı: ${error.message}`);
+                    }
+                }
+            }
+        }
+
+
+        // --- YENİ Özellik Fonksiyonları ---
+
+        /**
+         * Mevcut sohbet geçmişini özetler ve sonucu sohbete ekler.
+         */
+        async function summarizeChat() {
+            if (isProcessing || isSummarizing || isTtsProcessing || chatHistory.length === 0) {
+                if (chatHistory.length === 0) {
+                    showTemporaryMessage("Özetlenecek mesaj yok. Lütfen sohbete başlayın.", 'bg-yellow-500');
+                } else {
+                    showTemporaryMessage("Lütfen devam eden işlemi bekleyin.", 'bg-yellow-500');
+                }
+                return;
+            }
+
+            setSummarizeLoading(true);
+
+            // Özetleme için sadece metin içeriklerini birleştir.
+            const chatTranscript = chatHistory.map(msg => 
+                `${msg.role === 'user' ? 'Kullanıcı' : 'AI'}: ${msg.parts[0].text}`
+            ).join('\n');
+
+            const systemPrompt = "Sen bir özetleme uzmanısın. Aşağıdaki konuşmanın ana noktalarını, önemli kararlarını ve sonuçlarını vurgulayarak 3-4 cümlelik Türkçe bir özetini çıkar. Özetini doğrudan Markdown formatında sun.";
+            
+            try {
+                // Not: Özetleme isteği için Google Aramayı kapatıyoruz (useSearch = false)
+                const { text: summaryText } = await getGeminiResponse(
+                    `Lütfen şu sohbeti özetleyin:\n\n${chatTranscript}`, 
+                    [], // Geçmişi sıfırla, çünkü transkripti sorguda gönderiyoruz
+                    systemPrompt, 
+                    false // Arama kullanma
+                );
+
+                // Özetleme mesajını sohbete ekle
+                const summaryTitle = "✨ Sohbet Özeti (Gemini AI tarafından):";
+                displayMessage(`**${summaryTitle}**\n\n${summaryText}`, 'ai');
+                
+                // Özeti chat geçmişine kaydet
+                chatHistory.push({ 
+                    role: 'ai', 
+                    parts: [{ text: `${summaryTitle}\n\n${summaryText}` }], 
+                    sources: []
+                });
+                saveActiveChatHistory();
+
+
+            } catch (error) {
+                displayMessage(`Özetleme sırasında hata oluştu: ${error.message}`, 'ai');
+            } finally {
+                setSummarizeLoading(false);
+            }
+        }
+
+        /**
+         * AI'nın verdiği son mesajı TTS ile sese dönüştürür ve oynatır.
+         */
+        async function speakLastAiMessage() {
+            if (isProcessing || isSummarizing || isTtsProcessing) {
+                showTemporaryMessage("Lütfen devam eden işlemi bekleyin.", 'bg-yellow-500');
+                return;
+            }
+
+            // Son AI mesajını bul
+            const lastAiMessage = chatHistory.slice().reverse().find(msg => msg.role === 'ai');
+            if (!lastAiMessage || !lastAiMessage.parts[0].text) {
+                showTemporaryMessage("Seslendirilecek bir AI mesajı bulunamadı.", 'bg-yellow-500');
+                return;
+            }
+
+            // Mesajın içeriğini al ve varsa başlığı temizle
+            let textToSpeak = lastAiMessage.parts[0].text;
+            if (textToSpeak.startsWith('✨ Sohbet Özeti')) {
+                 textToSpeak = textToSpeak.substring(textToSpeak.indexOf(')\n\n') + 3).trim();
+            }
+
+            setTtsLoading(true);
+
+            try {
+                // 1. Ses dosyasını al
+                const audioUrl = await getGeminiTtsAudio(textToSpeak);
+
+                // 2. Oynat
+                ttsAudio.src = audioUrl;
+                await ttsAudio.play();
+                
+                showTemporaryMessage("Ses oynatılıyor...", 'bg-green-600');
+
+                // Oynatma bitince yükleme durumunu sıfırla
+                ttsAudio.onended = () => {
+                    setTtsLoading(false);
+                    URL.revokeObjectURL(audioUrl);
+                };
+
+            } catch (error) {
+                showTemporaryMessage(`Seslendirme başarısız: ${error.message}`, 'bg-red-500');
+                console.error("TTS Hata:", error);
+            } finally {
+                // Eğer hata olursa ve onended tetiklenmezse diye
+                if (ttsAudio.src === '') { 
+                    setTtsLoading(false);
+                }
+            }
+        }
+
 
         // --- Ana İşlem Fonksiyonu ---
 
@@ -474,27 +896,33 @@
                  const metaIndex = chatsMeta.findIndex(meta => meta.id === activeChatId);
                  if (metaIndex > -1) {
                     chatsMeta[metaIndex].title = newTitle;
-                    chatsMeta[metaIndex].timestamp = Date.now(); // En üste çıkarmak için zaman damgası
+                    chatsMeta[metaIndex].timestamp = Date.now();
                  }
                  chatTitleElement.textContent = newTitle;
                  saveChatsMeta();
                  renderChatList();
             }
 
-            // 1. UI'ı Hazırla
+            // 1. Sidebar açıksa kapat (sadece büyük ekranlarda)
+            const sidebarIsVisible = !sidebar.classList.contains('-translate-x-full');
+            if (sidebarIsVisible) {
+                 toggleSidebar();
+            }
+
+            // 2. UI'ı Hazırla
             userInput.value = '';
             setUILoading(true);
 
-            // 2. Kullanıcı Mesajını Görüntüle ve Geçmişe Ekle
+            // 3. Kullanıcı Mesajını Görüntüle ve Geçmişe Ekle
             displayMessage(query, 'user');
             chatHistory.push({ role: 'user', parts: [{ text: query }] });
             saveActiveChatHistory();
 
             try {
-                // 3. API'dan Yanıtı Al
+                // 4. API'dan Yanıtı Al
                 const { text: aiResponseText, sources: aiSources } = await getGeminiResponse(query);
                 
-                // 4. AI Mesajını Görüntüle ve Geçmişe Ekle
+                // 5. AI Mesajını Görüntüle ve Geçmişe Ekle
                 displayMessage(aiResponseText, 'ai', aiSources);
                 
                 chatHistory.push({ 
@@ -509,7 +937,7 @@
             } catch (error) {
                 displayMessage(`Hata oluştu: ${error.message}`, 'ai');
             } finally {
-                // 5. UI'ı Sıfırla
+                // 6. UI'ı Sıfırla
                 setUILoading(false);
             }
         }
@@ -518,15 +946,24 @@
         window.onload = function() {
             loadChatsMeta();
             
+            // Başlangıçta sidebar'ın gizli olmasını sağlıyoruz
+            if (!sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.add('-translate-x-full');
+                menuIcon.classList.remove('hidden');
+                closeIcon.classList.add('hidden');
+            }
+
             if (!activeChatId || chatsMeta.length === 0) {
-                // İlk çalıştırma veya geçmişi silinmiş
                 startNewChat();
             } else {
-                // Daha önce kalmış aktif sohbete geç
                 switchChat(activeChatId);
             }
             renderChatList();
             userInput.focus();
+            
+            // Audio Context'i başlat
+            // Bu, TTS için gerekli değildir, ancak gelecekteki ses işlemleri için iyi bir uygulamadır.
+            // window.AudioContext = window.AudioContext || window.webkitAudioContext;
         };
 
     </script>
