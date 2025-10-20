@@ -110,7 +110,8 @@ body { font-family: 'Inter', sans-serif; background-color: #f4f7f9; }
 
 <script>
 // --- Sabitler ve Global Durum ---
-const API_KEY = ""; // Canvas tarafından otomatik sağlanacaktır.
+// ** DİKKAT: API_KEY BOŞ KALMALIDIR. Sistem otomatik sağlar. **
+const API_KEY = "AIzaSyC5TjJMwl_kjTF9unQbpik5exA8WDn0_Bk"; 
 const TEXT_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${API_KEY}`;
 const TTS_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${API_KEY}`;
 
@@ -466,8 +467,14 @@ async function getGeminiResponse(prompt, history) {
                 await new Promise(resolve => setTimeout(resolve, delay));
             } else {
                 // API'dan HTTP hata kodu gelirse (400, 500 vb.) hata fırlat
+                const status = fetchResponse.status;
+                const statusText = fetchResponse.statusText;
                 const errorBody = await fetchResponse.text();
-                throw new Error(`API HTTP Hatası: ${fetchResponse.status} - ${fetchResponse.statusText}. Yanıt gövdesi: ${errorBody.substring(0, 200)}...`);
+                
+                // HATA DETAYINI KONSOLA LOGLAMA
+                console.error(`MUAI HATA DETAY: HTTP Status ${status} - ${statusText}. Yanıt gövdesi:`, errorBody.substring(0, 500));
+                
+                throw new Error(`API HTTP Hatası: ${status} - ${statusText}. (Detaylar Konsolda)`);
             }
         } catch (error) {
             console.error("API çağrısı sırasında genel hata:", error.message || error);
@@ -708,8 +715,14 @@ window.speakLastAiMessage = async function() {
                 const delay = Math.pow(2, attempts) * 1000 + Math.random() * 1000;
                 await new Promise(resolve => setTimeout(resolve, delay));
             } else {
+                const status = response.status;
+                const statusText = response.statusText;
                 const errorBody = await response.text();
-                throw new Error(`TTS API HTTP Hatası: ${response.status} - ${response.statusText}. Yanıt gövdesi: ${errorBody.substring(0, 200)}...`);
+                
+                // HATA DETAYINI KONSOLA LOGLAMA
+                console.error(`MUAI TTS HATA DETAY: HTTP Status ${status} - ${statusText}. Yanıt gövdesi:`, errorBody.substring(0, 500));
+
+                throw new Error(`TTS API HTTP Hatası: ${status} - ${statusText}. (Detaylar Konsolda)`);
             }
         }
 
