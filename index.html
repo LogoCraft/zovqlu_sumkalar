@@ -1,137 +1,534 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MuWeb Tarayıcı Deneyimi</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body { font-family: 'Inter', sans-serif; }
-    #browserView { position: fixed; top:0; left:0; width:100vw; height:100vh; z-index:50; display:none; flex-direction:column; }
-    #browserFrame { border:none; flex:1; width:100%; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Çoklu Sohbet AI Asistanı</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f7f9;
+        }
+        .ai-message {
+            background-color: #ffffff;
+            border-radius: 0.75rem 0.75rem 0.75rem 0; /* Sol üst, Sağ üst, Sağ alt, Sol alt */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+        }
+        .user-message {
+            background-color: #3b82f6;
+            color: white;
+            border-radius: 0.75rem 0.75rem 0 0.75rem; /* Sol üst, Sağ üst, Sağ alt, Sol alt */
+        }
+        .chat-container {
+            flex-grow: 1;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+        /* Tam Ekran Görüntüsü */
+        .full-screen-app {
+            height: 100vh;
+            width: 100vw;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+    </style>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col">
+<body class="full-screen-app">
 
-  <header class="flex justify-between items-center p-4 border-b border-gray-200 bg-white shadow-md z-10">
-    <h1 class="text-3xl font-extrabold select-none">
-      <span class="text-blue-600">M</span>
-      <span class="text-red-600">u</span>
-      <span class="text-yellow-600">W</span>
-      <span class="text-blue-600">e</span>
-      <span class="text-green-600">b</span>
-    </h1>
-    <div class="flex items-center gap-3">
-        <button id="langBtn" class="px-3 py-1 text-sm rounded hover:bg-gray-100 transition text-gray-700">Türkçe</button>
-    </div>
-  </header>
-
-  <section id="searchPage" class="flex-1 flex flex-col items-center justify-start pt-16 px-4">
-    <h1 class="text-7xl font-extrabold mb-10 select-none">
-      <span class="text-blue-600">M</span>
-      <span class="text-red-600">u</span>
-      <span class="text-yellow-600">W</span>
-      <span class="text-blue-600">e</span>
-      <span class="text-green-600">b</span>
-    </h1>
-    <div class="w-full max-w-xl">
-      <div class="flex items-center shadow-lg rounded-xl overflow-hidden border border-blue-500">
-        <input id="searchInput" type="text" placeholder="MuWeb'de ara veya bir URL yaz"
-          class="flex-1 h-12 px-5 py-3 text-lg focus:outline-none border-none" />
-        <button id="searchBtn" class="h-12 w-20 bg-blue-600 hover:bg-blue-700 text-white font-medium flex items-center justify-center">
-            🔍
+    <!-- Sidebar - Sohbet Listesi -->
+    <div id="sidebar" class="w-64 bg-gray-900 text-white flex flex-col shadow-xl">
+        <div class="p-4 border-b border-gray-700">
+            <h2 class="text-2xl font-bold">💬 Sohbetler</h2>
+        </div>
+        
+        <!-- Yeni Sohbet Butonu -->
+        <button onclick="startNewChat()" class="m-3 p-3 bg-indigo-600 rounded-lg text-lg font-semibold hover:bg-indigo-700 transition duration-150 shadow-md">
+            + Yeni Sohbet Başlat
         </button>
-      </div>
-      <div class="flex justify-center gap-4 mt-4">
-        <button id="luckyBtn" class="px-4 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg">Kendimi Şanslı Hissediyorum</button>
-      </div>
+
+        <!-- Sohbet Listesi -->
+        <div id="chat-list" class="flex-grow overflow-y-auto px-3 space-y-1">
+            <!-- Chat list items will be injected here -->
+        </div>
+
     </div>
-  </section>
 
-  <section id="browserView" class="bg-white flex flex-col">
-    <div id="browserControls" class="flex items-center p-2 border-b border-gray-300 bg-gray-200 flex-shrink-0 gap-2">
-      <button id="browserBack">◀</button>
-      <button id="browserForward">▶</button>
-      <button id="browserRefresh">⟳</button>
-      <input id="browserAddressBar" type="text" placeholder="Web adresi veya arama terimi" class="flex-1 h-9 px-4 rounded-full border border-gray-400" />
-      <button id="browserExit">X</button>
+    <!-- Main Chat Window -->
+    <div id="main-chat-window" class="flex-grow flex flex-col bg-gray-50 max-w-full">
+        
+        <!-- Header -->
+        <header class="p-4 bg-white border-b border-gray-200 shadow-md flex justify-between items-center">
+            <h1 id="chat-title" class="text-xl font-bold text-gray-800 truncate">Sohbet Başlığı Yükleniyor...</h1>
+            <button id="delete-button" onclick="confirmAndDeleteChat()"
+                    class="bg-red-500 text-white p-2 rounded-lg shadow-md hover:bg-red-600 transition duration-150 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm font-medium disabled:opacity-50">
+                Sohbeti Sil
+            </button>
+        </header>
+
+        <!-- Chat Area -->
+        <div id="chat-container" class="chat-container p-6 space-y-4">
+            <!-- Messages will be injected here -->
+        </div>
+
+        <!-- Input Area -->
+        <div class="p-4 bg-white border-t border-gray-200 flex items-center space-x-3 shadow-inner">
+            <input type="text" id="user-input" placeholder="Sorunuzu buraya yazın..."
+                   class="flex-grow p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-150"
+                   onkeydown="if(event.key === 'Enter') sendMessage()">
+            
+            <button id="send-button" onclick="sendMessage()"
+                    class="bg-indigo-600 text-white p-3 rounded-xl shadow-lg hover:bg-indigo-700 transition duration-150 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 flex items-center justify-center w-12 h-12">
+                <svg id="send-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                </svg>
+                <div id="loading-spinner" class="hidden w-6 h-6 border-3 border-t-3 border-white rounded-full animate-spin"></div>
+            </button>
+        </div>
+        
     </div>
-    <iframe id="browserFrame" src="about:blank"></iframe>
-  </section>
 
-  <footer id="mainFooter" class="bg-gray-100 border-t border-gray-300 mt-auto p-4 text-sm text-gray-600 w-full">
-    <div class="max-w-7xl mx-auto flex justify-between px-4">
-      <div class="flex gap-6">
-        <a href="#" class="hover:underline">Hakkında</a>
-        <a href="#" class="hover:underline">Reklam</a>
-        <a href="#" class="hover:underline">İş</a>
-      </div>
-      <div class="flex gap-6">
-        <a href="#" class="hover:underline">Gizlilik</a>
-        <a href="#" class="hover:underline">Şartlar</a>
-        <a href="#" class="hover:underline">Ayarlar</a>
-      </div>
-    </div>
-  </footer>
+    <script>
+        // --- Sabitler ve Global Değişkenler ---
+        const API_KEY = "";
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${API_KEY}`;
+        
+        // Yeni depolama anahtarları
+        const CHATS_META_KEY = 'aiChatMetadata';
+        const ACTIVE_CHAT_KEY = 'activeAiChatId';
 
-<script>
-  const searchPage = document.getElementById('searchPage');
-  const searchInput = document.getElementById('searchInput');
-  const searchBtn = document.getElementById('searchBtn');
-  const luckyBtn = document.getElementById('luckyBtn');
-  const browserView = document.getElementById('browserView');
-  const browserFrame = document.getElementById('browserFrame');
-  const browserAddressBar = document.getElementById('browserAddressBar');
-  const browserBack = document.getElementById('browserBack');
-  const browserForward = document.getElementById('browserForward');
-  const browserRefresh = document.getElementById('browserRefresh');
-  const browserExit = document.getElementById('browserExit');
-  const langBtn = document.getElementById('langBtn');
-  const mainFooter = document.getElementById('mainFooter');
+        // UI Elementleri
+        const chatContainer = document.getElementById('chat-container');
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+        const sendIcon = document.getElementById('send-icon');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const chatListElement = document.getElementById('chat-list');
+        const chatTitleElement = document.getElementById('chat-title');
 
-  let currentLang = 'tr';
-  const translations = {
-    tr: { langBtn: 'English', searchPlaceholder: "MuWeb'de ara veya bir URL yaz", feelingLucky: 'Kendimi Şanslı Hissediyorum', addressBar: 'Web adresi veya arama terimi' },
-    en: { langBtn: 'Türkçe', searchPlaceholder: 'Search MuWeb or type URL', feelingLucky: "I'm Feeling Lucky", addressBar: 'Enter web address or search term' }
-  };
-  function updateTexts() {
-    langBtn.innerText = translations[currentLang].langBtn;
-    searchInput.placeholder = translations[currentLang].searchPlaceholder;
-    luckyBtn.innerText = translations[currentLang].feelingLucky;
-    browserAddressBar.placeholder = translations[currentLang].addressBar;
-  }
-  langBtn.addEventListener('click',()=>{currentLang=currentLang==='tr'?'en':'tr';updateTexts()});
-  window.onload = updateTexts;
+        // Durum Değişkenleri
+        let chatsMeta = [];      // Tüm sohbetlerin listesi: [{ id: '...', title: '...' }]
+        let activeChatId = null; // Şu anda aktif olan sohbetin ID'si
+        let chatHistory = [];    // Aktif sohbetin mesaj geçmişi
+        let isProcessing = false;
 
-  function resolveUrl(query) {
-    let url=query.trim();
-    if(!url) return 'about:blank';
-    if(url.startsWith('http://')||url.startsWith('https://')) return url;
-    if(url.includes('.')&&!url.includes(' ')) return 'https://'+url;
-    if(url.toLowerCase().includes('transfer')||url.toLowerCase().includes('futbolcu')) url+=' transfermarkt';
-    if(url.toLowerCase().includes('youtube')) url='https://www.youtube.com/results?search_query='+encodeURIComponent(url);
-    return 'https://www.google.com/search?q='+encodeURIComponent(url);
-  }
+        // --- Yardımcı Fonksiyonlar ---
 
-  function loadBrowser(url){
-    if(!url) return;
-    searchPage.classList.add('hidden');
-    mainFooter.classList.add('hidden');
-    browserView.style.display='flex';
-    browserFrame.src=url;
-    browserAddressBar.value=url;
-  }
+        /**
+         * Mesajları ve kaynakları ekrana basar.
+         * ... (displayMessage fonksiyonu öncekiyle aynı)
+         */
+        function displayMessage(text, role, sources = []) {
+            const messageWrapper = document.createElement('div');
+            messageWrapper.className = `flex ${role === 'user' ? 'justify-end' : 'justify-start'}`;
 
-  const handleSearch=e=>{const query=e.value.trim();if(query){const url=resolveUrl(query);loadBrowser(url)}};
-  searchBtn.addEventListener('click',()=>handleSearch(searchInput));
-  searchInput.addEventListener('keypress',e=>{if(e.key==='Enter') handleSearch(searchInput)});
-  browserAddressBar.addEventListener('keypress',e=>{if(e.key==='Enter') handleSearch(browserAddressBar)});
-  luckyBtn.addEventListener('click',()=>{const q=searchInput.value.trim()||'rastgele popüler site';loadBrowser(resolveUrl(q))});
+            const messageBubble = document.createElement('div');
+            messageBubble.className = `p-3 max-w-3/4 rounded-xl shadow-md whitespace-pre-wrap ${role === 'user' ? 'user-message' : 'ai-message'}`;
 
-  browserBack.addEventListener('click',()=>{try{browserFrame.contentWindow.history.back()}catch(e){console.warn("Geri gitme engellendi")}});
-  browserForward.addEventListener('click',()=>{try{browserFrame.contentWindow.history.forward()}catch(e){console.warn("İleri gitme engellendi")}});
-  browserRefresh.addEventListener('click',()=>{browserFrame.src=browserFrame.src});
-  browserExit.addEventListener('click',()=>{browserView.style.display='none';searchPage.classList.remove('hidden');mainFooter.classList.remove('hidden');browserFrame.src='about:blank';searchInput.value='';});
-</script>
+            const formattedText = text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/\n/g, '<br>');
+
+            messageBubble.innerHTML = formattedText;
+
+            // Kaynakları AI mesajının altına ekle
+            if (role === 'ai' && sources.length > 0) {
+                const sourcesDiv = document.createElement('div');
+                sourcesDiv.className = 'mt-3 pt-2 border-t border-gray-200 text-xs text-gray-500 space-y-1';
+                sourcesDiv.innerHTML = '<span class="font-semibold text-gray-600">Kaynaklar:</span>';
+
+                sources.forEach((source) => {
+                    const link = document.createElement('a');
+                    link.href = source.uri;
+                    link.target = '_blank';
+                    link.className = 'block hover:text-indigo-600 truncate';
+                    link.textContent = `• ${source.title || source.uri}`;
+                    sourcesDiv.appendChild(link);
+                });
+                messageBubble.appendChild(sourcesDiv);
+            }
+
+            messageWrapper.appendChild(messageBubble);
+            chatContainer.appendChild(messageWrapper);
+            
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        /**
+         * UI durumunu (gönder/yükleniyor) günceller.
+         */
+        function setUILoading(loading) {
+            isProcessing = loading;
+            userInput.disabled = loading;
+            sendButton.disabled = loading;
+            if (loading) {
+                sendIcon.classList.add('hidden');
+                loadingSpinner.classList.remove('hidden');
+            } else {
+                sendIcon.classList.remove('hidden');
+                loadingSpinner.classList.add('hidden');
+            }
+        }
+        
+        // --- Çoklu Sohbet Yönetimi Fonksiyonları ---
+
+        /**
+         * Yeni benzersiz bir sohbet kimliği (ID) oluşturur.
+         */
+        function generateChatId() {
+            return 'chat_' + Date.now() + Math.random().toString(16).substring(2, 8);
+        }
+
+        /**
+         * Tüm sohbet meta verilerini (ID, Başlık) localStorage'dan yükler.
+         */
+        function loadChatsMeta() {
+            try {
+                const storedMeta = localStorage.getItem(CHATS_META_KEY);
+                chatsMeta = storedMeta ? JSON.parse(storedMeta) : [];
+                activeChatId = localStorage.getItem(ACTIVE_CHAT_KEY);
+            } catch (error) {
+                console.error("Meta veri yüklenirken hata:", error);
+                chatsMeta = [];
+                activeChatId = null;
+            }
+        }
+
+        /**
+         * Tüm sohbet meta verilerini (ID, Başlık) localStorage'a kaydeder.
+         */
+        function saveChatsMeta() {
+            localStorage.setItem(CHATS_META_KEY, JSON.stringify(chatsMeta));
+            if (activeChatId) {
+                localStorage.setItem(ACTIVE_CHAT_KEY, activeChatId);
+            } else {
+                localStorage.removeItem(ACTIVE_CHAT_KEY);
+            }
+        }
+
+        /**
+         * Belirli bir sohbet geçmişini yükler.
+         */
+        function loadChatHistory(chatId) {
+            try {
+                const storedHistory = localStorage.getItem(chatId);
+                chatHistory = storedHistory ? JSON.parse(storedHistory) : [];
+                return chatHistory;
+            } catch (error) {
+                console.error(`Sohbet geçmişi (${chatId}) yüklenirken hata:`, error);
+                return [];
+            }
+        }
+
+        /**
+         * Aktif sohbet geçmişini kaydeder.
+         */
+        function saveActiveChatHistory() {
+            if (activeChatId && chatHistory.length > 0) {
+                localStorage.setItem(activeChatId, JSON.stringify(chatHistory));
+            }
+            
+            // İlk mesajı kullanarak başlık oluştur ve meta veriyi güncelle
+            const firstUserMessage = chatHistory.find(msg => msg.role === 'user');
+            if (firstUserMessage) {
+                const newTitle = firstUserMessage.parts[0].text.substring(0, 30) + '...';
+                let chatMeta = chatsMeta.find(meta => meta.id === activeChatId);
+
+                if (chatMeta) {
+                    chatMeta.title = newTitle;
+                } else {
+                    // Bu, startNewChat tarafından yapılmalıydı, ama garanti olsun.
+                    chatsMeta.push({ id: activeChatId, title: newTitle });
+                }
+                saveChatsMeta();
+            }
+            renderChatList();
+        }
+
+        /**
+         * Belirtilen sohbete geçer ve UI'ı günceller.
+         */
+        function switchChat(chatId) {
+            if (isProcessing) {
+                // Modalsız uyarı
+                alert("Lütfen önceki işlemin bitmesini bekleyin.");
+                return;
+            }
+            
+            // Mevcut sohbeti kaydet (eğer varsa)
+            if (activeChatId) {
+                saveActiveChatHistory();
+            }
+
+            activeChatId = chatId;
+            
+            // Yeni sohbet geçmişini yükle
+            chatHistory = loadChatHistory(chatId);
+            
+            // UI'ı temizle ve yeni geçmişi görüntüle
+            chatContainer.innerHTML = '';
+            chatHistory.forEach(msg => {
+                const text = msg.parts[0].text;
+                const sources = msg.sources || [];
+                displayMessage(text, msg.role, sources);
+            });
+            
+            // Başlığı güncelle
+            const chatMeta = chatsMeta.find(meta => meta.id === chatId);
+            chatTitleElement.textContent = chatMeta ? chatMeta.title : 'Yeni Sohbet';
+            
+            // Sidebar'daki aktifliği işaretle
+            document.querySelectorAll('.chat-item').forEach(el => {
+                el.classList.remove('bg-indigo-700');
+                if (el.dataset.chatId === chatId) {
+                    el.classList.add('bg-indigo-700');
+                }
+            });
+
+            saveChatsMeta(); // Aktif sohbet ID'sini kaydet
+            userInput.focus();
+        }
+
+        /**
+         * Yeni bir sohbet oturumu başlatır.
+         */
+        function startNewChat() {
+            // Mevcut sohbeti kaydet
+            if (activeChatId) {
+                saveActiveChatHistory();
+            }
+
+            const newId = generateChatId();
+            const newMeta = { id: newId, title: 'Yeni Sohbet', timestamp: Date.now() };
+
+            chatsMeta.unshift(newMeta); // En üste ekle
+            saveChatsMeta();
+            
+            // Yeni sohbete geç
+            switchChat(newId);
+        }
+
+        /**
+         * Sidebar'daki sohbet listesini yeniden oluşturur.
+         */
+        function renderChatList() {
+            chatListElement.innerHTML = '';
+            
+            // En son ekleneni veya güncelleneni üste taşımak için sıralama yapabiliriz.
+            chatsMeta.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+            if (chatsMeta.length === 0) {
+                 // İlk çalıştırmada veya tümü silindiğinde yeni bir sohbet başlat.
+                 startNewChat(); 
+                 return; 
+            }
+
+            chatsMeta.forEach(meta => {
+                const item = document.createElement('div');
+                item.className = `chat-item p-3 rounded-lg cursor-pointer hover:bg-gray-800 transition duration-100 truncate ${meta.id === activeChatId ? 'bg-indigo-700' : ''}`;
+                item.textContent = meta.title;
+                item.dataset.chatId = meta.id;
+                item.onclick = () => switchChat(meta.id);
+                chatListElement.appendChild(item);
+            });
+        }
+        
+        /**
+         * Sohbeti silmeyi onaylar ve işlemi gerçekleştirir.
+         */
+        function confirmAndDeleteChat() {
+            // Modalsız onay için geçici uyarı
+            if (!activeChatId) return;
+
+            const chatMeta = chatsMeta.find(meta => meta.id === activeChatId);
+            const title = chatMeta ? chatMeta.title : 'Bu Sohbeti';
+            
+            if (confirm(`${title} silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.`)) {
+                deleteChat(activeChatId);
+            }
+        }
+        
+        /**
+         * Belirtilen sohbeti tamamen siler.
+         */
+        function deleteChat(chatIdToDelete) {
+            // 1. localStorage'dan geçmişi sil
+            localStorage.removeItem(chatIdToDelete);
+
+            // 2. Meta veriden kaldır
+            const index = chatsMeta.findIndex(meta => meta.id === chatIdToDelete);
+            if (index > -1) {
+                chatsMeta.splice(index, 1);
+            }
+            saveChatsMeta();
+
+            // 3. Aktif sohbeti kontrol et ve yönlendir
+            if (chatIdToDelete === activeChatId) {
+                if (chatsMeta.length > 0) {
+                    // Kalan son sohbete geç
+                    switchChat(chatsMeta[0].id);
+                } else {
+                    // Başka sohbet yoksa yeni bir tane başlat
+                    startNewChat();
+                }
+            } else {
+                // Sadece listeyi yeniden render et
+                renderChatList();
+            }
+        }
+        
+
+        // --- Gemini API Çağrısı (Öncekiyle aynı, geçmiş entegrasyonu hariç) ---
+        
+        async function getGeminiResponse(userQuery) {
+            const systemPrompt = "Sen, kullanıcının sorularına Türkçe olarak doğru, güncel ve ayrıntılı cevaplar veren, profesyonel bir yapay zeka asistanısın. Yanıtlarını verirken her zaman Google Arama sonuçlarını kullan ve Markdown formatını koru.";
+            
+            // Mevcut sohbet geçmişini (sadece role ve parts) API'a gönder
+            const conversationHistoryForApi = chatHistory.map(msg => ({
+                role: msg.role, 
+                parts: msg.parts // { text: "..." }
+            }));
+            
+            // Kullanıcı sorgusunu geçmişin sonuna ekle
+            conversationHistoryForApi.push({ role: 'user', parts: [{ text: userQuery }] });
+
+            const payload = {
+                contents: conversationHistoryForApi, // Tüm geçmişi gönder
+                tools: [{ "google_search": {} }], 
+                systemInstruction: {
+                    parts: [{ text: systemPrompt }]
+                },
+            };
+
+            const maxRetries = 5;
+            let currentDelay = 1000;
+
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fetch(API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (response.status === 429) {
+                        await new Promise(resolve => setTimeout(resolve, currentDelay));
+                        currentDelay *= 2;
+                        continue;
+                    }
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(`API Hatası: ${response.status} - ${errorText}`);
+                    }
+
+                    const result = await response.json();
+                    const candidate = result.candidates?.[0];
+
+                    if (candidate && candidate.content?.parts?.[0]?.text) {
+                        const text = candidate.content.parts[0].text;
+                        let sources = [];
+                        
+                        const groundingMetadata = candidate.groundingMetadata;
+                        if (groundingMetadata && groundingMetadata.groundingAttributions) {
+                            sources = groundingMetadata.groundingAttributions
+                                .map(attribution => ({
+                                    uri: attribution.web?.uri,
+                                    title: attribution.web?.title,
+                                }))
+                                .filter(source => source.uri && source.title);
+                        }
+
+                        return { text, sources };
+
+                    } else {
+                        return { text: "Üzgünüm, geçerli bir yanıt alamadım.", sources: [] };
+                    }
+                } catch (error) {
+                    console.error("API çağrısı sırasında hata:", error);
+                    if (i < maxRetries - 1) {
+                        await new Promise(resolve => setTimeout(resolve, currentDelay));
+                        currentDelay *= 2;
+                    } else {
+                        throw new Error(`Yapay Zeka ile iletişim kurulamadı: ${error.message}`);
+                    }
+                }
+            }
+        }
+
+
+        // --- Ana İşlem Fonksiyonu ---
+
+        async function sendMessage() {
+            const query = userInput.value.trim();
+            if (!query || isProcessing || !activeChatId) return;
+
+            // Eğer bu yeni bir sohbetteki ilk mesajsa, başlığı ayarla
+            if (chatHistory.length === 0) {
+                 const newTitle = query.substring(0, 30) + '...';
+                 const metaIndex = chatsMeta.findIndex(meta => meta.id === activeChatId);
+                 if (metaIndex > -1) {
+                    chatsMeta[metaIndex].title = newTitle;
+                    chatsMeta[metaIndex].timestamp = Date.now(); // En üste çıkarmak için zaman damgası
+                 }
+                 chatTitleElement.textContent = newTitle;
+                 saveChatsMeta();
+                 renderChatList();
+            }
+
+            // 1. UI'ı Hazırla
+            userInput.value = '';
+            setUILoading(true);
+
+            // 2. Kullanıcı Mesajını Görüntüle ve Geçmişe Ekle
+            displayMessage(query, 'user');
+            chatHistory.push({ role: 'user', parts: [{ text: query }] });
+            saveActiveChatHistory();
+
+            try {
+                // 3. API'dan Yanıtı Al
+                const { text: aiResponseText, sources: aiSources } = await getGeminiResponse(query);
+                
+                // 4. AI Mesajını Görüntüle ve Geçmişe Ekle
+                displayMessage(aiResponseText, 'ai', aiSources);
+                
+                chatHistory.push({ 
+                    role: 'ai', 
+                    parts: [{ text: aiResponseText }], 
+                    sources: aiSources 
+                });
+                
+                // Yanıt geldikten sonra tekrar kaydet
+                saveActiveChatHistory();
+
+            } catch (error) {
+                displayMessage(`Hata oluştu: ${error.message}`, 'ai');
+            } finally {
+                // 5. UI'ı Sıfırla
+                setUILoading(false);
+            }
+        }
+
+        // --- Başlangıç ---
+        window.onload = function() {
+            loadChatsMeta();
+            
+            if (!activeChatId || chatsMeta.length === 0) {
+                // İlk çalıştırma veya geçmişi silinmiş
+                startNewChat();
+            } else {
+                // Daha önce kalmış aktif sohbete geç
+                switchChat(activeChatId);
+            }
+            renderChatList();
+            userInput.focus();
+        };
+
+    </script>
 </body>
 </html>
