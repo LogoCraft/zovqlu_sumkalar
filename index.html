@@ -1045,7 +1045,7 @@
             setTimeout(() => {
                 const words = wordBank[state.currentLevel];
                 if (!words || words.length === 0) {
-                    wordListContainer.innerHTML = <p class="text-gray-400 col-span-full text-center">${i18n[state.currentLang].noWordsFound}</p>;
+                    wordListContainer.innerHTML = `<p class="text-gray-400 col-span-full text-center">${i18n[state.currentLang].noWordsFound}</p>`;
                     loadingSpinner.classList.add('hidden');
                     return;
                 }
@@ -1053,7 +1053,7 @@
                 const page = state.wordPages[state.currentLevel];
                 const wordsToShow = words.slice(page * 20, (page + 1) * 20);
 
-                       state.currentWords = wordsToShow;
+                        state.currentWords = wordsToShow;
                 
                 renderWords();
                 loadingSpinner.classList.add('hidden');
@@ -1062,7 +1062,7 @@
                 const start = page * 20 + 1;
                 const end = Math.min((page + 1) * 20, words.length);
                 const total = words.length;
-                refreshBtn.querySelector('span').textContent = ${i18n[state.currentLang].getNewWords} (${start}-${end} / ${total});
+                refreshBtn.querySelector('span').textContent = `${i18n[state.currentLang].getNewWords} (${start}-${end} / ${total})`;
                 
             }, 300); // 0.3 saniye gecikme
         }
@@ -1076,7 +1076,7 @@
             if (state.currentWords.length === 0) {
                 // Yükleniyor spinner'ı gizliyse ve kelime yoksa mesajı göster
                 if (loadingSpinner.classList.contains('hidden')) {
-                     wordListContainer.innerHTML = <p class="text-gray-400 col-span-full text-center">${i18n[state.currentLang].noWordsToShow}</p>;
+                     wordListContainer.innerHTML = `<p class="text-gray-400 col-span-full text-center">${i18n[state.currentLang].noWordsToShow}</p>`;
                 }
                 return;
             }
@@ -1090,7 +1090,7 @@
                 const translation = word.translations[state.currentLang] || word.translations['tr'] || 'Çeviri Yok';
 
                 const card = document.createElement('div');
-                card.className = word-card bg-gray-800 p-4 rounded-lg shadow-md transition-all duration-300 ${isBookmarked ? 'bookmark-highlight' : ''};
+                card.className = `word-card bg-gray-800 p-4 rounded-lg shadow-md transition-all duration-300 ${isBookmarked ? 'bookmark-highlight' : ''}`;
                 card.dataset.enWord = word.en;
 
                 card.innerHTML = `
@@ -1160,7 +1160,7 @@
          */
         function togglePin(word) {
             const index = state.pinnedWords.findIndex(p => p.en === word.en);
-            const card = wordListContainer.querySelector(.word-card[data-en-word="${word.en}"]);
+            const card = wordListContainer.querySelector(`.word-card[data-en-word="${word.en}"]`);
             const pinIcon = card ? card.querySelector('.pin-btn svg') : null;
 
             if (index > -1) {
@@ -1196,7 +1196,7 @@
             } else {
                 // Yeni işaret koy
                 state.bookmarkedWordId = enWord;
-                const newBookmarkedCard = wordListContainer.querySelector(.word-card[data-en-word="${enWord}"]);
+                const newBookmarkedCard = wordListContainer.querySelector(`.word-card[data-en-word="${enWord}"]`);
                 if (newBookmarkedCard) {
                     newBookmarkedCard.classList.add('bookmark-highlight');
                     const icon = newBookmarkedCard.querySelector('.bookmark-btn svg');
@@ -1236,7 +1236,7 @@
             // Sayfalamayı o seviye için sıfırla
             state.wordPages[state.currentLevel] = 0;
             
-            toggleFreezeBtn.innerHTML = <span data-i18n-key="freezeList">${i18n[state.currentLang].freezeList}</span>;
+            toggleFreezeBtn.innerHTML = `<span data-i18n-key="freezeList">${i18n[state.currentLang].freezeList}</span>`;
             toggleFreezeBtn.classList.remove('bg-red-600', 'hover:bg-red-700');
             toggleFreezeBtn.classList.add('bg-green-600', 'hover:bg-green-700');
 
@@ -1260,12 +1260,12 @@
         function toggleFreeze() {
             state.isFrozen = !state.isFrozen;
             if (state.isFrozen) {
-                toggleFreezeBtn.innerHTML = <span data-i18n-key="unfreezeList">${i18n[state.currentLang].unfreezeList}</span>;
+                toggleFreezeBtn.innerHTML = `<span data-i18n-key="unfreezeList">${i18n[state.currentLang].unfreezeList}</span>`;
                 toggleFreezeBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
                 toggleFreezeBtn.classList.add('bg-red-600', 'hover:bg-red-700');
                 showAppMessage('listFrozenInfo', 'info');
             } else {
-                toggleFreezeBtn.innerHTML = <span data-i18n-key="freezeList">${i18n[state.currentLang].freezeList}</span>;
+                toggleFreezeBtn.innerHTML = `<span data-i18n-key="freezeList">${i18n[state.currentLang].freezeList}</span>`;
                 toggleFreezeBtn.classList.remove('bg-red-600', 'hover:bg-red-700');
                 toggleFreezeBtn.classList.add('bg-green-600', 'hover:bg-green-700');
                 showAppMessage('listUnfrozen', 'info');
@@ -1278,10 +1278,10 @@
         function showPinnedWordsModal() {
             pinnedListContent.innerHTML = '';
             if (state.pinnedWords.length === 0) {
-                pinnedListContent.innerHTML = <p class="text-gray-400 text-center">${i18n[state.currentLang].noPinnedWords}</p>;
+                pinnedListContent.innerHTML = `<p class="text-gray-400 text-center">${i18n[state.currentLang].noPinnedWords}</p>`;
             } else {
                 state.pinnedWords.sort((a, b) => a.en.localeCompare(b.en)).forEach(word => {
-                    const note = state.notes[word.en] || <i>${i18n[state.currentLang].notePlaceholder}</i>;
+                    const note = state.notes[word.en] || `<i>${i18n[state.currentLang].notePlaceholder}</i>`;
                     // Çeviriyi de dinamik yap
                     const translation = word.translations[state.currentLang] || word.translations['tr'] || 'Çeviri Yok';
 
@@ -1336,7 +1336,7 @@
             closeSubscriptionModalBtn.addEventListener('click', () => subscriptionModal.classList.add('hidden'));
             contactWhatsAppBtn.addEventListener('click', () => {
                 const whatsAppNumber = "994707841414";
-                window.open(https://wa.me/${whatsAppNumber}, '_blank');
+                window.open(`https://wa.me/${whatsAppNumber}`, '_blank');
             });
 
             // İlk yükleme
