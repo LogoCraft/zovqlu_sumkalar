@@ -1,953 +1,311 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MuAi - Çok Sesli Sohbet Asistanı</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-<style>
-/* CSS'i yan menünün her zaman açık kalmaması için güncelledim. */
-body { font-family: 'Inter', sans-serif; background-color: #f4f7f9; }
-.ai-message { background-color: #fff; border-radius: 0.75rem 0.75rem 0.75rem 0; box-shadow:0 2px 4px rgba(0,0,0,0.05); border:1px solid #e5e7eb; max-width: 80%; }
-.user-message { background-color: #3b82f6; color:white; border-radius:0.75rem 0.75rem 0 0.75rem; max-width: 80%;}
-.chat-container { flex-grow:1; overflow-y:auto; scroll-behavior:smooth; }
-.full-screen-app { height:100vh; width:100vw; margin:0; padding:0; display:flex; position:relative;}
-/* Sidebar artık sadece mobil değil, her zaman hareketli (absolute) olacak */
-#sidebar { transition: transform 0.3s ease-in-out; position:absolute; height:100%; z-index:50; }
-
-.spinner { border:4px solid rgba(255,255,255,0.3); border-top:4px solid #fff; border-radius:50%; width:16px; height:16px; animation:spin 1s linear infinite; }
-@keyframes spin { 0%{transform:rotate(0deg);} 100%{transform:rotate(360deg);} }
-
-/* Yazıyor... Göstergesi Animasyonu */
-.typing-dots .dot { animation: bounce 1.4s infinite ease-in-out both; }
-.typing-dots .dot:nth-child(2) { animation-delay: -0.32s; }
-.typing-dots .dot:nth-child(3) { animation-delay: -0.16s; }
-@keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
-
-/* Özellik Menüsü Stili */
-.feature-button { 
-    display: flex;
-    align-items: center;
-    justify-content: start;
-    padding: 0.75rem; 
-    border-radius: 0.5rem; 
-    width: 100%;
-    text-align: left;
-    transition: background-color 0.15s;
-    font-weight: 600;
-}
-.feature-button:hover { background-color: #f3f4f6; }
-
-/* Ayarlar Butonu Stili */
-.voice-option-button {
-    cursor: pointer;
-    border-radius: 0.5rem;
-    transition: background-color 0.15s, border-color 0.15s;
-}
-.voice-option-button:hover {
-    background-color: #f3f4f6;
-}
-.voice-option-button.selected {
-    border: 2px solid #4f46e5; /* indigo-600 */
-    background-color: #eef2ff; /* indigo-50 */
-}
-</style>
-</head>
-<body class="full-screen-app">
-
-<!-- Sidebar: Sohbet Listesi -->
-<div id="sidebar" class="w-64 bg-gray-900 text-white flex flex-col shadow-xl -translate-x-full">
-    <div class="p-4 border-b border-gray-700 flex flex-col">
-        <h2 class="text-2xl font-bold mb-1">MuAi Sohbetler</h2>
-        <p class="text-xs text-gray-400">Veriler yerel olarak saklanır.</p>
-    </div>
-    <button onclick="startNewChat(true); toggleSidebar(true)" class="m-3 p-3 bg-indigo-600 rounded-lg text-lg font-semibold hover:bg-indigo-700 transition duration-150 shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500">+ Yeni Sohbet Başlat</button>
-    <div id="chat-list" class="flex-grow overflow-y-auto px-3 space-y-1"></div>
-</div>
-
-<div id="main-chat-window" class="flex-grow flex flex-col bg-gray-50 max-w-full w-full">
-    <header class="p-4 bg-white border-b border-gray-200 shadow-md flex items-center justify-between">
-        <button id="menu-toggle" onclick="toggleSidebar()" class="p-2 mr-4 text-gray-600 hover:text-indigo-600 focus:outline-none">
-            <svg id="menu-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
-            <svg id="close-icon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-        </button>
-        <h1 id="chat-title" class="text-xl font-bold text-gray-800 truncate flex-grow">MuAi Asistanı</h1>
-    </header>
-
-    <div id="chat-container" class="chat-container p-6 space-y-4"></div>
-
-    <!-- Yazıyor... Göstergesi -->
-    <div id="typing-indicator-container" class="hidden p-4 flex items-center space-x-2">
-        <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/><circle cx="12" cy="12" r="1" fill="currentColor"/><circle cx="8" cy="12" r="1" fill="currentColor"/><circle cx="16" cy="12" r="1" fill="currentColor"/></svg>
-        </div>
-        <div class="ai-message p-3 flex items-center space-x-2">
-            <span class="text-gray-700">Asistan yazıyor</span>
-            <div class="typing-dots flex space-x-1">
-                <div class="w-2 h-2 bg-indigo-500 rounded-full dot"></div>
-                <div class="w-2 h-2 bg-indigo-500 rounded-full dot"></div>
-                <div class="w-2 h-2 bg-indigo-500 rounded-full dot"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Yeni Giriş Alanı ve Özellikler Menüsü -->
-    <div class="p-4 bg-white border-t border-gray-200 flex items-center space-x-3 shadow-inner relative">
-        
-        <!-- Özellikler Menüsü Açma Butonu -->
-        <button id="features-toggle-button" onclick="toggleFeaturesMenu()" class="p-3 bg-gray-200 text-gray-600 rounded-xl shadow-md hover:bg-gray-300 transition duration-150 focus:outline-none focus:ring-2 focus:ring-gray-400 w-12 h-12 flex items-center justify-center">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-        </button>
-
-        <!-- Özellikler Menüsü (Açılır Pencere) -->
-        <div id="features-menu" class="absolute bottom-full mb-3 w-64 bg-white p-2 rounded-xl shadow-2xl hidden ring-1 ring-gray-100 transform -translate-x-1 z-20">
-            <div class="space-y-1">
-                <!-- SES AYARLARI BUTONU -->
-                 <button id="settings-button" onclick="showSettingsModal(); toggleFeaturesMenu(true);" class="feature-button text-blue-600">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                    Ses Ayarları
-                </button>
-                
-                <!-- MANUEL SESLENDİR BUTONU -->
-                <button id="tts-button" onclick="speakLastAiMessage(); toggleFeaturesMenu(true);" class="feature-button text-green-600 disabled:opacity-50" disabled>
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a.5.5 0 00-.707 0L12 11.293 9.171 8.464a.5.5 0 10-.707.707L11.293 12l-2.829 2.829a.5.5 0 10.707.707L12 12.707l2.829 2.829a.5.5 0 00.707-.707L12.707 12l2.829-2.829a.5.5 0 000-.707z"></path></svg>
-                    <span id="tts-text">Son Yanıtı Tekrar Oku</span>
-                    <div id="tts-spinner" class="spinner hidden ml-auto border-t-green-600"></div>
-                </button>
-                
-                <!-- ÖZETLE BUTONU -->
-                <button id="summarize-button" onclick="summarizeChat(); toggleFeaturesMenu(true);" class="feature-button text-purple-600 disabled:opacity-50" disabled>
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                    <span id="summarize-text">Sohbeti Özetle</span>
-                    <div id="summarize-spinner" class="spinner hidden ml-auto border-t-purple-600"></div>
-                </button>
-
-                <!-- SİL BUTONU -->
-                <button id="delete-button" onclick="confirmAndDeleteChat(); toggleFeaturesMenu(true);" class="feature-button text-red-600 disabled:opacity-50" disabled>
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                    Sohbeti Sil
-                </button>
-            </div>
-        </div>
-
-        <input type="text" id="user-input" placeholder="Sorunuzu buraya yazın..." class="flex-grow p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-150" onkeydown="if(event.key==='Enter') sendMessage()">
-        <button id="send-button" onclick="sendMessage()" class="bg-indigo-600 text-white p-3 rounded-xl shadow-lg hover:bg-indigo-700 transition duration-150 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 flex items-center justify-center w-12 h-12">
-            <svg id="send-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-            <div id="loading-spinner" class="hidden w-6 h-6 border-3 border-t-3 border-white rounded-full animate-spin"></div>
-        </button>
-    </div>
-</div>
-
-<!-- Onay Modalı -->
-<div id="confirmation-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center">
-    <div class="bg-white p-6 rounded-lg shadow-2xl max-w-sm w-full">
-        <h3 class="text-lg font-bold mb-4 text-gray-800">İşlem Onayı</h3>
-        <p id="modal-message" class="mb-6 text-gray-700"></p>
-        <div class="flex justify-end space-x-3">
-            <button onclick="hideModal(false)" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition duration-150">İptal</button>
-            <button id="modal-confirm-button" onclick="hideModal(true)" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-150">Onayla</button>
-        </div>
-    </div>
-</div>
-
-<!-- Ses Ayarları Modalı -->
-<div id="settings-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center">
-    <div class="bg-white p-6 rounded-lg shadow-2xl max-w-lg w-full m-4">
-        <h3 class="text-xl font-bold mb-4 text-gray-800 flex justify-between items-center">
-            Ses Ayarları
-            <button onclick="hideSettingsModal()" class="text-gray-400 hover:text-gray-600">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-        </h3>
-        <p class="mb-6 text-gray-600">Tercih ettiğiniz ses tonunu seçin. Her seçimde örnek bir ses çalacaktır.</p>
-
-        <div id="voice-options-container" class="space-y-3">
-            <!-- Ses Seçenekleri buraya JS ile yüklenecek -->
-        </div>
-
-        <button onclick="hideSettingsModal()" class="mt-6 w-full py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-150">Kapat</button>
-    </div>
-</div>
-
-<audio id="tts-audio" style="display:none;"></audio>
-
-<script type="module">
-// --- Sabitler ve Global Durum ---
-const API_KEY = "AIzaSyC5TjJMwl_kjTF9unQbpik5exA8WDn0_Bk"; 
-const TEXT_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${API_KEY}`;
-const TTS_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${API_KEY}`;
-const VOICE_STORAGE_KEY = 'muai_tts_voice_id';
-
-// Ses Seçenekleri Tanımı: id'ler Gemini PrebuiltVoiceConfig isimlerine karşılık gelir
-const VOICE_OPTIONS = [
-    { id: 'Kore', name: 'Kore (Ciddi Erkek)', persona: 'Ciddi, Resmi, Derin Ses', sampleText: "Merhaba. Bu ses tonuyla yanıtlarınızı okuyacağım. Nasıl yardımcı olabilirim?" },
-    { id: 'Leda', name: 'Leda (Kadın)', persona: 'Genç, Berrak, Dostça Ses', sampleText: "Merhaba. Bu ses tonuyla yanıtlarınızı okuyacağım. Nasıl yardımcı olabilirim?" },
-    { id: 'Puck', name: 'Puck (Çocuk/Neşeli)', persona: 'Neşeli, Çocuksu, Canlı Ses', sampleText: "Merhaba. Bu ses tonuyla yanıtlarınızı okuyacağım. Nasıl yardımcı olabilirim?" }
-];
-
-// LocalStorage Anahtarları
-const LOCAL_STORAGE_KEY_META = 'muai_chats_meta';
-
-// UI elementleri
-const chatContainer = document.getElementById('chat-container');
-const userInput = document.getElementById('user-input');
-const sendButton = document.getElementById('send-button');
-const sendIcon = document.getElementById('send-icon');
-const loadingSpinner = document.getElementById('loading-spinner');
-const chatListElement = document.getElementById('chat-list');
-const chatTitleElement = document.getElementById('chat-title');
-const sidebar = document.getElementById('sidebar');
-const menuIcon = document.getElementById('menu-icon');
-const closeIcon = document.getElementById('close-icon');
-const typingIndicator = document.getElementById('typing-indicator-container');
-
-// Özellik Menüsü Elementleri
-const featuresMenu = document.getElementById('features-menu');
-const summarizeButton = document.getElementById('summarize-button');
-const summarizeSpinner = document.getElementById('summarize-spinner');
-const summarizeText = document.getElementById('summarize-text');
-const ttsButton = document.getElementById('tts-button'); 
-const ttsSpinner = document.getElementById('tts-spinner');
-const ttsText = document.getElementById('tts-text');
-const ttsAudio = document.getElementById('tts-audio');
-const deleteButton = document.getElementById('delete-button');
-
-// Modal Elementleri
-const confirmationModal = document.getElementById('confirmation-modal');
-const modalMessage = document.getElementById('modal-message');
-const modalConfirmButton = document.getElementById('modal-confirm-button');
-const settingsModal = document.getElementById('settings-modal');
-const voiceOptionsContainer = document.getElementById('voice-options-container');
-
-// Durum Değişkenleri
-let chatsMeta = []; 
-let activeChatId = null;
-let chatHistory = []; 
-let isProcessing = false;
-let isTtsProcessing = false;
-let isSummarizing = false;
-let modalCallback = null;
-
-// Ses Durumu
-let selectedVoiceId = VOICE_OPTIONS[0].id; 
-
-// --- Veri Saklama İşlemleri (LocalStorage) ---
-
-function saveChatsMetaToLocalStorage() {
-    localStorage.setItem(LOCAL_STORAGE_KEY_META, JSON.stringify(chatsMeta));
-}
-
-function loadChatHistoryFromLocalStorage(chatId) {
-    const key = `muai_chat_history_${chatId}`;
-    const storedHistory = localStorage.getItem(key);
-    return storedHistory ? JSON.parse(storedHistory) : [];
-}
-
-function loadChatsMetaFromLocalStorage() {
-    // Ses tercihlerini yükle
-    const storedVoice = localStorage.getItem(VOICE_STORAGE_KEY);
-    if (storedVoice && VOICE_OPTIONS.some(v => v.id === storedVoice)) {
-        selectedVoiceId = storedVoice;
-    }
-
-    const storedMeta = localStorage.getItem(LOCAL_STORAGE_KEY_META);
-    chatsMeta = storedMeta ? JSON.parse(storedMeta) : [];
-    
-    chatsMeta.sort((a, b) => b.lastUpdated - a.lastUpdated);
-
-    const activeMetaExists = chatsMeta.some(c => c.id === activeChatId);
-    if (!activeChatId || !activeMetaExists) {
-        if (chatsMeta.length > 0) {
-            switchChat(chatsMeta[0].id);
-        } else {
-            startNewChat(true); 
-        }
-    } else {
-        switchChat(activeChatId); 
-    }
-    
-    renderChatList();
-}
-
-async function saveChatToLocalStorage(chatId, title, history) {
-    const historyKey = `muai_chat_history_${chatId}`;
-    localStorage.setItem(historyKey, JSON.stringify(history));
-
-    const now = Date.now();
-
-    const metaIndex = chatsMeta.findIndex(c => c.id === chatId);
-    if (metaIndex !== -1) {
-        chatsMeta[metaIndex].title = title;
-        chatsMeta[metaIndex].lastUpdated = now;
-    } else {
-        chatsMeta.unshift({ id: chatId, title: title, lastUpdated: now });
-    }
-    
-    chatsMeta.sort((a, b) => b.lastUpdated - a.lastUpdated);
-    saveChatsMetaToLocalStorage();
-
-    renderChatList(); 
-}
-
-async function deleteChatFromLocalStorage(chatId) {
-    const historyKey = `muai_chat_history_${chatId}`;
-    localStorage.removeItem(historyKey);
-
-    chatsMeta = chatsMeta.filter(c => c.id !== chatId);
-    saveChatsMetaToLocalStorage();
-
-    if (activeChatId === chatId) {
-        activeChatId = null;
-        if (chatsMeta.length > 0) {
-            switchChat(chatsMeta[0].id);
-        } else {
-            startNewChat();
-        }
-    } else {
-        renderChatList();
-    }
-}
-
-
-// --- UI ve Mesajlaşma Fonksiyonları ---
-
-function renderChatList() {
-    chatListElement.innerHTML = '';
-    
-    if (chatsMeta.length === 0) {
-        chatListElement.innerHTML = '<p class="text-gray-500 p-3 text-center text-sm">Henüz sohbet yok. Yeni bir sohbet başlatın!</p>';
-        chatTitleElement.textContent = 'MuAi Asistanı'; 
-        return;
-    }
-
-    chatsMeta.forEach(chat => {
-        const isActive = chat.id === activeChatId;
-        const button = document.createElement('button');
-        button.className = `w-full text-left p-3 rounded-lg truncate transition duration-150 ${isActive ? 'bg-indigo-700 text-white font-semibold' : 'text-gray-300 hover:bg-gray-700'}`;
-        button.textContent = chat.title || 'Adsız Sohbet';
-        button.onclick = () => {
-            switchChat(chat.id);
-            if (window.innerWidth < 768) {
-                toggleSidebar(true);
-            }
-        };
-        chatListElement.appendChild(button);
-    });
-
-    const activeMeta = chatsMeta.find(c => c.id === activeChatId);
-    chatTitleElement.textContent = activeMeta ? activeMeta.title : 'MuAi Asistanı';
-    
-    // Buton durumlarını güncelle
-    const hasAiResponse = chatHistory.slice().reverse().some(m => m.role === 'model');
-    summarizeButton.disabled = chatHistory.length === 0;
-    ttsButton.disabled = !hasAiResponse;
-    deleteButton.disabled = !activeChatId;
-}
-
-function renderChatHistory() {
-    chatContainer.innerHTML = '';
-    chatHistory.forEach(message => {
-        displayMessage(message.text, message.role);
-    });
-    renderChatList();
-    chatContainer.scrollTop = chatContainer.scrollHeight;
-}
-
-function displayMessage(text, role) {
-    const messageWrapper = document.createElement('div');
-    const isUser = role === 'user';
-    const alignClass = isUser ? 'flex justify-end' : 'flex justify-start';
-
-    // Markdown'ı temel HTML'e dönüştür (Basitleştirilmiş)
-    let formattedText = text;
-    formattedText = formattedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); 
-    formattedText = formattedText.replace(/\*(.*?)\*/g, '<em>$1</em>');
-
-    formattedText = formattedText.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
-        const language = lang || 'text';
-        const highlightedCode = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        return `<pre class="bg-gray-800 text-white p-3 rounded-md overflow-x-auto my-2 text-xs"><code>${highlightedCode}</code></pre>`;
-    });
-
-    chatContainer.appendChild(messageWrapper); 
-    
-    const messageBox = document.createElement('div');
-    messageBox.className = `p-4 text-sm ${isUser ? 'user-message' : 'ai-message'} break-words`;
-    messageBox.innerHTML = formattedText.trim().replace(/\n/g, '<br>'); // Yeni satırları <br> yap
-    
-    messageWrapper.className = alignClass + " mb-4"; // margin ekledik
-    messageWrapper.appendChild(messageBox);
-    chatContainer.scrollTop = chatContainer.scrollHeight;
-}
-
-// Global Loading Durumu
-function setUILoading(loading) {
-    isProcessing = loading;
-    userInput.disabled = loading;
-    sendButton.disabled = loading;
-
-    if (loading) {
-        sendIcon.classList.add('hidden');
-        loadingSpinner.classList.remove('hidden');
-        typingIndicator.classList.remove('hidden');
-    } else {
-        sendIcon.classList.remove('hidden');
-        loadingSpinner.classList.add('hidden');
-        typingIndicator.classList.add('hidden');
-    }
-    
-    // Özellik menüsü butonlarını güncelle
-    const hasAiResponse = chatHistory.slice().reverse().some(m => m.role === 'model');
-    summarizeButton.disabled = loading || isTtsProcessing || isSummarizing || chatHistory.length === 0;
-    ttsButton.disabled = loading || isTtsProcessing || isSummarizing || !hasAiResponse;
-    deleteButton.disabled = loading || !activeChatId;
-}
-
-function setSummarizeLoading(loading) {
-    isSummarizing = loading;
-    const hasAiResponse = chatHistory.slice().reverse().some(m => m.role === 'model');
-    summarizeButton.disabled = loading || isProcessing || isTtsProcessing || chatHistory.length === 0;
-    
-    if (loading) {
-        summarizeText.textContent = "Özetleniyor...";
-        summarizeSpinner.classList.remove('hidden');
-    } else {
-        summarizeText.textContent = "Sohbeti Özetle";
-        summarizeSpinner.classList.add('hidden');
-    }
-}
-
-function setTtsLoading(loading) {
-    isTtsProcessing = loading;
-    const hasAiResponse = chatHistory.slice().reverse().some(m => m.role === 'model');
-    ttsButton.disabled = loading || isProcessing || isSummarizing || !hasAiResponse;
-    
-    if (loading) {
-        ttsText.textContent = "Okunuyor...";
-        ttsSpinner.classList.remove('hidden');
-    } else {
-        ttsText.textContent = "Son Yanıtı Tekrar Oku";
-        ttsSpinner.classList.add('hidden');
-    }
-}
-
-// --- Yeni Ayarlar Modalı Fonksiyonları ---
-
-window.showSettingsModal = function() {
-    renderVoiceOptions();
-    settingsModal.classList.remove('hidden');
-}
-
-window.hideSettingsModal = function() {
-    settingsModal.classList.add('hidden');
-    // Modalı kapatırken herhangi bir ses çalmasını durdur
-    ttsAudio.pause();
-    ttsAudio.src = '';
-}
-
-function renderVoiceOptions() {
-    voiceOptionsContainer.innerHTML = '';
-    
-    VOICE_OPTIONS.forEach(voice => {
-        const isSelected = voice.id === selectedVoiceId;
-        const button = document.createElement('div');
-        button.className = `voice-option-button p-3 border ${isSelected ? 'selected' : 'border-gray-300'}`;
-        button.setAttribute('data-voice-id', voice.id);
-        button.onclick = () => selectVoice(voice.id);
-        
-        button.innerHTML = `
-            <div class="flex items-center justify-between">
-                <div class="flex items-center">
-                    <div class="w-4 h-4 rounded-full mr-3 border ${isSelected ? 'bg-indigo-600 border-indigo-600' : 'border-gray-400'} flex-shrink-0"></div>
-                    <span class="font-semibold text-gray-800">${voice.name}</span>
-                </div>
-                <span class="text-sm text-gray-500">${voice.persona}</span>
-            </div>
-        `;
-        voiceOptionsContainer.appendChild(button);
-    });
-}
-
-window.selectVoice = function(voiceId) {
-    if (isTtsProcessing) {
-        // Seslendirme yapılıyorsa durdur
-        ttsAudio.pause();
-        ttsAudio.src = '';
-        setTtsLoading(false);
-    }
-    
-    selectedVoiceId = voiceId;
-    localStorage.setItem(VOICE_STORAGE_KEY, voiceId);
-    
-    // UI'ı güncelle
-    renderVoiceOptions(); 
-
-    // Örnek sesi çal
-    const voice = VOICE_OPTIONS.find(v => v.id === voiceId);
-    if (voice) {
-        speakText(voice.sampleText, voice.id);
-    }
-}
-
-
-// --- Utility ve Modal Fonksiyonları ---
-
-function generateChatId() { return crypto.randomUUID(); }
-
-window.toggleFeaturesMenu = function(forceClose = false) {
-    const isCurrentlyOpen = !featuresMenu.classList.contains('hidden');
-
-    if (forceClose || isCurrentlyOpen) { featuresMenu.classList.add('hidden'); } 
-    else { featuresMenu.classList.remove('hidden'); }
-};
-
-window.toggleSidebar = function(forceClose = false) {
-    const isCurrentlyOpen = !sidebar.classList.contains('-translate-x-full');
-
-    if (forceClose || isCurrentlyOpen) {
-        sidebar.classList.add('-translate-x-full');
-        menuIcon.classList.remove('hidden');
-        closeIcon.classList.add('hidden');
-    } else {
-        sidebar.classList.remove('-translate-x-full');
-        menuIcon.classList.add('hidden');
-        closeIcon.classList.remove('hidden');
-    }
-};
-
-function showModal(title, message, confirmText, callback = null) {
-    document.querySelector('#confirmation-modal h3').textContent = title;
-    modalMessage.textContent = message;
-    modalConfirmButton.textContent = confirmText;
-    modalCallback = callback;
-    
-    const cancelButton = document.querySelector('#confirmation-modal .flex > button:first-child');
-
-    if (!callback) {
-        modalConfirmButton.onclick = () => hideModal(false);
-        cancelButton.classList.add('hidden'); 
-    } else {
-        modalConfirmButton.onclick = () => hideModal(true);
-        cancelButton.classList.remove('hidden'); 
-    }
-    
-    confirmationModal.classList.remove('hidden');
-}
-
-window.hideModal = function(confirmed) {
-    confirmationModal.classList.add('hidden');
-    if (confirmed && modalCallback) {
-        modalCallback();
-    }
-    modalCallback = null;
-}
-
-window.confirmAndDeleteChat = function() {
-    if (!activeChatId) return;
-
-    const chat = chatsMeta.find(c => c.id === activeChatId);
-    const title = chat ? chat.title : 'Bu Sohbeti';
-    
-    showModal('İşlem Onayı', `"${title}" başlıklı sohbeti kalıcı olarak silmek istediğinizden emin misiniz? (Bu işlem sadece bu tarayıcıdaki veriyi siler)`, 'SİL', async () => {
-        await deleteChatFromLocalStorage(activeChatId); 
-    });
-}
-
-window.startNewChat = async function(shouldDisplayWelcome = true) {
-    const newChatId = generateChatId();
-    activeChatId = newChatId;
-    chatHistory = [];
-    chatContainer.innerHTML = '';
-
-    const initialTitle = 'Yeni Sohbet';
-    await saveChatToLocalStorage(newChatId, initialTitle, chatHistory);
-
-    chatTitleElement.textContent = initialTitle;
-    userInput.focus();
-    
-    if (shouldDisplayWelcome) {
-        const welcomeText = "Merhaba! Ben MuAi. Verileriniz tarayıcınızda saklanmaktadır. Yanıtlarımı dinlemek için menüden 'Son Yanıtı Tekrar Oku' butonuna basmanız yeterlidir. Sesinizi ayarlardan değiştirebilirsiniz. Nasıl yardımcı olabilirim?";
-        displayMessage(welcomeText, "model");
-    }
-}
-
-window.switchChat = async function(chatId) {
-    activeChatId = chatId;
-    chatHistory = loadChatHistoryFromLocalStorage(chatId);
-    
-    renderChatHistory(); 
-    
-    const activeMeta = chatsMeta.find(c => c.id === activeChatId);
-    if(activeMeta) {
-        chatTitleElement.textContent = activeMeta.title;
-    }
-    
-    setUILoading(false);
-    userInput.focus();
-}
-
-// --- TTS Çekirdek Fonksiyonları ---
-
-function base64ToArrayBuffer(base64) {
-    const binaryString = atob(base64);
-    const len = binaryString.length;
-    const bytes = new Uint8Array(len);
-    for (let i = 0; i < len; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-    }
-    return bytes.buffer;
-}
-
-function pcmToWav(pcm16, sampleRate) {
-    const dataView = new DataView(new ArrayBuffer(44 + pcm16.length * 2));
-    let offset = 0;
-
-    function writeString(s) {
-        for (let i = 0; i < s.length; i++) {
-            dataView.setUint8(offset + i, s.charCodeAt(i));
-        }
-        offset += s.length;
-    }
-
-    function writeUint32(i) {
-        dataView.setUint32(offset, i, true);
-        offset += 4;
-    }
-
-    function writeUint16(i) {
-        dataView.setUint16(offset, i, true);
-        offset += 2;
-    }
-
-    // RIFF header
-    writeString('RIFF');
-    writeUint32(36 + pcm16.length * 2); 
-    writeString('WAVE');
-
-    // FMT sub-chunk
-    writeString('fmt ');
-    writeUint32(16); 
-    writeUint16(1);  
-    writeUint16(1);  
-    writeUint32(sampleRate);
-    writeUint32(sampleRate * 2); 
-    writeUint16(2);  
-    writeUint16(16); 
-
-    // Data sub-chunk
-    writeString('data');
-    writeUint32(pcm16.length * 2); 
-
-    for (let i = 0; i < pcm16.length; i++) {
-        dataView.setInt16(offset, pcm16[i], true);
-        offset += 2;
-    }
-
-    return new Blob([dataView.buffer], { type: 'audio/wav' });
-}
-
-// Belirli bir metni, isteğe bağlı bir ses ID'si ile seslendiren çekirdek fonksiyon
-window.speakText = async function(textToSpeak, voiceIdOverride = null) {
-    if (!textToSpeak.trim()) return;
-    
-    // Seslendirme yapılıyorsa durdur
-    if (isTtsProcessing) {
-        ttsAudio.pause();
-        ttsAudio.src = '';
-        setTtsLoading(false);
-    }
-    
-    setTtsLoading(true); 
-    const voiceToUse = voiceIdOverride || selectedVoiceId; // Seçilen sesi veya override edilen sesi kullan
-    
-    try {
-        const payload = {
-            contents: [{ parts: [{ text: textToSpeak }] }],
-            generationConfig: {
-                responseModalities: ["AUDIO"],
-                speechConfig: {
-                    voiceConfig: {
-                        prebuiltVoiceConfig: { voiceName: voiceToUse } 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Çanta Cenneti - Premium Çantalar</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'bag-cream': '#F7F3E8',
+                        'bag-green': '#1A4731',
                     }
-                }
-            },
-            model: "gemini-2.5-flash-preview-tts"
+                },
+                fontFamily: {
+                    sans: ['Inter', 'sans-serif'],
+                },
+            }
+        }
+    </script>
+
+    <style>
+        body::-webkit-scrollbar { display: none; }
+        body { -ms-overflow-style: none; scrollbar-width: none; }
+        #drop-zone.dragover {
+            border-color: #1A4731;
+            background-color: #F7F3E8;
+        }
+    </style>
+
+</head>
+<body class="bg-bag-cream text-bag-green font-sans antialiased">
+
+    <!-- ===== ANA SAYFA ===== -->
+    <div id="main-view" class="view">
+        <header class="bg-bag-green text-bag-cream shadow-lg">
+            <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+                <a class="text-3xl font-bold">Çanta Cenneti</a>
+                <div>
+                    <a href="#" class="px-4 hover:text-gray-300">Anasayfa</a>
+                    <a href="#" class="px-4 hover:text-gray-300">Kategoriler</a>
+                    <a href="#" class="px-4 hover:text-gray-300">İletişim</a>
+                </div>
+            </nav>
+        </header>
+
+        <section class="container mx-auto px-6 py-16 text-center">
+            <h1 class="text-5xl font-bold mb-4">Stilinizi Tamamlayın</h1>
+            <p class="text-xl text-gray-700 mb-8">En şık ve kaliteli el yapımı çantalar burada.</p>
+            <a class="bg-bag-green text-bag-cream px-8 py-3 rounded-full font-semibold text-lg hover:bg-opacity-90">Şimdi Keşfet</a>
+        </section>
+
+        <main class="container mx-auto px-6 py-8">
+            <h2 class="text-3xl font-bold text-center mb-10">Yeni Gelenler</h2>
+            <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+                <p id="loading-products" class="text-center col-span-full text-gray-600">Ürünler yükleniyor...</p>
+            </div>
+        </main>
+
+        <footer class="bg-bag-green text-bag-cream mt-16 py-8 relative">
+            <div class="container mx-auto px-6 text-center">
+                <p>&copy; 2025 Çanta Cenneti.</p>
+            </div>
+            <div id="secret-admin-trigger" class="absolute bottom-2 right-2 w-2 h-2 bg-bag-cream opacity-20 rounded-full cursor-pointer hover:opacity-100"></div>
+        </footer>
+    </div>
+
+    <!-- ===== ADMİN GİRİŞ ===== -->
+    <div id="admin-login-view" class="view hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+        <div class="bg-white p-10 rounded-lg shadow-2xl w-full max-w-sm relative">
+            <button id="close-login-button" class="absolute top-3 right-3 text-gray-500 text-2xl">&times;</button>
+            <h2 class="text-2xl font-bold text-center mb-6">Admin Girişi</h2>
+            <form id="admin-login-form">
+                <div class="mb-4">
+                    <label>Şifre</label>
+                    <input type="password" id="admin-password" class="w-full px-4 py-2 border rounded-lg" required>
+                </div>
+                <button class="w-full bg-bag-green text-bag-cream py-2 rounded-lg">Giriş Yap</button>
+                <p id="login-error-message" class="text-red-500 text-sm text-center mt-4"></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== ADMİN PANEL ===== -->
+    <div id="admin-panel-view" class="view hidden min-h-screen bg-gray-100 p-8">
+        <div class="max-w-4xl mx-auto bg-white p-10 rounded-lg shadow-xl">
+
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="text-3xl font-bold">Admin Paneli - Ürün Yönetimi</h1>
+                <button id="admin-logout-button" class="bg-red-600 text-white px-5 py-2 rounded-lg">Çıkış Yap</button>
+            </div>
+
+            <form id="add-product-form" class="space-y-6">
+
+                <div>
+                    <label>Ürün Adı</label>
+                    <input id="product-name" class="w-full px-4 py-2 border rounded-lg" required>
+                </div>
+
+                <div>
+                    <label>Açıklama</label>
+                    <textarea id="product-description" rows="3" class="w-full px-4 py-2 border rounded-lg" required></textarea>
+                </div>
+
+                <div>
+                    <label>Fiyat (₺)</label>
+                    <input type="number" id="product-price" step="0.01" class="w-full px-4 py-2 border rounded-lg" required>
+                </div>
+
+                <div>
+                    <label>Ürün Fotoğrafı</label>
+                    <div id="drop-zone" class="flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md cursor-pointer">
+                        <div class="text-center">
+                            <p class="text-sm text-gray-600">Fotoğrafı buraya bırak veya seç</p>
+                            <p class="text-xs text-gray-500">PNG, JPG, GIF (Max 5MB)</p>
+                        </div>
+                    </div>
+                    <input id="file-input" type="file" class="hidden" accept="image/*">
+                    <img id="image-preview" class="hidden h-48 mt-4 rounded-lg shadow">
+                    <p id="file-name" class="text-sm text-gray-600 mt-2"></p>
+                </div>
+
+                <button id="save-product-button" class="w-full bg-bag-green text-bag-cream py-3 rounded-lg">
+                    <span id="save-button-text">Ürünü Kaydet</span>
+                    <svg id="loading-spinner" class="animate-spin h-5 w-5 text-white hidden"></svg>
+                </button>
+
+                <p id="admin-status" class="text-center mt-4"></p>
+
+            </form>
+
+        </div>
+    </div>
+
+    <!-- ===== FIREBASE ===== -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAKJSmx2_1RPVtvnnJT-49Nz8SGUPrvH0c",
+            authDomain: "mulogo-b941c.firebaseapp.com",
+            projectId: "mulogo-b941c",
+            storageBucket: "mulogo-b941c.appspot.com",
+            messagingSenderId: "382222540163",
+            appId: "1:382222540163:web:09a21543065fa0c469eab6"
         };
-        
-        let attempts = 0;
-        let result = null;
-        const maxRetries = 5;
 
-        while (attempts < maxRetries) {
-            attempts++;
-            const response = await fetch(TTS_API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const storage = getStorage(app);
+
+        const productsCollectionRef = collection(db, "products");
+
+        function showView(id) {
+            document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        // ==== Firebase Başlat ====
+        onAuthStateChanged(auth, user => {
+            if (user) loadProducts();
+            else signInAnonymously(auth);
+        });
+
+        // ==== Ürünleri Çek ====
+        function loadProducts() {
+            const grid = document.getElementById("product-grid");
+            const msg = document.getElementById("loading-products");
+
+            onSnapshot(query(productsCollectionRef), snapshot => {
+                if (snapshot.empty) {
+                    msg.textContent = "Henüz ürün yok.";
+                    return;
+                }
+
+                msg.remove();
+                grid.innerHTML = "";
+
+                let products = [];
+                snapshot.forEach(doc => products.push({ id: doc.id, ...doc.data() }));
+
+                products.sort((a, b) =>
+                    (b.createdAt?.toDate?.() || 0) - (a.createdAt?.toDate?.() || 0)
+                );
+
+                products.forEach(p => {
+                    grid.innerHTML += `
+                        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                            <img src="${p.imageUrl}" class="w-full h-64 object-cover">
+                            <div class="p-6">
+                                <h3 class="text-2xl font-bold">${p.name}</h3>
+                                <p class="text-gray-700 mb-4">${p.description}</p>
+                                <span class="text-2xl font-semibold">${p.price} ₺</span>
+                            </div>
+                        </div>`;
+                });
             });
+        }
 
-            if (response.ok) {
-                result = await response.json();
-                break;
-            } else if (response.status === 429 && attempts < maxRetries) {
-                const delay = Math.pow(2, attempts) * 1000 + Math.random() * 1000;
-                await new Promise(resolve => setTimeout(resolve, delay));
+        // ==== Admin Trigger ====
+        document.getElementById("secret-admin-trigger").onclick = () => showView("admin-login-view");
+        document.getElementById("close-login-button").onclick = () => showView("main-view");
+
+        document.getElementById("admin-login-form").onsubmit = e => {
+            e.preventDefault();
+            if (document.getElementById("admin-password").value === "1975") {
+                showView("admin-panel-view");
             } else {
-                throw new Error(`TTS API HTTP Hatası: ${response.status}`);
+                document.getElementById("login-error-message").textContent = "Hatalı şifre!";
             }
-            if (attempts === maxRetries) throw new Error("TTS API çağrısı maksimum denemeden sonra başarısız oldu.");
+        };
+
+        document.getElementById("admin-logout-button").onclick = () => showView("main-view");
+
+        // ==== Dosya Yükleme ====
+        let selectedFile = null;
+        const dropZone = document.getElementById("drop-zone");
+        const fileInput = document.getElementById("file-input");
+        const imagePreview = document.getElementById("image-preview");
+        const fileName = document.getElementById("file-name");
+
+        dropZone.onclick = () => fileInput.click();
+        fileInput.onchange = e => handleFile(e.target.files[0]);
+
+        dropZone.ondragover = e => {
+            e.preventDefault();
+            dropZone.classList.add("dragover");
+        };
+        dropZone.ondragleave = () => dropZone.classList.remove("dragover");
+        dropZone.ondrop = e => {
+            e.preventDefault();
+            dropZone.classList.remove("dragover");
+            handleFile(e.dataTransfer.files[0]);
+        };
+
+        function handleFile(file) {
+            if (!file || !file.type.startsWith("image/")) return;
+            selectedFile = file;
+            fileName.textContent = file.name;
+            const reader = new FileReader();
+            reader.onload = e => {
+                imagePreview.src = e.target.result;
+                imagePreview.classList.remove("hidden");
+            };
+            reader.readAsDataURL(file);
         }
 
+        // ==== Ürün Kaydet ====
+        document.getElementById("add-product-form").onsubmit = async e => {
+            e.preventDefault();
 
-        const part = result?.candidates?.[0]?.content?.parts?.[0];
-        const audioData = part?.inlineData?.data;
-        const mimeType = part?.inlineData?.mimeType;
+            const name = document.getElementById("product-name").value;
+            const desc = document.getElementById("product-description").value;
+            const price = document.getElementById("product-price").value;
 
-        if (audioData && mimeType && mimeType.startsWith("audio/L16")) {
-            const match = mimeType.match(/rate=(\d+)/);
-            const sampleRate = match ? parseInt(match[1], 10) : 16000; 
+            const status = document.getElementById("admin-status");
 
-            const pcmData = base64ToArrayBuffer(audioData);
-            const pcm16 = new Int16Array(pcmData);
-            const wavBlob = pcmToWav(pcm16, sampleRate);
-            
-            ttsAudio.src = URL.createObjectURL(wavBlob);
-            ttsAudio.play();
-
-            // Sadece bittiğinde veya hata verdiğinde loading'i kapat
-            ttsAudio.onended = () => setTtsLoading(false);
-            ttsAudio.onerror = () => {
-                setTtsLoading(false);
-                if (!voiceIdOverride) showModal("Seslendirme Hatası", "Ses çalınırken bir hata oluştu.", 'Tamam');
-            }
-        } else {
-            throw new Error("Geçersiz veya eksik ses verisi alındı.");
-        }
-
-    } catch (error) {
-        console.error("TTS hatası:", error);
-        setTtsLoading(false);
-        if (!voiceIdOverride) showModal("Seslendirme Başarısız", `Ses dosyası oluşturulamadı: ${error.message || 'Bilinmeyen hata'}`, 'Tamam');
-    }
-}
-
-// MANUEL TTS BUTONU İÇİN KULLANILIR
-window.speakLastAiMessage = function() {
-    // Seslendirme yapılıyorsa veya API işlemi varsa tekrar başlatma
-    if (isTtsProcessing || isProcessing || isSummarizing) return; 
-
-    const lastAiMessage = chatHistory.slice().reverse().find(m => m.role === 'model')?.text;
-    if (lastAiMessage) {
-        // Kaydedilmiş sesi kullanarak oku
-        speakText(lastAiMessage, selectedVoiceId); 
-    } else {
-        showModal("Seslendirme Hatası", "Seslendirilecek bir yapay zeka yanıtı bulunamadı.", 'Tamam');
-    }
-}
-
-// --- Yeni ve Güvenilir LLM API Çağrı Fonksiyonları ---
-
-/**
- * Üstel geri çekilme (exponential backoff) ile API çağrısını deneme.
- * Hata olması durumunda (HTTP veya yanıt yapısı) hata fırlatır.
- */
-async function fetchWithRetry(payload, maxRetries = 5, apiUrl = TEXT_API_URL) {
-    let lastError = null;
-
-    for (let attempt = 0; attempt < maxRetries; attempt++) {
-        try {
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            if (!response.ok) {
-                // Başarısız HTTP durum kodlarını yakala (400, 500 serisi)
-                const errorBody = await response.json().catch(() => ({}));
-                throw new Error(`HTTP Hata ${response.status}: ${errorBody.error?.message || response.statusText}`);
+            if (!name || !desc || !price || !selectedFile) {
+                status.textContent = "Tüm alanları doldurun!";
+                status.className = "text-red-600 text-center mt-4";
+                return;
             }
 
-            const responseJson = await response.json();
-            
-            // Yanıt Yapısı Kontrolü (Gördüğünüz Hatanın Önlenmesi)
-            const candidate = responseJson.candidates?.[0];
-            const textPart = candidate?.content?.parts?.[0]?.text;
+            status.textContent = "Yükleniyor...";
+            status.className = "text-blue-600 text-center mt-4";
 
-            if (!textPart) {
-                const safetyReason = candidate?.finishReason === 'SAFETY' ? ' (Güvenlik Politikaları nedeniyle engellendi)' : '';
-                throw new Error(`Yanıt yapısı bozuk veya geçerli metin bulunamadı.${safetyReason}`);
+            try {
+                const imgRef = ref(storage, `products/${Date.now()}-${selectedFile.name}`);
+                const snapshot = await uploadBytes(imgRef, selectedFile);
+                const url = await getDownloadURL(snapshot.ref);
+
+                await addDoc(productsCollectionRef, {
+                    name,
+                    description: desc,
+                    price: parseFloat(price),
+                    imageUrl: url,
+                    createdAt: serverTimestamp()
+                });
+
+                status.textContent = "Ürün eklendi!";
+                status.className = "text-green-600 text-center mt-4";
+
+                e.target.reset();
+                selectedFile = null;
+                imagePreview.classList.add("hidden");
+                fileName.textContent = "";
+
+            } catch (err) {
+                status.textContent = "Hata: " + err.message;
+                status.className = "text-red-600 text-center mt-4";
             }
-            
-            return responseJson; // Başarılı, kontrol edilmiş yanıtı döndür
+        };
 
-        } catch (error) {
-            lastError = error;
-            // Son deneme değilse geri çekilme (backoff) beklemesi yap
-            if (attempt < maxRetries - 1) {
-                const delay = Math.pow(2, attempt) * 1000 + (Math.random() * 1000); // 1s, 2s, 4s, 8s...
-                await new Promise(resolve => setTimeout(resolve, delay));
-            } else {
-                // Son denemeden sonra hatayı fırlat
-                throw new Error(`API çağrısı ${maxRetries} denemeden sonra başarısız oldu. Son hata: ${lastError.message}`);
-            }
-        }
-    }
-}
-
-
-function toGeminiHistory(internalHistory) {
-    return internalHistory.map(m => ({
-        role: m.role,
-        parts: [{ text: m.text }]
-    }));
-}
-
-async function getGeminiResponse(prompt, history) {
-    const chatHistoryForApi = toGeminiHistory(history); 
-    chatHistoryForApi.push({ role: "user", parts: [{ text: prompt }] });
-
-    const systemInstruction = "Sen, Türkiye'den bir kullanıcıya destek veren, samimi, kibar ve çok yönlü bir yapay zeka asistanı olan MuAi'sin. Yanıtlarını Türkçe ve anlaşılır bir dille, markdown formatında vermelisin. Yanıtların **MÜMKÜN OLDUKÇA KISA, ÖZ VE GEREKSİZ SÖZ UZATILMADAN** verilmelidir. Cevaplar 200 kelimeyi asla geçmemelidir.";
-    
-    const payload = {
-        contents: chatHistoryForApi,
-        tools: [{ "google_search": {} }],
-        systemInstruction: {
-            parts: [{ text: systemInstruction }]
-        },
-    };
-
-    // Yeni: Güvenilir fetchWithRetry fonksiyonunu kullan
-    return await fetchWithRetry(payload);
-}
-
-window.summarizeChat = async function() {
-    if (chatHistory.length < 1 || isProcessing || isSummarizing || isTtsProcessing) return;
-    
-    setSummarizeLoading(true);
-
-    const historyText = chatHistory
-        .map(m => `${m.role === 'user' ? 'Kullanıcı' : 'Asistan'}: ${m.text}`)
-        .join('\n\n');
-
-    const prompt = `Aşağıdaki tüm sohbet geçmişini, temel konuları ve kararları içeren tek bir paragrafla, resmi olmayan bir dille Türkçe olarak özetleyin:\n\n---\n\n${historyText}`;
-
-    try {
-        const apiResponse = await getGeminiResponse(prompt, []); 
-        const summaryText = apiResponse?.candidates?.[0]?.content?.parts?.[0]?.text;
-
-        if (summaryText) {
-            showModal("Sohbet Özeti", summaryText, 'Tamam');
-        } else {
-            // Bu blok artık fetchWithRetry sayesinde nadiren tetiklenmeli
-            throw new Error("Özet metni API'dan alınamadı.");
-        }
-    } catch (error) {
-        console.error("Özetleme hatası:", error);
-        showModal("Bağlantı Hatası", `Özetleme başarısız oldu: ${error.message}`, 'Tamam');
-    } finally {
-        setSummarizeLoading(false);
-    }
-}
-
-window.sendMessage = async function() {
-    if (isProcessing || !activeChatId) return;
-
-    const prompt = userInput.value.trim();
-    if (!prompt) return;
-
-    userInput.value = '';
-    setUILoading(true);
-    
-    const userMessage = { role: "user", text: prompt };
-    // UI'da mesajı göstermeden önce history'e ekle
-    chatHistory = [...chatHistory, userMessage];
-    
-    // UI'ı anında güncelle
-    displayMessage(userMessage.text, userMessage.role); 
-    await saveChatToLocalStorage(activeChatId, chatTitleElement.textContent, chatHistory); 
-    
-    try {
-        // Hata toleranslı API çağrısı
-        const apiResponse = await getGeminiResponse(prompt, chatHistory);
-        const text = apiResponse?.candidates?.[0]?.content?.parts?.[0]?.text;
-
-        // Metin geldiği fetchWithRetry içinde kontrol edildi, burada sadece işleme alınıyor
-        const aiMessage = { role: "model", text: text };
-        chatHistory = [...chatHistory, aiMessage];
-        
-        if (chatHistory.length === 2) { 
-            await generateTitleFromFirstMessage(prompt);
-        } 
-        
-        await saveChatToLocalStorage(activeChatId, chatTitleElement.textContent, chatHistory);
-        displayMessage(aiMessage.text, aiMessage.role); // AI yanıtını UI'da göster
-        renderChatList(); 
-
-    } catch (error) {
-        // Ağ, HTTP, yapısal hatalar buraya düşer.
-        console.error("Mesaj gönderme hatası (Detay):", error.message || error);
-        const displayErrorMsg = `Bir bağlantı veya işlem hatası oluştu. Lütfen tekrar deneyin. (Hata: ${error.message.substring(0, 100)})`;
-        const errorMsg = { role: "model", text: displayErrorMsg };
-
-        chatHistory = [...chatHistory, errorMsg];
-        displayMessage(errorMsg.text, errorMsg.role);
-        await saveChatToLocalStorage(activeChatId, chatTitleElement.textContent, chatHistory);
-        
-    } finally {
-        setUILoading(false);
-        userInput.focus();
-    }
-}
-
-async function generateTitleFromFirstMessage(firstPrompt) {
-    if (!activeChatId) return;
-
-    const titlePrompt = `Aşağıdaki ilk sohbet mesajına dayanarak, 5 kelimeyi geçmeyen, ilgi çekici ve özet bir başlık önerin. Yalnızca başlığı döndürün, başka hiçbir şey söylemeyin: "${firstPrompt}"`;
-
-    try {
-        // Başlık oluşturma çağrısı da fetchWithRetry kullanacak.
-        const response = await getGeminiResponse(titlePrompt, []); 
-        let title = response?.candidates?.[0]?.content?.parts?.[0]?.text.trim().replace(/['"*\n]+/g, '');
-
-        if (title && title.length > 3) {
-            title = title.length > 30 ? title.substring(0, 27) + '...' : title;
-        } else {
-            title = 'Adsız Sohbet';
-        }
-        
-        await saveChatToLocalStorage(activeChatId, title, chatHistory);
-        chatTitleElement.textContent = title;
-
-    } catch (error) {
-        console.error("Başlık oluşturulamadı (Detay):", error.message || error);
-        await saveChatToLocalStorage(activeChatId, 'Adsız Sohbet', chatHistory);
-    }
-}
-
-
-// --- Başlangıç ---
-function initializeLocalStorageApp() {
-    console.log("Uygulama LocalStorage ile başlatılıyor. Veriler tarayıcınızda saklanacaktır.");
-    loadChatsMetaFromLocalStorage(); 
-}
-
-window.onload = function() {
-    initializeLocalStorageApp();
-
-    // Sidebar başlangıçta kapalı
-    sidebar.classList.add('-translate-x-full');
-    menuIcon.classList.remove('hidden');
-    closeIcon.classList.add('hidden');
-
-    // Seslendirme bitince loading'i kapat
-    ttsAudio.addEventListener('pause', () => setTtsLoading(false));
-    ttsAudio.addEventListener('error', () => setTtsLoading(false));
-    ttsAudio.addEventListener('ended', () => setTtsLoading(false));
-};
-
-</script>
+    </script>
 
 </body>
 </html>
