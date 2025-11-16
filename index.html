@@ -30,23 +30,28 @@
     </script>
 
     <style>
+        /* Hide scrollbar */
         body::-webkit-scrollbar { display: none; }
         body { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Drag-over effect for drop zone */
         #drop-zone.dragover {
             border-color: #1A4731;
-            background-color: #F7F3E8;
+            background-color: #f7f3e8b3; /* Lighter cream */
         }
     </style>
 
 </head>
 <body class="bg-bag-cream text-bag-green font-sans antialiased">
 
-    <!-- ===== ANA SAYFA ===== -->
+    <!-- ===== ANA SAYFA (Main View) ===== -->
     <div id="main-view" class="view">
+        <!-- Header -->
         <header class="bg-bag-green text-bag-cream shadow-lg">
             <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-                <a class="text-3xl font-bold">Çanta Cenneti</a>
+                <a href="#" class="text-3xl font-bold">Çanta Cenneti</a>
                 <div>
+                    <!-- Navigation links -->
                     <a href="#" class="px-4 hover:text-gray-300">Anasayfa</a>
                     <a href="#" class="px-4 hover:text-gray-300">Kategoriler</a>
                     <a href="#" class="px-4 hover:text-gray-300">İletişim</a>
@@ -54,171 +59,263 @@
             </nav>
         </header>
 
+        <!-- Hero Section -->
         <section class="container mx-auto px-6 py-16 text-center">
             <h1 class="text-5xl font-bold mb-4">Stilinizi Tamamlayın</h1>
             <p class="text-xl text-gray-700 mb-8">En şık ve kaliteli el yapımı çantalar burada.</p>
-            <a class="bg-bag-green text-bag-cream px-8 py-3 rounded-full font-semibold text-lg hover:bg-opacity-90">Şimdi Keşfet</a>
+            <a href="#" class="bg-bag-green text-bag-cream px-8 py-3 rounded-full font-semibold text-lg hover:bg-opacity-90 transition-colors">Şimdi Keşfet</a>
         </section>
 
+        <!-- Product Grid -->
         <main class="container mx-auto px-6 py-8">
             <h2 class="text-3xl font-bold text-center mb-10">Yeni Gelenler</h2>
             <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
-                <p id="loading-products" class="text-center col-span-full text-gray-600">Ürünler yükleniyor...</p>
+                <!-- Products will be loaded here by JavaScript -->
+                <p id="loading-products" class="text-center col-span-full text-gray-600 text-lg">Ürünler yükleniyor...</p>
             </div>
         </main>
 
+        <!-- Footer -->
         <footer class="bg-bag-green text-bag-cream mt-16 py-8 relative">
             <div class="container mx-auto px-6 text-center">
                 <p>&copy; 2025 Çanta Cenneti.</p>
             </div>
-            <div id="secret-admin-trigger" class="absolute bottom-2 right-2 w-2 h-2 bg-bag-cream opacity-20 rounded-full cursor-pointer hover:opacity-100"></div>
+            <!-- Secret trigger for admin login -->
+            <div id="secret-admin-trigger" class="absolute bottom-2 right-2 w-3 h-3 bg-bag-cream opacity-20 rounded-full cursor-pointer hover:opacity-100 transition-opacity"></div>
         </footer>
     </div>
 
-    <!-- ===== ADMİN GİRİŞ ===== -->
-    <div id="admin-login-view" class="view hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+    <!-- ===== ADMİN GİRİŞ (Admin Login View) ===== -->
+    <div id="admin-login-view" class="view hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
         <div class="bg-white p-10 rounded-lg shadow-2xl w-full max-w-sm relative">
-            <button id="close-login-button" class="absolute top-3 right-3 text-gray-500 text-2xl">&times;</button>
+            <button id="close-login-button" class="absolute top-3 right-3 text-gray-500 hover:text-black text-3xl leading-none">&times;</button>
             <h2 class="text-2xl font-bold text-center mb-6">Admin Girişi</h2>
             <form id="admin-login-form">
                 <div class="mb-4">
-                    <label>Şifre</label>
-                    <input type="password" id="admin-password" class="w-full px-4 py-2 border rounded-lg" required>
+                    <label for="admin-password" class="block text-sm font-medium text-gray-700 mb-1">Şifre</label>
+                    <input type="password" id="admin-password" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-bag-green focus:border-bag-green" required>
                 </div>
-                <button class="w-full bg-bag-green text-bag-cream py-2 rounded-lg">Giriş Yap</button>
+                <button type="submit" class="w-full bg-bag-green text-bag-cream py-2 rounded-lg font-semibold hover:bg-opacity-90 transition-colors">Giriş Yap</button>
                 <p id="login-error-message" class="text-red-500 text-sm text-center mt-4"></p>
             </form>
         </div>
     </div>
 
-    <!-- ===== ADMİN PANEL ===== -->
-    <div id="admin-panel-view" class="view hidden min-h-screen bg-gray-100 p-8">
-        <div class="max-w-4xl mx-auto bg-white p-10 rounded-lg shadow-xl">
+    <!-- ===== ADMİN PANEL (Admin Panel View) ===== -->
+    <div id="admin-panel-view" class="view hidden min-h-screen bg-gray-100 p-4 md:p-8">
+        <div class="max-w-4xl mx-auto bg-white p-6 md:p-10 rounded-lg shadow-xl">
 
             <div class="flex justify-between items-center mb-8">
-                <h1 class="text-3xl font-bold">Admin Paneli - Ürün Yönetimi</h1>
-                <button id="admin-logout-button" class="bg-red-600 text-white px-5 py-2 rounded-lg">Çıkış Yap</button>
+                <h1 class="text-2xl md:text-3xl font-bold">Admin Paneli - Ürün Yönetimi</h1>
+                <button id="admin-logout-button" class="bg-red-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-red-700 transition-colors">Çıkış Yap</button>
             </div>
 
+            <!-- Add Product Form -->
             <form id="add-product-form" class="space-y-6">
 
                 <div>
-                    <label>Ürün Adı</label>
-                    <input id="product-name" class="w-full px-4 py-2 border rounded-lg" required>
+                    <label for="product-name" class="block text-sm font-medium text-gray-700 mb-1">Ürün Adı</label>
+                    <input id="product-name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-bag-green focus:border-bag-green" required>
                 </div>
 
                 <div>
-                    <label>Açıklama</label>
-                    <textarea id="product-description" rows="3" class="w-full px-4 py-2 border rounded-lg" required></textarea>
+                    <label for="product-description" class="block text-sm font-medium text-gray-700 mb-1">Açıklama</label>
+                    <textarea id="product-description" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-bag-green focus:border-bag-green" required></textarea>
                 </div>
 
                 <div>
-                    <label>Fiyat (₺)</label>
-                    <input type="number" id="product-price" step="0.01" class="w-full px-4 py-2 border rounded-lg" required>
+                    <label for="product-price" class="block text-sm font-medium text-gray-700 mb-1">Fiyat (₺)</label>
+                    <input type="number" id="product-price" step="0.01" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-bag-green focus:border-bag-green" required>
                 </div>
 
+                <!-- File Upload Drop Zone -->
                 <div>
-                    <label>Ürün Fotoğrafı</label>
-                    <div id="drop-zone" class="flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md cursor-pointer">
-                        <div class="text-center">
-                            <p class="text-sm text-gray-600">Fotoğrafı buraya bırak veya seç</p>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Ürün Fotoğrafı</label>
+                    <div id="drop-zone" class="flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md cursor-pointer hover:border-bag-green transition-colors">
+                        <div id="drop-zone-text" class="text-center">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            <p class="mt-1 text-sm text-gray-600">Fotoğrafı buraya bırak veya seç</p>
                             <p class="text-xs text-gray-500">PNG, JPG, GIF (Max 5MB)</p>
                         </div>
                     </div>
                     <input id="file-input" type="file" class="hidden" accept="image/*">
-                    <img id="image-preview" class="hidden h-48 mt-4 rounded-lg shadow">
+                    <!-- Image Preview -->
+                    <img id="image-preview" class="hidden h-48 mt-4 rounded-lg shadow object-cover">
                     <p id="file-name" class="text-sm text-gray-600 mt-2"></p>
                 </div>
 
-                <button id="save-product-button" class="w-full bg-bag-green text-bag-cream py-3 rounded-lg">
+                <!-- Save Button with Spinner -->
+                <button id="save-product-button" type="submit" class="w-full bg-bag-green text-bag-cream py-3 rounded-lg font-semibold flex items-center justify-center hover:bg-opacity-90 transition-colors disabled:opacity-50">
                     <span id="save-button-text">Ürünü Kaydet</span>
-                    <svg id="loading-spinner" class="animate-spin h-5 w-5 text-white hidden"></svg>
+                    <svg id="loading-spinner" class="animate-spin h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
                 </button>
 
                 <p id="admin-status" class="text-center mt-4"></p>
 
             </form>
-
         </div>
     </div>
 
-    <!-- ===== FIREBASE ===== -->
+    <!-- ===== FIREBASE SCRIPT ===== -->
     <script type="module">
+        // --- Firebase v11.6.1 Imports ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp, query, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAKJSmx2_1RPVtvnnJT-49Nz8SGUPrvH0c",
-            authDomain: "mulogo-b941c.firebaseapp.com",
-            projectId: "mulogo-b941c",
-            storageBucket: "mulogo-b941c.appspot.com",
-            messagingSenderId: "382222540163",
-            appId: "1:382222540163:web:09a21543065fa0c469eab6"
-        };
+        // --- Use mandatory environment variables ---
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-        const storage = getStorage(app);
+        let app, db, auth, storage;
+        let productsCollectionRef;
+        let currentUserId = null;
 
-        const productsCollectionRef = collection(db, "products");
+        // --- Initialize Firebase ---
+        try {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+            storage = getStorage(app);
+            setLogLevel('Debug'); // Enable Firestore debug logging
+            console.log("Firebase initialized.");
+        } catch (e) {
+            console.error("Firebase initialization failed:", e);
+            document.getElementById("loading-products").textContent = "Site configuration error. Could not load products.";
+            // Stop execution if Firebase fails to init
+            throw new Error("Firebase init failed");
+        }
 
+        /**
+         * Switches the visible view.
+         * @param {string} id - The ID of the view to show.
+         */
         function showView(id) {
             document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
         }
 
-        // ==== Firebase Başlat ====
-        onAuthStateChanged(auth, user => {
-            if (user) loadProducts();
-            else signInAnonymously(auth);
+        // ==== Firebase Auth State ====
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                console.log("User signed in:", user.uid);
+                currentUserId = user.uid;
+                initializeProductListener(); // Initialize listener once authenticated
+            } else {
+                console.log("No user signed in, attempting auth...");
+                currentUserId = null;
+                try {
+                    // Use the provided auth token if available, otherwise sign in anonymously
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                        console.log("Signed in with custom token.");
+                    } else {
+                        await signInAnonymously(auth);
+                        console.log("Signed in anonymously.");
+                    }
+                } catch (error) {
+                    console.error("Authentication error:", error);
+                    document.getElementById("loading-products").textContent = "Authentication failed. Please refresh.";
+                }
+            }
         });
 
-        // ==== Ürünleri Çek ====
+        // ==== Setup Firestore Listener ====
+        function initializeProductListener() {
+            if (!appId || appId === 'default-app-id') {
+                 console.error("App ID is not available.");
+                 document.getElementById("loading-products").textContent = "Error: App configuration is missing.";
+                 return;
+            }
+            // Use public path for products as per security rules
+            const collectionPath = `artifacts/${appId}/public/data/products`;
+            productsCollectionRef = collection(db, collectionPath);
+            console.log("Listening for products at:", collectionPath);
+
+            loadProducts(); // Start loading products
+        }
+
+        // ==== Ürünleri Çek (Load Products) ====
         function loadProducts() {
             const grid = document.getElementById("product-grid");
             const msg = document.getElementById("loading-products");
 
+            if (!productsCollectionRef) {
+                msg.textContent = "Waiting for authentication...";
+                return;
+            }
+
+            // Listen for real-time updates
             onSnapshot(query(productsCollectionRef), snapshot => {
+                const msgEl = document.getElementById("loading-products");
+
                 if (snapshot.empty) {
-                    msg.textContent = "Henüz ürün yok.";
+                    grid.innerHTML = ""; // Clear grid
+                    if (msgEl) {
+                        msgEl.textContent = "Henüz ürün yok.";
+                    } else {
+                        grid.innerHTML = '<p id="loading-products" class="text-center col-span-full text-gray-600 text-lg">Henüz ürün yok.</p>';
+                    }
                     return;
                 }
 
-                msg.remove();
-                grid.innerHTML = "";
+                if (msgEl) {
+                    msgEl.remove(); // Remove "loading" message
+                }
+                grid.innerHTML = ""; // Clear grid before adding new items
 
                 let products = [];
                 snapshot.forEach(doc => products.push({ id: doc.id, ...doc.data() }));
 
+                // Sort by creation date, newest first
                 products.sort((a, b) =>
                     (b.createdAt?.toDate?.() || 0) - (a.createdAt?.toDate?.() || 0)
                 );
 
+                // Create and append product cards
                 products.forEach(p => {
+                    if (!p.imageUrl || !p.name || !p.price) {
+                        console.warn("Skipping incomplete product data:", p);
+                        return;
+                    }
                     grid.innerHTML += `
-                        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-                            <img src="${p.imageUrl}" class="w-full h-64 object-cover">
+                        <div class="bg-white rounded-lg shadow-lg overflow-hidden transition-shadow hover:shadow-xl">
+                            <img src="${p.imageUrl}" alt="${p.name}" class="w-full h-64 object-cover" onerror="this.src='https://placehold.co/600x400/F7F3E8/1A4731?text=Resim+Yok'">
                             <div class="p-6">
-                                <h3 class="text-2xl font-bold">${p.name}</h3>
-                                <p class="text-gray-700 mb-4">${p.description}</p>
+                                <h3 class="text-2xl font-bold truncate">${p.name}</h3>
+                                <p class="text-gray-700 my-2 h-14 overflow-hidden">${p.description}</p>
                                 <span class="text-2xl font-semibold">${p.price} ₺</span>
                             </div>
                         </div>`;
                 });
+            }, (error) => {
+                console.error("Error loading products: ", error);
+                const msgEl = document.getElementById("loading-products");
+                if (msgEl) {
+                    msgEl.textContent = "Error loading products. Check console.";
+                } else {
+                    grid.innerHTML = '<p id="loading-products" class="text-center col-span-full text-red-600 text-lg">Error loading products. Check console.</p>';
+                }
             });
         }
 
-        // ==== Admin Trigger ====
+        // ==== Admin Panel Triggers ====
         document.getElementById("secret-admin-trigger").onclick = () => showView("admin-login-view");
         document.getElementById("close-login-button").onclick = () => showView("main-view");
 
         document.getElementById("admin-login-form").onsubmit = e => {
             e.preventDefault();
-            if (document.getElementById("admin-password").value === "1975") {
+            const passwordInput = document.getElementById("admin-password");
+            if (passwordInput.value === "1975") {
                 showView("admin-panel-view");
+                passwordInput.value = ""; // Clear password after login
+                document.getElementById("login-error-message").textContent = "";
             } else {
                 document.getElementById("login-error-message").textContent = "Hatalı şifre!";
             }
@@ -226,63 +323,125 @@
 
         document.getElementById("admin-logout-button").onclick = () => showView("main-view");
 
-        // ==== Dosya Yükleme ====
+        // ==== File Upload Logic ====
         let selectedFile = null;
         const dropZone = document.getElementById("drop-zone");
         const fileInput = document.getElementById("file-input");
         const imagePreview = document.getElementById("image-preview");
         const fileName = document.getElementById("file-name");
+        const dropZoneText = document.getElementById("drop-zone-text");
 
+        // Open file dialog on drop zone click
         dropZone.onclick = () => fileInput.click();
+        
+        // Handle file selection from dialog
         fileInput.onchange = e => handleFile(e.target.files[0]);
 
-        dropZone.ondragover = e => {
-            e.preventDefault();
-            dropZone.classList.add("dragover");
-        };
-        dropZone.ondragleave = () => dropZone.classList.remove("dragover");
-        dropZone.ondrop = e => {
+        // Drag and Drop event listeners
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, e => {
+                e.preventDefault();
+                dropZone.classList.add("dragover");
+            }, false);
+        });
+
+        dropZone.addEventListener('dragleave', e => {
+             e.preventDefault();
+             dropZone.classList.remove("dragover");
+        }, false);
+        
+        dropZone.addEventListener('drop', e => {
             e.preventDefault();
             dropZone.classList.remove("dragover");
-            handleFile(e.dataTransfer.files[0]);
-        };
+            if (e.dataTransfer.files[0]) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        }, false);
 
+        /**
+         * Handles the selected file, validates it, and shows a preview.
+         * @param {File} file - The file selected by the user.
+         */
         function handleFile(file) {
-            if (!file || !file.type.startsWith("image/")) return;
+            if (!file || !file.type.startsWith("image/")) {
+                selectedFile = null;
+                // Using a custom modal/status message instead of alert()
+                status.textContent = "Lütfen bir resim dosyası seçin (PNG, JPG, vb.).";
+                status.className = "text-red-600 text-center mt-4";
+                return;
+            }
             selectedFile = file;
             fileName.textContent = file.name;
+            
+            // Show image preview
             const reader = new FileReader();
             reader.onload = e => {
                 imagePreview.src = e.target.result;
                 imagePreview.classList.remove("hidden");
+                dropZoneText.classList.add("hidden"); // Hide dropzone text
             };
             reader.readAsDataURL(file);
         }
 
-        // ==== Ürün Kaydet ====
-        document.getElementById("add-product-form").onsubmit = async e => {
+        /**
+         * Resets the add product form to its default state.
+         */
+        function resetAddProductForm() {
+            document.getElementById("add-product-form").reset();
+            selectedFile = null;
+            imagePreview.classList.add("hidden");
+            imagePreview.src = "";
+            fileName.textContent = "";
+            dropZoneText.classList.remove("hidden"); // Show dropzone text again
+        }
+
+        // ==== Ürün Kaydet (Save Product) ====
+        const addProductForm = document.getElementById("add-product-form");
+        const saveButton = document.getElementById("save-product-button");
+        const buttonText = document.getElementById("save-button-text");
+        const spinner = document.getElementById("loading-spinner");
+        const status = document.getElementById("admin-status");
+
+        addProductForm.onsubmit = async e => {
             e.preventDefault();
+
+            if (!productsCollectionRef || !appId || appId === 'default-app-id') {
+                status.textContent = "Hata: Veritabanı bağlantısı hazır değil. Lütfen bekleyin.";
+                status.className = "text-red-600 text-center mt-4";
+                return;
+            }
 
             const name = document.getElementById("product-name").value;
             const desc = document.getElementById("product-description").value;
             const price = document.getElementById("product-price").value;
 
-            const status = document.getElementById("admin-status");
-
             if (!name || !desc || !price || !selectedFile) {
-                status.textContent = "Tüm alanları doldurun!";
+                status.textContent = "Tüm alanları doldurun ve bir resim seçin!";
                 status.className = "text-red-600 text-center mt-4";
                 return;
             }
 
-            status.textContent = "Yükleniyor...";
+            // --- Start loading state ---
+            status.textContent = "Ürün yükleniyor...";
             status.className = "text-blue-600 text-center mt-4";
+            saveButton.disabled = true;
+            buttonText.classList.add("hidden");
+            spinner.classList.remove("hidden");
+            // ---
 
             try {
-                const imgRef = ref(storage, `products/${Date.now()}-${selectedFile.name}`);
+                // 1. Upload Image to Storage - *** THIS IS THE FIX ***
+                // Use the correct public path matching security rules
+                const storagePath = `artifacts/${appId}/public/data/products/${Date.now()}-${selectedFile.name}`;
+                const imgRef = ref(storage, storagePath);
+                
+                console.log(`Uploading to Storage at: ${storagePath}`);
                 const snapshot = await uploadBytes(imgRef, selectedFile);
                 const url = await getDownloadURL(snapshot.ref);
+                console.log("Image uploaded, URL:", url);
 
+                // 2. Save Product to Firestore
+                console.log("Saving product to Firestore...");
                 await addDoc(productsCollectionRef, {
                     name,
                     description: desc,
@@ -290,18 +449,26 @@
                     imageUrl: url,
                     createdAt: serverTimestamp()
                 });
+                console.log("Product saved to Firestore.");
 
-                status.textContent = "Ürün eklendi!";
+                status.textContent = "Ürün başarıyla eklendi!";
                 status.className = "text-green-600 text-center mt-4";
 
-                e.target.reset();
-                selectedFile = null;
-                imagePreview.classList.add("hidden");
-                fileName.textContent = "";
+                resetAddProductForm();
+
+                // Hide status message after 3 seconds
+                setTimeout(() => { status.textContent = "" }, 3000);
 
             } catch (err) {
+                console.error("Product save error: ", err);
                 status.textContent = "Hata: " + err.message;
                 status.className = "text-red-600 text-center mt-4";
+            } finally {
+                // --- End loading state ---
+                saveButton.disabled = false;
+                buttonText.classList.remove("hidden");
+                spinner.classList.add("hidden");
+                // ---
             }
         };
 
@@ -309,3 +476,5 @@
 
 </body>
 </html>
+
+
