@@ -1,304 +1,433 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Çanta Cenneti - Premium Çantalar (Supabase)</title>
-
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Google Fonts: Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'bag-cream': '#F7F3E8',
-                        'bag-green': '#1A4731',
-                    }
-                },
-                fontFamily: {
-                    sans: ['Inter', 'sans-serif'],
-                },
-            }
-        }
-    </script>
-
-    <style>
-        body::-webkit-scrollbar { display: none; }
-        body { -ms-overflow-style: none; scrollbar-width: none; }
-        #drop-zone.dragover {
-            border-color: #1A4731;
-            background-color: #f7f3e8b3;
-        }
-    </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Çanta Cenneti - Admin (Mubag_Style)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  body { font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
+  #drop-zone.dragover { border-color: #1A4731; background:#f7f3e8b3 }
+</style>
 </head>
-<body class="bg-bag-cream text-bag-green font-sans antialiased">
+<body class="bg-gray-50 text-gray-800 p-6">
 
-    <!-- ===== ANA SAYFA ===== -->
-    <div id="main-view" class="view">
-        <header class="bg-bag-green text-bag-cream shadow-lg">
-            <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-                <a href="#" class="text-3xl font-bold">Çanta Cenneti</a>
-                <div>
-                    <a href="#" class="px-4 hover:text-gray-300">Anasayfa</a>
-                    <a href="#" class="px-4 hover:text-gray-300">Kategoriler</a>
-                    <a href="#" class="px-4 hover:text-gray-300">İletişim</a>
-                </div>
-            </nav>
-        </header>
+<div class="max-w-5xl mx-auto">
 
-        <section class="container mx-auto px-6 py-16 text-center">
-            <h1 class="text-5xl font-bold mb-4">Stilinizi Tamamlayın</h1>
-            <p class="text-xl text-gray-700 mb-8">En şık ve kaliteli el yapımı çantalar burada.</p>
-            <a href="#" class="bg-bag-green text-bag-cream px-8 py-3 rounded-full font-semibold text-lg hover:bg-opacity-90 transition-colors">Şimdi Keşfet</a>
-        </section>
+  <!-- Top -->
+  <header class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-bold">Çanta Cenneti — Yönetim</h1>
+    <div id="auth-area" class="flex items-center gap-4"></div>
+  </header>
 
-        <main class="container mx-auto px-6 py-8">
-            <h2 class="text-3xl font-bold text-center mb-10">Yeni Gelenler</h2>
-            <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
-                <p id="loading-products" class="text-center col-span-full text-gray-600 text-lg">Ürünler yükleniyor...</p>
-            </div>
-        </main>
+  <!-- MAIN VIEWS -->
+  <div id="main-view">
 
-        <footer class="bg-bag-green text-bag-cream mt-16 py-8 relative">
-            <div class="container mx-auto px-6 text-center">
-                <p>&copy; 2025 Çanta Cenneti.</p>
-            </div>
-            <div id="secret-admin-trigger" class="absolute bottom-2 right-2 w-3 h-3 bg-bag-cream opacity-20 rounded-full cursor-pointer hover:opacity-100 transition-opacity"></div>
-        </footer>
-    </div>
-
-    <!-- ===== ADMİN GİRİŞ ===== -->
-    <div id="admin-login-view" class="view hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
-        <div class="bg-white p-10 rounded-lg shadow-2xl w-full max-w-sm relative">
-            <button id="close-login-button" class="absolute top-3 right-3 text-gray-500 hover:text-black text-3xl leading-none">&times;</button>
-            <h2 class="text-2xl font-bold text-center mb-6">Admin Girişi</h2>
-            <form id="admin-login-form">
-                <div class="mb-4">
-                    <label for="admin-password" class="block text-sm font-medium text-gray-700 mb-1">Şifre</label>
-                    <input type="password" id="admin-password" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-bag-green focus:border-bag-green" required>
-                </div>
-                <button type="submit" class="w-full bg-bag-green text-bag-cream py-2 rounded-lg font-semibold hover:bg-opacity-90 transition-colors">Giriş Yap</button>
-                <p id="login-error-message" class="text-red-500 text-sm text-center mt-4"></p>
-            </form>
+    <!-- Admin login -->
+    <div id="login-card" class="bg-white p-6 rounded shadow mb-6 max-w-md">
+      <h2 class="font-semibold mb-4">Admin Girişi (Supabase Auth)</h2>
+      <form id="login-form" class="space-y-3">
+        <input id="login-email" type="email" placeholder="Email" class="w-full p-2 border rounded" required />
+        <input id="login-pass" type="password" placeholder="Şifre" class="w-full p-2 border rounded" required />
+        <div class="flex gap-2">
+          <button class="bg-green-700 text-white px-4 py-2 rounded" type="submit">Giriş Yap</button>
+          <button id="register-btn" type="button" class="bg-gray-200 px-4 py-2 rounded">Kayıt Ol (test)</button>
         </div>
+        <p id="login-msg" class="text-sm text-red-600"></p>
+      </form>
     </div>
 
-    <!-- ===== ADMİN PANEL ===== -->
-    <div id="admin-panel-view" class="view hidden min-h-screen bg-gray-100 p-4 md:p-8">
-        <div class="max-w-4xl mx-auto bg-white p-6 md:p-10 rounded-lg shadow-xl">
+    <!-- Admin panel (gizli, gösterilcek giriş sonrası) -->
+    <div id="admin-panel" class="hidden">
 
-            <div class="flex justify-between items-center mb-8">
-                <h1 class="text-2xl md:text-3xl font-bold">Admin Paneli</h1>
-                <button id="admin-logout-button" class="bg-red-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-red-700 transition-colors">Çıkış Yap</button>
+      <!-- New product form (multi images + category) -->
+      <div class="bg-white p-6 rounded shadow mb-6">
+        <h2 class="font-semibold mb-4">Yeni Ürün Ekle / Düzenle</h2>
+
+        <form id="product-form" class="space-y-3">
+          <input id="product-id" type="hidden" />
+          <div><input id="product-name" placeholder="Ürün adı" class="w-full p-2 border rounded" required /></div>
+          <div><textarea id="product-desc" rows="2" placeholder="Açıklama" class="w-full p-2 border rounded"></textarea></div>
+          <div><input id="product-price" type="number" step="0.01" placeholder="Fiyat" class="w-full p-2 border rounded" required /></div>
+
+          <div>
+            <label class="block mb-1">Kategori</label>
+            <div class="flex gap-2">
+              <select id="category-select" class="p-2 border rounded flex-1"></select>
+              <input id="new-category" placeholder="Yeni kategori ekle" class="p-2 border rounded w-48" />
+              <button id="add-category-btn" type="button" class="px-3 bg-blue-600 text-white rounded">Ekle</button>
             </div>
+          </div>
 
-            <h2 class="text-2xl font-semibold mb-4">Yeni Ürün Ekle</h2>
-            <form id="add-product-form" class="space-y-6 mb-12">
-                <div>
-                    <label for="product-name" class="block text-sm font-medium text-gray-700 mb-1">Ürün Adı</label>
-                    <input id="product-name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-bag-green focus:border-bag-green" required>
-                </div>
-                <div>
-                    <label for="product-description" class="block text-sm font-medium text-gray-700 mb-1">Açıklama</label>
-                    <textarea id="product-description" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-bag-green focus:border-bag-green" required></textarea>
-                </div>
-                <div>
-                    <label for="product-price" class="block text-sm font-medium text-gray-700 mb-1">Fiyat (₺)</label>
-                    <input type="number" id="product-price" step="0.01" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-bag-green focus:border-bag-green" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Ürün Fotoğrafı</label>
-                    <div id="drop-zone" class="flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md cursor-pointer hover:border-bag-green transition-colors">
-                        <div id="drop-zone-text" class="text-center">
-                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
-                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                            <p class="mt-1 text-sm text-gray-600">Fotoğrafı buraya bırak veya seç</p>
-                            <p class="text-xs text-gray-500">PNG, JPG, GIF</p>
-                        </div>
-                    </div>
-                    <input id="file-input" type="file" class="hidden" accept="image/*">
-                    <img id="image-preview" class="hidden h-48 mt-4 rounded-lg shadow object-cover">
-                </div>
-                <button id="save-product-button" type="submit" class="w-full bg-bag-green text-bag-cream py-3 rounded-lg font-semibold flex items-center justify-center hover:bg-opacity-90 transition-colors">
-                    <span id="save-button-text">Ürünü Kaydet</span>
-                    <svg id="loading-spinner" class="animate-spin h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                </button>
-                <p id="admin-status" class="text-center mt-4"></p>
-            </form>
-
-            <div class="border-t pt-8">
-                <h2 class="text-2xl font-semibold mb-4">Mevcut Ürünler</h2>
-                <div id="admin-product-list" class="space-y-4">
-                    <p id="admin-loading-products" class="text-gray-600">Ürünler yükleniyor...</p>
-                </div>
+          <div>
+            <label class="block mb-1">Fotoğraflar (Çoklu)</label>
+            <div id="drop-zone" class="p-6 border-2 border-dashed rounded cursor-pointer text-center">
+              <p>Dosyaları sürükle veya seç (JPG/PNG/WebP) — max 2MB / dosya</p>
+              <input id="file-input" type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple class="hidden" />
             </div>
+            <div id="thumbs" class="flex gap-2 mt-3 flex-wrap"></div>
+          </div>
 
+          <div class="flex gap-2">
+            <button id="save-btn" class="bg-green-700 text-white px-4 py-2 rounded" type="submit">Kaydet</button>
+            <button id="cancel-edit" type="button" class="bg-gray-200 px-4 py-2 rounded">İptal</button>
+          </div>
+          <p id="form-status" class="text-sm"></p>
+        </form>
+      </div>
+
+      <!-- Product list (admin) -->
+      <div class="bg-white p-6 rounded shadow">
+        <h2 class="font-semibold mb-4">Mevcut Ürünler</h2>
+        <div id="admin-product-list" class="space-y-3"></div>
+      </div>
+
+      <!-- Public product grid (gözlem) -->
+      <div class="mt-6 bg-white p-6 rounded shadow">
+        <h2 class="font-semibold mb-4">Site Önizleme</h2>
+        <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js";
+
+const SUPABASE_URL = "https://wlnffeirtmjikbgggckn.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsbmZmZWlydG1qaWtiZ2dnY2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI3MTc4NzMsImV4cCI6MjA3ODI5Mzg3M30.bcKzldG9TuH8T_xMwtsoZ7aYKI_J4Cb5UapFDI00mVo";
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ---------- CONFIG ----------
+const BUCKET = "Mubag_Style";
+const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
+const ALLOWED = ["image/jpeg","image/png","image/webp","image/gif"];
+
+// Admin olarak tanımlanacak e-posta (değiştir!)
+const ADMIN_EMAIL = "admin@yourdomain.com";
+
+// ---------- STATE ----------
+let selectedFiles = []; // File objects
+let categories = [];
+
+// ---------- HELPERS ----------
+function el(id){ return document.getElementById(id); }
+function showAdminPanel(user) {
+  el("login-card").classList.add("hidden");
+  el("admin-panel").classList.remove("hidden");
+  // auth-area güncelle
+  el("auth-area").innerHTML = `
+    <div class="text-sm">Hoşgeldin: ${user.email}</div>
+    <button id="signout-btn" class="bg-red-600 text-white px-3 py-1 rounded">Çıkış</button>
+  `;
+  el("signout-btn").onclick = async () => {
+    await supabase.auth.signOut();
+    location.reload();
+  };
+}
+
+// Upload single file -> public url
+async function uploadSingleFile(file, folder="") {
+  const ext = file.name.split(".").pop();
+  const key = (folder ? folder + "/" : "") + `img_${Date.now()}_${Math.floor(Math.random()*10000)}.${ext}`;
+  // upload
+  const { error } = await supabase.storage.from(BUCKET).upload(key, file);
+  if (error) {
+    console.error("Upload error:", error);
+    return null;
+  }
+  const { data } = supabase.storage.from(BUCKET).getPublicUrl(key);
+  return data?.publicUrl ?? null;
+}
+
+// Upload multiple files -> returns array of urls (parallel)
+async function uploadFiles(files) {
+  const urls = [];
+  for (const f of files) {
+    const u = await uploadSingleFile(f);
+    if (!u) return null;
+    urls.push(u);
+  }
+  return urls;
+}
+
+// get products
+async function getProducts() {
+  const { data, error } = await supabase.from("products").select("*").order("id",{ascending:false});
+  if (error) { console.error(error); return []; }
+  return data || [];
+}
+
+// save new product
+async function saveProduct(product) {
+  const { data, error } = await supabase.from("products").insert(product).select();
+  if (error) { console.error(error); return null; }
+  return data ? data[0] : null;
+}
+
+// update product
+async function updateProduct(id, payload) {
+  const { data, error } = await supabase.from("products").update(payload).eq("id", id).select();
+  if (error) { console.error(error); return null; }
+  return data ? data[0] : null;
+}
+
+// delete product
+async function deleteProduct(id) {
+  await supabase.from("products").delete().eq("id", id);
+  await refreshAll();
+}
+
+// categories
+async function loadCategories() {
+  const { data, error } = await supabase.from("categories").select("*").order("id",{ascending:true});
+  categories = (error || !data) ? [] : data.map(c=>c.name);
+  renderCategoryOptions();
+}
+function renderCategoryOptions() {
+  const sel = el("category-select");
+  sel.innerHTML = "<option value=''>--Kategori seç--</option>";
+  categories.forEach(c => sel.insertAdjacentHTML("beforeend", `<option value="${c}">${c}</option>`));
+}
+
+// add category
+async function addCategory(name) {
+  if (!name) return;
+  await supabase.from("categories").insert({ name }).select();
+  await loadCategories();
+}
+
+// ---------- UI RENDER ----------
+function renderAdminList(products) {
+  const wrap = el("admin-product-list");
+  wrap.innerHTML = "";
+  if (!products.length) { wrap.innerHTML = "<p>Henüz ürün yok.</p>"; return; }
+  products.forEach(p => {
+    const firstImg = (p.image_urls && p.image_urls.length) ? p.image_urls[0] : "";
+    wrap.insertAdjacentHTML("beforeend", `
+      <div class="flex items-center justify-between p-3 border rounded">
+        <div class="flex items-center gap-3">
+          <img src="${firstImg}" class="w-16 h-16 object-cover rounded" />
+          <div>
+            <div class="font-semibold">${p.name}</div>
+            <div class="text-sm text-gray-600">${p.category || ""}</div>
+          </div>
         </div>
-    </div>
+        <div class="flex gap-2">
+          <button class="edit-btn bg-yellow-400 px-3 py-1 rounded" data-id="${p.id}">Düzenle</button>
+          <button class="del-btn bg-red-600 text-white px-3 py-1 rounded" data-id="${p.id}">Sil</button>
+        </div>
+      </div>
+    `);
+  });
+  // events
+  wrap.querySelectorAll(".edit-btn").forEach(b => b.onclick = () => startEdit(b.dataset.id, products));
+  wrap.querySelectorAll(".del-btn").forEach(b => {
+    b.onclick = async () => {
+      if (!confirm("Ürün silinsin mi?")) return;
+      await deleteProduct(b.dataset.id);
+    };
+  });
+}
 
-    <!-- ===== SUPABASE SCRIPT ===== -->
-    <script type="module">
-        import { createClient } from "https://esm.sh/@supabase/supabase-js";
+function renderGrid(products) {
+  const grid = el("product-grid");
+  grid.innerHTML = "";
+  if (!products.length) { grid.innerHTML = "<p>Henüz ürün yok.</p>"; return; }
+  products.forEach(p => {
+    const first = (p.image_urls && p.image_urls.length) ? p.image_urls[0] : "";
+    grid.insertAdjacentHTML("beforeend", `
+      <div class="border rounded overflow-hidden">
+        <img src="${first}" class="w-full h-48 object-cover" />
+        <div class="p-3">
+          <h3 class="font-semibold">${p.name}</h3>
+          <div class="text-sm text-gray-600">${p.category || ""}</div>
+          <div class="mt-2 font-semibold">${p.price} ₺</div>
+        </div>
+      </div>
+    `);
+  });
+}
 
-        const SUPABASE_URL = "https://wlnffeirtmjikbgggckn.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsbmZmZWlydG1qaWtiZ2dnY2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI3MTc4NzMsImV4cCI6MjA3ODI5Mzg3M30.bcKzldG9TuH8T_xMwtsoZ7aYKI_J4Cb5UapFDI00mVo";
+// ---------- EDIT FLOW ----------
+function startEdit(id, products) {
+  const p = products.find(x => String(x.id) === String(id));
+  if (!p) return;
+  // fill form
+  el("product-id").value = p.id;
+  el("product-name").value = p.name;
+  el("product-desc").value = p.description || "";
+  el("product-price").value = p.price || "";
+  el("category-select").value = p.category || "";
+  // show thumbs for existing images (not files)
+  const thumbs = el("thumbs");
+  thumbs.innerHTML = "";
+  (p.image_urls || []).forEach(url => {
+    const div = document.createElement("div");
+    div.className = "w-24 h-24 border rounded overflow-hidden relative";
+    div.innerHTML = `<img src="${url}" class="w-full h-full object-cover" />`;
+    thumbs.appendChild(div);
+  });
+  // clear selectedFiles to avoid accidental overwrite
+  selectedFiles = [];
+  // scroll to form
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
 
-        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// ---------- REFRESH ----------
+async function refreshAll() {
+  const prods = await getProducts();
+  renderAdminList(prods);
+  renderGrid(prods);
+}
 
-        let selectedFile = null;
+// ---------- EVENTS ----------
+window.onload = async () => {
+  // auth check
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session && session.user && session.user.email === ADMIN_EMAIL) {
+    showAdminPanel(session.user);
+    await loadCategories();
+    await refreshAll();
+  } else {
+    el("login-card").classList.remove("hidden");
+  }
 
-        async function getProducts() {
-            const { data, error } = await supabase.from("products").select("*").order("id", { ascending: false });
-            if (error) { console.error(error); return []; }
-            return data;
+  // login form
+  el("login-form").onsubmit = async (e) => {
+    e.preventDefault();
+    el("login-msg").textContent = "";
+    const email = el("login-email").value;
+    const pass = el("login-pass").value;
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
+      if (error) { el("login-msg").textContent = error.message; return; }
+      if (data && data.user && data.user.email === ADMIN_EMAIL) {
+        showAdminPanel(data.user);
+        await loadCategories();
+        await refreshAll();
+      } else {
+        // allow sign in but check admin email
+        if (data && data.user) {
+          el("login-msg").textContent = "Bu e-posta admin değil.";
+          await supabase.auth.signOut();
         }
+      }
+    } catch(err){ el("login-msg").textContent = err.message; }
+  };
 
-        async function saveProduct(product) {
-            const { data, error } = await supabase.from("products").insert(product).select();
-            if (error) { console.error(error); return null; }
-            return data[0];
-        }
+  // quick register (test) - create a user in Supabase (dev convenience)
+  el("register-btn").onclick = async () => {
+    const email = el("login-email").value;
+    const pass = el("login-pass").value;
+    if(!email||!pass){ el("login-msg").textContent="Email ve şifre girin"; return; }
+    const { data, error } = await supabase.auth.signUp({ email, password: pass });
+    if (error) el("login-msg").textContent = error.message;
+    else el("login-msg").textContent = "Kayıt isteği gönderildi. Supabase auth kullanıcılar bölümünden e-postayı onayla ve admin email yap.";
+  };
 
-        async function deleteProduct(id) {
-            await supabase.from("products").delete().eq("id", id);
-            refreshAllProductLists();
-        }
+  // drop zone + file input
+  const dz = el("drop-zone"), fi = el("file-input");
+  dz.onclick = () => fi.click();
+  fi.onchange = e => handleFileList(e.target.files);
+  ['dragenter','dragover'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add("dragover"); }));
+  ['dragleave','drop'].forEach(ev => dz.addEventListener(ev, e => {
+    e.preventDefault(); dz.classList.remove("dragover");
+    if (ev==="drop" && e.dataTransfer.files[0]) handleFileList(e.dataTransfer.files);
+  }));
 
-        async function uploadImage(file) {
-            const fileName = `img_${Date.now()}.${file.name.split(".").pop()}`;
-            const { error } = await supabase.storage.from("product-images").upload(fileName, file);
-            if (error) { console.error(error); return null; }
-            const { data: publicUrlData } = supabase.storage.from("product-images").getPublicUrl(fileName);
-            return publicUrlData.publicUrl;
-        }
+  // add category
+  el("add-category-btn").onclick = async () => {
+    const v = el("new-category").value.trim();
+    if (!v) return;
+    await addCategory(v);
+    el("new-category").value = "";
+  };
 
-        async function refreshAllProductLists() {
-            const products = await getProducts();
-            const grid = document.getElementById("product-grid");
-            grid.innerHTML = "";
-            if (products.length === 0) {
-                grid.innerHTML = `<p class="col-span-full text-center text-gray-600">Henüz ürün yok.</p>`;
-            } else {
-                products.forEach(p => {
-                    grid.innerHTML += `
-                        <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl">
-                            <img src="${p.image_url}" class="w-full h-64 object-cover">
-                            <div class="p-6">
-                                <h3 class="text-2xl font-bold truncate">${p.name}</h3>
-                                <p class="text-gray-700 my-2 h-14 overflow-hidden">${p.description}</p>
-                                <span class="text-2xl font-semibold">${p.price} ₺</span>
-                            </div>
-                        </div>`;
-                });
-            }
+  // cancel edit
+  el("cancel-edit").onclick = () => {
+    el("product-form").reset();
+    selectedFiles = [];
+    el("thumbs").innerHTML = "";
+    el("product-id").value = "";
+  };
 
-            const list = document.getElementById("admin-product-list");
-            list.innerHTML = "";
-            if (products.length === 0) {
-                list.innerHTML = `<p class="text-gray-600">Henüz ürün yok.</p>`;
-            } else {
-                products.forEach(p => {
-                    list.innerHTML += `
-                        <div class="flex items-center justify-between p-3 bg-gray-50 border rounded-lg">
-                            <img src="${p.image_url}" class="w-16 h-16 object-cover rounded-md">
-                            <span class="flex-1 ml-4 font-semibold truncate">${p.name}</span>
-                            <span class="mx-4 text-gray-800">${p.price} ₺</span>
-                            <button class="delete-product-btn bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold" data-id="${p.id}">Sil</button>
-                        </div>`;
-                });
-            }
-        }
+  // save product (insert or update)
+  el("product-form").onsubmit = async (e) => {
+    e.preventDefault();
+    const status = el("form-status"); status.textContent = "";
+    const id = el("product-id").value;
+    const name = el("product-name").value.trim();
+    const desc = el("product-desc").value.trim();
+    const price = parseFloat(el("product-price").value) || 0;
+    const category = el("category-select").value || "";
 
-        function handleFile(file) {
-            if (!file || !file.type.startsWith("image/")) { selectedFile = null; return; }
-            selectedFile = file;
-            const reader = new FileReader();
-            reader.onload = e => {
-                document.getElementById("image-preview").classList.remove("hidden");
-                document.getElementById("image-preview").src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
+    if (!name) { status.textContent = "Ürün adı gerekli."; return; }
 
-        function showView(id) {
-            document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
-            document.getElementById(id).classList.remove('hidden');
-        }
+    // if new files selected -> upload them and set image_urls
+    let uploadedUrls = null;
+    if (selectedFiles.length) {
+      status.textContent = "Resimler yükleniyor...";
+      uploadedUrls = await uploadFiles(selectedFiles);
+      if (!uploadedUrls) { status.textContent = "Resim yükleme hatası."; return; }
+    }
 
-        window.onload = () => {
-            refreshAllProductLists();
+    // payload
+    const payload = {
+      name, description: desc, price, category
+    };
+    if (uploadedUrls) payload.image_urls = uploadedUrls;
 
-            document.getElementById("secret-admin-trigger").onclick = () => showView("admin-login-view");
-            document.getElementById("close-login-button").onclick = () => showView("main-view");
+    if (!id) {
+      // create
+      const created = await saveProduct(payload);
+      if (!created) { status.textContent = "Ürün kaydedilemedi."; return; }
+      status.textContent = "Ürün eklendi.";
+    } else {
+      // update existing: if uploadedUrls set -> replace image_urls; else keep existing
+      const updated = await updateProduct(id, payload);
+      if (!updated) { status.textContent = "Güncelleme başarısız."; return; }
+      status.textContent = "Ürün güncellendi.";
+    }
 
-            document.getElementById("admin-login-form").onsubmit = e => {
-                e.preventDefault();
-                if (document.getElementById("admin-password").value === "1975") {
-                    showView("admin-panel-view");
-                } else {
-                    document.getElementById("login-error-message").textContent = "Hatalı şifre!";
-                }
-            };
+    // reset form
+    el("product-form").reset();
+    selectedFiles = [];
+    el("thumbs").innerHTML = "";
+    el("product-id").value = "";
+    await refreshAll();
+    setTimeout(()=>status.textContent="",2000);
+  };
 
-            document.getElementById("admin-logout-button").onclick = () => showView("main-view");
+  // load categories & products for initial
+  await loadCategories();
+  await refreshAll();
+};
 
-            const dropZone = document.getElementById("drop-zone");
-            const fileInput = document.getElementById("file-input");
-            dropZone.onclick = () => fileInput.click();
-            fileInput.onchange = e => handleFile(e.target.files[0]);
-            ['dragenter','dragover'].forEach(event => dropZone.addEventListener(event,e=>{e.preventDefault();dropZone.classList.add("dragover")}));
-            ['dragleave','drop'].forEach(event => dropZone.addEventListener(event,e=>{e.preventDefault();dropZone.classList.remove("dragover");if(event==="drop" && e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0])}));
-
-            document.getElementById("admin-product-list").onclick = e => {
-                if (e.target.classList.contains("delete-product-btn")) {
-                    deleteProduct(e.target.dataset.id);
-                }
-            };
-
-            document.getElementById("add-product-form").onsubmit = async e => {
-                e.preventDefault();
-                const status = document.getElementById("admin-status");
-                if (!selectedFile) {
-                    status.textContent = "Lütfen bir fotoğraf seçin.";
-                    status.className = "text-red-600 text-center mt-4";
-                    return;
-                }
-                status.textContent = "Fotoğraf yükleniyor...";
-                status.className = "text-blue-600 text-center mt-4";
-
-                const imageUrl = await uploadImage(selectedFile);
-                if (!imageUrl) {
-                    status.textContent = "Fotoğraf yüklenemedi!";
-                    status.className = "text-red-600 text-center mt-4";
-                    return;
-                }
-
-                const product = {
-                    name: document.getElementById("product-name").value,
-                    description: document.getElementById("product-description").value,
-                    price: parseFloat(document.getElementById("product-price").value),
-                    image_url: imageUrl
-                };
-
-                await saveProduct(product);
-                status.textContent = "Ürün başarıyla eklendi!";
-                status.className = "text-green-600 text-center mt-4";
-                selectedFile = null;
-                document.getElementById("add-product-form").reset();
-                document.getElementById("image-preview").classList.add("hidden");
-                refreshAllProductLists();
-                setTimeout(()=>status.textContent="",2000);
-            };
-        };
-    </script>
+// file handling with checks and thumbnails
+function handleFileList(fileList) {
+  const arr = Array.from(fileList);
+  const thumbs = el("thumbs");
+  for (const f of arr) {
+    if (!ALLOWED.includes(f.type)) { alert("Sadece JPG/PNG/WebP/GIF izinli."); continue; }
+    if (f.size > MAX_FILE_SIZE) { alert("Maksimum dosya boyutu 2MB."); continue; }
+    selectedFiles.push(f);
+    // thumb
+    const reader = new FileReader();
+    reader.onload = e => {
+      const div = document.createElement("div");
+      div.className = "w-24 h-24 border rounded overflow-hidden relative";
+      div.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover" />`;
+      thumbs.appendChild(div);
+    };
+    reader.readAsDataURL(f);
+  }
+}
+</script>
+</body>
+</html>
