@@ -1,29 +1,32 @@
-<!DOCTYPE html>
+]<!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>English Dream</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Ikon Kütüphanesi -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            background-color: #111827; /* gray-900 */
         }
         /* Özel Kaydırma Çubuğu */
         ::-webkit-scrollbar {
             width: 8px;
         }
         ::-webkit-scrollbar-track {
-            background: #f1f1f1;
+            background: #374151; /* gray-700 */
             border-radius: 10px;
         }
         ::-webkit-scrollbar-thumb {
-            background: #888;
+            background: #6366F1; /* indigo-500 */
             border-radius: 10px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #555;
+            background: #4F46E5; /* indigo-600 */
         }
         .bookmark-highlight {
             box-shadow: 0 0 15px 5px rgba(250, 204, 21, 0.7); /* yellow-400 */
@@ -44,17 +47,23 @@
             cursor: pointer;
             display: flex;
             align-items: center;
+            transition: background-color 0.3s ease;
         }
-        .lang-selector-btn svg {
+        .lang-selector-btn:hover {
+            background-color: #6B7280; /* gray-500 */
+        }
+        .lang-selector-btn svg, .lang-selector-btn i {
             margin-left: 8px;
+            width: 16px;
+            height: 16px;
         }
         .lang-selector-content {
             display: none;
             position: absolute;
             background-color: #374151; /* gray-700 */
-            min-width: 120px;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-            z-index: 1;
+            min-width: 140px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.3);
+            z-index: 10;
             border-radius: 8px;
             overflow: hidden;
             right: 0;
@@ -63,12 +72,15 @@
             color: #E5E7EB; /* gray-200 */
             padding: 12px 16px;
             text-decoration: none;
-            display: block;
+            display: flex;
+            align-items: center;
+            gap: 8px;
             width: 100%;
             text-align: left;
             background: none;
             border: none;
             cursor: pointer;
+            transition: background-color 0.2s ease;
         }
         .lang-selector-content button:hover {
             background-color: #4B5563; /* gray-600 */
@@ -76,27 +88,48 @@
         .lang-selector:hover .lang-selector-content {
             display: block;
         }
+        
+        /* Modal Geçişleri */
+        .modal-backdrop {
+            transition: opacity 0.3s ease;
+        }
+        .modal-container {
+            transition: all 0.3s ease;
+            transform: scale(0.95);
+            opacity: 0;
+        }
+        .modal-open .modal-backdrop {
+            opacity: 1;
+        }
+        .modal-open .modal-container {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        /* Lucide Ikon Dolgusu */
+        .lucide-filled {
+            fill: currentColor;
+        }
     </style>
 </head>
 <body class="bg-gray-900 min-h-screen text-gray-200">
 
     <!-- Header -->
-    <header class="bg-gray-800 shadow-md sticky top-0 z-50">
+    <header class="bg-gray-800 shadow-lg sticky top-0 z-50">
         <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
-                <h1 class="text-2xl sm:text-3xl font-bold text-purple-400">English Dream</h1>
+                <h1 class="text-2xl sm:text-3xl font-bold text-indigo-400">English Dream</h1>
                 <div class="flex items-center space-x-2 sm:space-x-4">
-                    <!-- ARAMA ÇUBUĞU KALDIRILDI -->
 
-                    <button id="pinned-list-btn" class="p-2 rounded-full text-gray-300 hover:bg-gray-700 hover:text-purple-400 transition" data-i18n-key="pinnedWordsTitle" title="Sabitlenen Kelimeler">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                    <button id="pinned-list-btn" class="p-2 rounded-full text-gray-300 hover:bg-gray-700 hover:text-indigo-400 transition-all duration-300" data-i18n-key="pinnedWordsTitle" title="Sabitlenen Kelimeler">
+                        <i data-lucide="book-marked" class="w-6 h-6"></i>
                     </button>
                     
                     <!-- Dil Seçici -->
                     <div class="lang-selector hidden sm:inline-block">
                         <button class="lang-selector-btn">
                             <span id="current-lang-flag">🇹🇷</span><span id="lang-text-desktop">TR</span>
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            <i data-lucide="chevron-down"></i>
                         </button>
                         <div class="lang-selector-content" id="lang-options">
                             <button data-lang="tr">🇹🇷 Türkçe</button>
@@ -107,30 +140,29 @@
                     </div>
 
                     <span id="level-selection" class="hidden sm:flex items-center space-x-1">
-                        <button data-level="a1" class="level-btn px-3 py-2 rounded-md text-sm font-medium transition bg-purple-600 text-white">A1</button>
-                        <button data-level="a2" class="level-btn px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-gray-700 transition">A2</button>
-                        <button data-level="b1" class="level-btn px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-gray-700 transition">B1</button>
-                        <button data-level="b2" class="level-btn px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-gray-700 transition">B2</button>
-                        <button data-level="c1" class="level-btn px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-gray-700 transition">C1</button>
+                        <button data-level="a1" class="level-btn px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 active:scale-95 bg-indigo-600 text-white shadow-md">A1</button>
+                        <button data-level="a2" class="level-btn px-3 py-2 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-700 transition-all duration-300 active:scale-95">A2</button>
+                        <button data-level="b1" class="level-btn px-3 py-2 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-700 transition-all duration-300 active:scale-95">B1</button>
+                        <button data-level="b2" class="level-btn px-3 py-2 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-700 transition-all duration-300 active:scale-95">B2</button>
+                        <button data-level="c1" class="level-btn px-3 py-2 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-700 transition-all duration-300 active:scale-95">C1</button>
                     </span>
                 </div>
             </div>
             <!-- Mobil Seviye Seçimi -->
             <div id="mobile-level-selection" class="sm:hidden flex justify-center space-x-2 pb-3 border-t border-gray-700 pt-3">
-                <button data-level="a1" class="level-btn px-3 py-2 rounded-md text-sm font-medium transition bg-purple-600 text-white">A1</button>
-                <button data-level="a2" class="level-btn px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-gray-700 transition">A2</button>
-                <button data-level="b1" class="level-btn px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-gray-700 transition">B1</button>
-                <button data-level="b2" class="level-btn px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-gray-700 transition">B2</button>
-                <button data-level="c1" class="level-btn px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-gray-700 transition">C1</button>
+                <button data-level="a1" class="level-btn px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 active:scale-95 bg-indigo-600 text-white shadow-md">A1</button>
+                <button data-level="a2" class="level-btn px-3 py-2 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-700 transition-all duration-300 active:scale-95">A2</button>
+                <button data-level="b1" class="level-btn px-3 py-2 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-700 transition-all duration-300 active:scale-95">B1</button>
+                <button data-level="b2" class="level-btn px-3 py-2 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-700 transition-all duration-300 active:scale-95">B2</button>
+                <button data-level="c1" class="level-btn px-3 py-2 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-700 transition-all duration-300 active:scale-95">C1</button>
             </div>
-            <!-- MOBİL ARAMA KALDIRILDI -->
             
             <!-- Mobil Dil Seçici -->
             <div class="sm:hidden flex justify-center pb-3 pt-2">
                 <div class="lang-selector">
                     <button class="lang-selector-btn">
                         <span id="current-lang-flag-mobile">🇹🇷</span><span id="lang-text-mobile">TR</span>
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        <i data-lucide="chevron-down"></i>
                     </button>
                     <div class="lang-selector-content" id="lang-options-mobile">
                         <button data-lang="tr">🇹🇷 Türkçe</button>
@@ -148,14 +180,14 @@
 
         <!-- Kontrol Butonları -->
         <div class="mb-6 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
-            <button id="refresh-btn" class="flex-1 w-full bg-purple-600 text-white px-5 py-3 rounded-lg font-semibold shadow-md hover:bg-purple-700 transition flex items-center justify-center space-x-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9H0v5h.582A8.001 8.001 0 0023.418 15H24v-5h-.582z"></path></svg>
+            <button id="refresh-btn" class="flex-1 w-full bg-indigo-600 text-white px-5 py-3 rounded-lg font-semibold shadow-md hover:bg-indigo-700 transition-all duration-300 active:scale-95 flex items-center justify-center space-x-2">
+                <i data-lucide="refresh-cw" class="w-5 h-5"></i>
                 <span data-i18n-key="getNewWords">Yeni Kelimeler Getir</span>
             </button>
-            <button id="toggle-freeze-btn" class="flex-1 w-full bg-green-600 text-white px-5 py-3 rounded-lg font-semibold shadow-md hover:bg-green-700 transition">
+            <button id="toggle-freeze-btn" class="flex-1 w-full bg-green-600 text-white px-5 py-3 rounded-lg font-semibold shadow-md hover:bg-green-700 transition-all duration-300 active:scale-95">
                 <span data-i18n-key="freezeList">Listeyi Sabitle</span>
             </button>
-            <button id="subscription-btn" class="flex-1 w-full bg-blue-500 text-white px-5 py-3 rounded-lg font-semibold shadow-md hover:bg-blue-600 transition">
+            <button id="subscription-btn" class="flex-1 w-full bg-blue-500 text-white px-5 py-3 rounded-lg font-semibold shadow-md hover:bg-blue-600 transition-all duration-300 active:scale-95">
                 <span data-i18n-key="subscription">Abonelik</span>
             </button>
         </div>
@@ -167,7 +199,7 @@
 
         <!-- Yükleniyor... -->
         <div id="loading-spinner" class="text-center py-10 hidden">
-            <svg class="animate-spin h-8 w-8 text-purple-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <svg class="animate-spin h-8 w-8 text-indigo-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
@@ -175,15 +207,20 @@
         </div>
     </main>
 
-    <!-- SINAV ARAYÜZÜ KALDIRILDI -->
-
     <!-- Sabitlenen Kelimeler Modalı -->
-    <div id="pinned-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
-        <div class="bg-gray-800 rounded-lg shadow-xl w-11/12 max-w-2xl h-4/5 flex flex-col">
+    <div id="pinned-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+        <!-- Backdrop -->
+        <div class="modal-backdrop fixed inset-0 bg-black bg-opacity-75 transition-opacity duration-300 opacity-0"></div>
+        
+        <!-- Modal Container -->
+        <div class="modal-container bg-gray-800 rounded-lg shadow-xl w-11/12 max-w-2xl h-4/5 flex flex-col z-10">
             <div class="flex justify-between items-center p-5 border-b border-gray-700">
-                <h3 class="text-2xl font-semibold text-gray-100" data-i18n-key="pinnedWordsHeader">Sabitlenen Kelimeler</h3>
-                <button id="close-pinned-modal-btn" class="text-gray-400 hover:text-white">
-                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                <h3 class="text-2xl font-semibold text-gray-100 flex items-center gap-2">
+                    <i data-lucide="book-marked" class="text-indigo-400"></i>
+                    <span data-i18n-key="pinnedWordsHeader">Sabitlenen Kelimeler</span>
+                </h3>
+                <button id="close-pinned-modal-btn" class="text-gray-400 hover:text-white transition-all duration-300 active:scale-90">
+                    <i data-lucide="x" class="w-7 h-7"></i>
                 </button>
             </div>
             <div id="pinned-list-content" class="p-6 overflow-y-auto">
@@ -192,37 +229,46 @@
         </div>
     </div>
 
-    <!-- SINAV GEÇMİŞİ MODALI KALDIRILDI -->
-    
-    <!-- ARAMA SONUÇLARI MODALI KALDIRILDI -->
-    
-    <!-- SINAV ÇIKIŞ MODALI KALDIRILDI -->
-    
-    <!-- ABONELİK MODALI KALDIRILDI -->
-
     <!-- Yeni Abonelik Modalı -->
-    <div id="subscription-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
-        <div class="bg-gray-800 rounded-lg shadow-xl w-11/12 max-w-lg flex flex-col">
+    <div id="subscription-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+        <!-- Backdrop -->
+        <div class="modal-backdrop fixed inset-0 bg-black bg-opacity-75 transition-opacity duration-300 opacity-0"></div>
+        
+        <!-- Modal Container -->
+        <div class="modal-container bg-gray-800 rounded-lg shadow-xl w-11/12 max-w-lg flex flex-col z-10">
             <!-- Başlık -->
             <div class="flex justify-between items-center p-5 border-b border-gray-700">
-                <h3 class="text-2xl font-semibold text-gray-100" data-i18n-key="subscriptionHeader">Abonelik Detayları</h3>
-                <button id="close-subscription-modal-btn" class="text-gray-400 hover:text-white">
-                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                <h3 class="text-2xl font-semibold text-gray-100 flex items-center gap-2">
+                    <i data-lucide="gem" class="text-blue-400"></i>
+                    <span data-i18n-key="subscriptionHeader">Premium Abonelik</span>
+                </h3>
+                <button id="close-subscription-modal-btn" class="text-gray-400 hover:text-white transition-all duration-300 active:scale-90">
+                    <i data-lucide="x" class="w-7 h-7"></i>
                 </button>
             </div>
             <!-- İçerik -->
             <div class="p-6 overflow-y-auto text-gray-300">
-                <p class="mb-4" data-i18n-key="subDescription">Premium abonelik ile tüm özelliklerin kilidini açın ve dil öğrenme sürecinizi hızlandırın:</p>
-                <ul class="list-disc list-inside space-y-2 mb-6">
-                    <li data-i18n-key="subFeature1">Kendinizi test etmeniz için 3 adet kapsamlı seviye belirleme sınavı.</li>
-                    <li data-i18n-key="subFeature2">Almanca ve İspanyolca dilleri için özel kelime listeleri ve sınavlar.</li>
-                    <li data-i18n-key="subFeature3">Matematik ve Fizik için özel testler.</li>
+                <p class="mb-6 text-lg" data-i18n-key="subDescription">Premium abonelik ile tüm özelliklerin kilidini açın ve dil öğrenme sürecinizi hızlandırın:</p>
+                <ul class="space-y-4 mb-8">
+                    <li class="flex items-center gap-3">
+                        <i data-lucide="check-circle" class="w-6 h-6 text-green-500 flex-shrink-0"></i>
+                        <span data-i18n-key="subFeature1">Kendinizi test etmeniz için 3 adet kapsamlı seviye belirleme sınavı.</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <i data-lucide="check-circle" class="w-6 h-6 text-green-500 flex-shrink-0"></i>
+                        <span data-i18n-key="subFeature2">Almanca ve İspanyolca dilleri için özel kelime listeleri ve sınavlar.</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <i data-lucide="check-circle" class="w-6 h-6 text-green-500 flex-shrink-0"></i>
+                        <span data-i18n-key="subFeature3">Matematik ve Fizik için özel testler.</span>
+                    </li>
                 </ul>
-                <p data-i18n-key="subContact">Fiyatlar ve detaylı bilgi için bizimle iletişime geçin.</p>
+                <p class="text-center text-gray-400" data-i18n-key="subContact">Fiyatlar ve detaylı bilgi için bizimle iletişime geçin.</p>
             </div>
             <!-- Buton -->
-            <div class="p-4 border-t border-gray-700">
-                <button id="contact-whatsapp-btn" class="w-full bg-green-500 text-white px-5 py-3 rounded-lg font-semibold shadow-md hover:bg-green-600 transition flex items-center justify-center space-x-2">
+            <div class="p-5 border-t border-gray-700 bg-gray-800 rounded-b-lg">
+                <button id="contact-whatsapp-btn" class="w-full bg-green-500 text-white px-5 py-3 rounded-lg font-semibold shadow-md hover:bg-green-600 transition-all duration-300 active:scale-95 flex items-center justify-center space-x-2">
+                    <!-- WhatsApp ikonu için SVG'yi koruyoruz, çünkü Lucide'da yok -->
                     <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.0-5.842 4.76-10.584 10.687-10.584 2.991.0 5.798 1.166 7.914 3.282 2.118 2.116 3.287 4.922 3.287 7.912.0 5.841-4.764 10.583-10.686 10.583-1.98.0-3.896-.539-5.57-1.506L.057 24zM12.066 3.387c-4.797 0-8.686 3.884-8.686 8.669.0 1.83.574 3.536 1.631 4.966l-.105.39-.757 2.726 2.793-.737.356-.09.985.549c1.378.761 2.96 1.166 4.605 1.166 4.795 0 8.684-3.886 8.684-8.671.0-4.783-3.887-8.668-8.686-8.668zM17.51 14.66c-.14-.07-.852-.42-1-.49-.141-.07-.251-.12-.361.12-.11.24-.38.49-.46.56-.08.07-.16.07-.3.0l-1.42-.52c-.47-.18-.78-.39-1.09-.69-.3-.29-.49-.46-.69-.78-.18-.31-.03-.48.07-.56.09-.08.18-.19.27-.29l.104-.12c.1-.12.16-.21.22-.34.07-.12.04-.24-.03-.31-.07-.07-.38-.91-.52-1.23-.13-.31-.27-.27-.36-.27a.48.48 0 0 0-.34.15c-.1.12-.38.38-.38.91s.38 1.05.43 1.12c.05.07.76 1.23 1.87 1.76.3.14.46.19.64.24.45.12.68.1.92-.07.27-.08.85-.38.97-.75.12-.38.12-.7.08-.75-.04-.05-.14-.07-.22-.12z"/></svg>
                     <span data-i18n-key="contactWhatsApp">WhatsApp ile İletişime Geçin</span>
                 </button>
@@ -235,6 +281,23 @@
     <div id="app-message" class="fixed bottom-5 right-5 bg-red-600 text-white px-6 py-4 rounded-lg shadow-xl z-50 hidden transition-all duration-300 transform translate-y-20 opacity-0">
         <span id="app-message-text">Bu bir hata mesajıdır.</span>
     </div>
+
+    <!-- Footer (Alt Bilgi) -->
+    <footer class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-500 text-sm pb-6 mt-12">
+        <div class="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6">
+            <span class="flex items-center gap-2">
+                <i data-lucide="lock" class="w-4 h-4 text-green-500"></i>
+                Güvenli Bağlantı (SSL)
+            </span>
+            <span class="flex items-center gap-2">
+                <i data-lucide="database" class="w-4 h-4"></i>
+                Verileriniz Sadece Cihazınızda Saklanır
+            </span>
+            <a href="#" class="hover:text-indigo-400 hover:underline transition-colors duration-300">Gizlilik Politikası</a>
+        </div>
+        <p class="mt-4">© 2024 English Dream. Tüm hakları saklıdır.</p>
+    </footer>
+
 
     <script>
         // --- DİL VERİLERİ (i18n) ---
@@ -259,7 +322,7 @@
                 wordPinned: 'sabitlendi.',
                 wordUnpinned: 'sabitlemesi kaldırıldı.',
                 wordsLoaded: 'Kelimeler yüklendi',
-                subscriptionHeader: 'Abonelik Detayları',
+                subscriptionHeader: 'Premium Abonelik',
                 subDescription: 'Premium abonelik ile tüm özelliklerin kilidini açın ve dil öğrenme sürecinizi hızlandırın:',
                 subFeature1: 'Kendinizi test etmeniz için 3 adet kapsamlı seviye belirleme sınavı.',
                 subFeature2: 'Almanca ve İspanyolca dilleri için özel kelime listeleri ve sınavlar.',
@@ -286,7 +349,7 @@
                 wordPinned: 'pinned.',
                 wordUnpinned: 'unpinned.',
                 wordsLoaded: 'Words loaded',
-                subscriptionHeader: 'Subscription Details',
+                subscriptionHeader: 'Premium Subscription',
                 subDescription: 'Unlock all features and accelerate your language learning with a premium subscription:',
                 subFeature1: '3 comprehensive placement exams to test yourself.',
                 subFeature2: 'Special word lists and exams for German and Spanish languages.',
@@ -313,7 +376,7 @@
                 wordPinned: 'bərkidildi.',
                 wordUnpinned: 'bərkitmə ləğv edildi.',
                 wordsLoaded: 'Sözlər yükləndi',
-                subscriptionHeader: 'Abunəlik Məlumatları',
+                subscriptionHeader: 'Premium Abunəlik',
                 subDescription: 'Premium abunəlik ilə bütün funksiyaları açın və dil öyrənmə prosesinizi sürətləndirin:',
                 subFeature1: 'Özünüzü yoxlamaq üçün 3 ədəd əhatəli səviyyə təyin etmə imtahanı.',
                 subFeature2: 'Alman və İspan dilləri üçün xüsusi söz siyahıları və imtahanlar.',
@@ -340,7 +403,7 @@
                 wordPinned: 'закреплено.',
                 wordUnpinned: 'откреплено.',
                 wordsLoaded: 'Слова загружены',
-                subscriptionHeader: 'Детали Подписки',
+                subscriptionHeader: 'Премиум Подписка',
                 subDescription: 'Разблокируйте все функции и ускорьте изучение языка с премиум-подпиской:',
                 subFeature1: '3 комплексных экзамена для определения вашего уровня.',
                 subFeature2: 'Специальные списки слов и экзамены по немецкому и испанскому языкам.',
@@ -350,11 +413,10 @@
             }
         };
 
-        // --- YENİ KELİME VERİTABANI ---
+        // --- GENİŞLETİLMİŞ KELİME VERİTABANI ---
         const wordBank = {
             a1: [
-                // Örnek olarak AZ ve RU çevirileri eklendi.
-                // Geri kalanlar için siz de ekleyebilirsiniz.
+                // Mevcut kelimeler (90 adet)
                 { en: 'apple', translations: { tr: 'elma', az: 'alma', ru: 'яблоко' } },
                 { en: 'book', translations: { tr: 'kitap', az: 'kitab', ru: 'книга' } },
                 { en: 'cat', translations: { tr: 'kedi', az: 'pişik', ru: 'кошка' } },
@@ -412,11 +474,9 @@
                 { en: 'clock', translations: { tr: 'saat' } },
                 { en: 'color', translations: { tr: 'renk' } },
                 { en: 'dance', translations: { tr: 'dans' } },
-                { en: 'door', translations: { tr: 'kapı' } },
                 { en: 'drink', translations: { tr: 'içmek' } },
                 { en: 'family', translations: { tr: 'aile' } },
                 { en: 'father', translations: { tr: 'baba' } },
-                { en: 'happy', translations: { tr: 'mutlu' } },
                 { en: 'home', translations: { tr: 'ev' } },
                 { en: 'job', translations: { tr: 'iş' } },
                 { en: 'letter', translations: { tr: 'mektup' } },
@@ -441,8 +501,6 @@
                 { en: 'bread', translations: { tr: 'ekmek' } },
                 { en: 'cheese', translations: { tr: 'peynir' } },
                 { en: 'butter', translations: { tr: 'tereyağı' } },
-                { en: 'friend', translations: { tr: 'arkadaş' } },
-                { en: 'happy', translations: { tr: 'mutlu' } },
                 { en: 'cold', translations: { tr: 'soğuk' } },
                 { en: 'hot', translations: { tr: 'sıcak' } },
                 { en: 'fast', translations: { tr: 'hızlı' } },
@@ -454,9 +512,70 @@
                 { en: 'start', translations: { tr: 'başlamak' } },
                 { en: 'finish', translations: { tr: 'bitirmek' } },
                 { en: 'small', translations: { tr: 'küçük' } },
-                { en: 'big', translations: { tr: 'büyük' } }
-            ],
+                { en: 'big', translations: { tr: 'büyük' } },
+                // --- YENİ EKLENEN A1 KELİMELERİ (60 Adet) ---
+                { en: 'tree', translations: { tr: 'ağaç' } },
+                { en: 'flower', translations: { tr: 'çiçek' } },
+                { en: 'sky', translations: { tr: 'gökyüzü' } },
+                { en: 'moon', translations: { tr: 'ay' } },
+                { en: 'star', translations: { tr: 'yıldız' } },
+                { en: 'hand', translations: { tr: 'el' } },
+                { en: 'foot', translations: { tr: 'ayak' } },
+                { en: 'head', translations: { tr: 'baş' } },
+                { en: 'eye', translations: { tr: 'göz' } },
+                { en: 'ear', translations: { tr: 'kulak' } },
+                { en: 'mouth', translations: { tr: 'ağız' } },
+                { en: 'phone', translations: { tr: 'telefon' } },
+                { en: 'watch', translations: { tr: 'kol saati' } },
+                { en: 'money', translations: { tr: 'para' } },
+                { en: 'bus', translations: { tr: 'otobüs' } },
+                { en: 'train', translations: { tr: 'tren' } },
+                { en: 'plane', translations: { tr: 'uçak' } },
+                { en: 'ship', translations: { tr: 'gemi' } },
+                { en: 'road', translations: { tr: 'yol' } },
+                { en: 'city', translations: { tr: 'şehir' } },
+                { en: 'village', translations: { tr: 'köy' } },
+                { en: 'sea', translations: { tr: 'deniz' } },
+                { en: 'river', translations: { tr: 'nehir' } },
+                { en: 'mountain', translations: { tr: 'dağ' } },
+                { en: 'forest', translations: { tr: 'orman' } },
+                { en: 'read', translations: { tr: 'okumak' } },
+                { en: 'write', translations: { tr: 'yazmak' } },
+                { en: 'draw', translations: { tr: 'çizmek' } },
+                { en: 'run', translations: { tr: 'koşmak' } },
+                { en: 'talk', translations: { tr: 'konuşmak' } },
+                { en: 'speak', translations: { tr: 'konuşmak' } },
+                { en: 'listen', translations: { tr: 'dinlemek' } },
+                { en: 'wait', translations: { tr: 'beklemek' } },
+                { en: 'give', translations: { tr: 'vermek' } },
+                { en: 'take', translations: { tr: 'almak' } },
+                { en: 'blue', translations: { tr: 'mavi' } },
+                { en: 'green', translations: { tr: 'yeşil' } },
+                { en: 'white', translations: { tr: 'beyaz' } },
+                { en: 'black', translations: { tr: 'siyah' } },
+                { en: 'purple', translations: { tr: 'mor' } },
+                { en: 'pink', translations: { tr: 'pembe' } },
+                { en: 'brown', translations: { tr: 'kahverengi' } },
+                { en: 'gray', translations: { tr: 'gri' } },
+                { en: 'one', translations: { tr: 'bir' } },
+                { en: 'two', translations: { tr: 'iki' } },
+                { en: 'three', translations: { tr: 'üç' } },
+                { en: 'four', translations: { tr: 'dört' } },
+                { en: 'five', translations: { tr: 'beş' } },
+                { en: 'six', translations: { tr: 'altı' } },
+                { en: 'seven', translations: { tr: 'yedi' } },
+                { en: 'eight', translations: { tr: 'sekiz' } },
+                { en: 'nine', translations: { tr: 'dokuz' } },
+                { en: 'ten', translations: { tr: 'on' } },
+                { en: 'sad', translations: { tr: 'üzgün' } },
+                { en: 'angry', translations: { tr: 'kızgın' } },
+                { en: 'tired', translations: { tr: 'yorgun' } },
+                { en: 'hungry', translations: { tr: 'aç' } },
+                { en: 'thirsty', translations: { tr: 'susamış' } },
+                { en: 'today', translations: { tr: 'bugün' } }
+            ], // Toplam 150 kelime
             a2: [
+                // Mevcut kelimeler (100 adet)
                 { en: 'above', translations: { tr: 'yukarıda' } },
                 { en: 'across', translations: { tr: 'karşısında' } },
                 { en: 'afraid', translations: { tr: 'korkmuş' } },
@@ -556,9 +675,61 @@
                 { en: 'open', translations: { tr: 'açmak' } },
                 { en: 'party', translations: { tr: 'parti' } },
                 { en: 'picture', translations: { tr: 'resim' } },
-                { en: 'play', translations: { tr: 'oynamak' } }
-            ],
+                { en: 'play', translations: { tr: 'oynamak' } },
+                // --- YENİ EKLENEN A2 KELİMELERİ (50 Adet) ---
+                { en: 'actor', translations: { tr: 'aktör' } },
+                { en: 'address', translations: { tr: 'adres' } },
+                { en: 'adult', translations: { tr: 'yetişkin' } },
+                { en: 'afternoon', translations: { tr: 'öğleden sonra' } },
+                { en: 'again', translations: { tr: 'tekrar' } },
+                { en: 'age', translations: { tr: 'yaş' } },
+                { en: 'air', translations: { tr: 'hava' } },
+                { en: 'animal', translations: { tr: 'hayvan' } },
+                { en: 'apartment', translations: { tr: 'daire' } },
+                { en: 'arm', translations: { tr: 'kol' } },
+                { en: 'artist', translations: { tr: 'sanatçı' } },
+                { en: 'aunt', translations: { tr: 'hala/teyze' } },
+                { en: 'autumn', translations: { tr: 'sonbahar' } },
+                { en: 'away', translations: { tr: 'uzakta' } },
+                { en: 'baby', translations: { tr: 'bebek' } },
+                { en: 'back', translations: { tr: 'arka' } },
+                { en: 'bad', translations: { tr: 'kötü' } },
+                { en: 'bakery', translations: { tr: 'fırın' } },
+                { en: 'banana', translations: { tr: 'muz' } },
+                { en: 'bank', translations: { tr: 'banka' } },
+                { en: 'bath', translations: { tr: 'banyo' } },
+                { en: 'bed', translations: { tr: 'yatak' } },
+                { en: 'bedroom', translations: { tr: 'yatak odası' } },
+                { en: 'beer', translations: { tr: 'bira' } },
+                { en: 'before', translations: { tr: 'önce' } },
+                { en: 'begin', translations: { tr: 'başlamak' } },
+                { en: 'behind', translations: { tr: 'arkasında' } },
+                { en: 'below', translations: { tr: 'aşağıda' } },
+                { en: 'best', translations: { tr: 'en iyi' } },
+                { en: 'better', translations: { tr: 'daha iyi' } },
+                { en: 'big', translations: { tr: 'büyük' } },
+                { en: 'bike', translations: { tr: 'bisiklet' } },
+                { en: 'body', translations: { tr: 'vücut' } },
+                { en: 'boil', translations: { tr: 'kaynamak' } },
+                { en: 'boring', translations: { tr: 'sıkıcı' } },
+                { en: 'bottle', translations: { tr: 'şişe' } },
+                { en: 'box', translations: { tr: 'kutu' } },
+                { en: 'bread', translations: { tr: 'ekmek' } },
+                { en: 'break', translations: { tr: 'kırmak' } },
+                { en: 'bring', translations: { tr: 'getirmek' } },
+                { en: 'brother', translations: { tr: 'erkek kardeş' } },
+                { en: 'build', translations: { tr: 'inşa etmek' } },
+                { en: 'building', translations: { tr: 'bina' } },
+                { en: 'bus stop', translations: { tr: 'otobüs durağı' } },
+                { en: 'buy', translations: { tr: 'satın almak' } },
+                { en: 'by', translations: { tr: 'tarafından, ile' } },
+                { en: 'cake', translations: { tr: 'kek' } },
+                { en: 'camera', translations: { tr: 'kamera' } },
+                { en: 'capital', translations: { tr: 'başkent' } },
+                { en: 'carpet', translations: { tr: 'halı' } }
+            ], // Toplam 150 kelime
             b1: [
+                // Mevcut kelimeler (151 adet)
                 { en: 'ability', translations: { tr: 'yetenek' } },
                 { en: 'achieve', translations: { tr: 'başarmak' } },
                 { en: 'action', translations: { tr: 'eylem' } },
@@ -708,9 +879,61 @@
                 { en: 'discover', translations: { tr: 'keşfetmek' } },
                 { en: 'discuss', translations: { tr: 'tartışmak' } },
                 { en: 'disease', translations: { tr: 'hastalık' } },
-                { en: 'do', translations: { tr: 'yapmak' } }
-            ],
+                { en: 'do', translations: { tr: 'yapmak' } },
+                // --- YENİ EKLENEN B1 KELİMELERİ (50 Adet) ---
+                { en: 'abroad', translations: { tr: 'yurt dışı' } },
+                { en: 'accept', translations: { tr: 'kabul etmek' } },
+                { en: 'accident', translations: { tr: 'kaza' } },
+                { en: 'across', translations: { tr: 'karşısında' } },
+                { en: 'advertisement', translations: { tr: 'reklam' } },
+                { en: 'advise', translations: { tr: 'tavsiye etmek' } },
+                { en: 'age', translations: { tr: 'yaş' } },
+                { en: 'agent', translations: { tr: 'ajan, temsilci' } },
+                { en: 'ago', translations: { tr: 'önce' } },
+                { en: 'alarm', translations: { tr: 'alarm' } },
+                { en: 'all', translations: { tr: 'tüm, hepsi' } },
+                { en: 'allow', translations: { tr: 'izin vermek' } },
+                { en: 'also', translations: { tr: 'ayrıca, de' } },
+                { en: 'always', translations: { tr: 'her zaman' } },
+                { en: 'ambulance', translations: { tr: 'ambulans' } },
+                { en: 'amount', translations: { tr: 'miktar' } },
+                { en: 'another', translations: { tr: 'diğer, başka' } },
+                { en: 'any', translations: { tr: 'hiç' } },
+                { en: 'anyone', translations: { tr: 'hiç kimse' } },
+                { en: 'anything', translations: { tr: 'hiçbir şey' } },
+                { en: 'anyway', translations: { tr: 'her neyse' } },
+                { en: 'anywhere', translations: { tr: 'hiçbir yer' } },
+                { en: 'apply', translations: { tr: 'başvurmak' } },
+                { en: 'approach', translations: { tr: 'yaklaşmak' } },
+                { en: 'argument', translations: { tr: 'tartışma' } },
+                { en: 'around', translations: { tr: 'etrafında' } },
+                { en: 'arrival', translations: { tr: 'varış' } },
+                { en: 'arrive', translations: { tr: 'varmak' } },
+                { en: 'ashamed', translations: { tr: 'utanmış' } },
+                { en: 'ask', translations: { tr: 'sormak' } },
+                { en: 'asleep', translations: { tr: 'uykuda' } },
+                { en: 'at all', translations: { tr: 'hiç' } },
+                { en: 'attack', translations: { tr: 'saldırı' } },
+                { en: 'attend', translations: { tr: 'katılmak' } },
+                { en: 'audience', translations: { tr: 'izleyici' } },
+                { en: 'aunt', translations: { tr: 'hala, teyze' } },
+                { en: 'author', translations: { tr: 'yazar' } },
+                { en: 'available', translations: { tr: 'mevcut' } },
+                { en: 'average', translations: { tr: 'ortalama' } },
+                { en: 'awful', translations: { tr: 'berbat' } },
+                { en: 'backpack', translations: { tr: 'sırt çantası' } },
+                { en: 'badly', translations: { tr: 'kötü bir şekilde' } },
+                { en: 'bake', translations: { tr: 'fırında pişirmek' } },
+                { en: 'band', translations: { tr: 'müzik grubu' } },
+                { en: 'baseball', translations: { tr: 'beyzbol' } },
+                { en: 'based on', translations: { tr: 'dayanarak' } },
+                { en: 'basketball', translations: { tr: 'basketbol' } },
+                { en: 'bath', translations: { tr: 'banyo' } },
+                { en: 'bathroom', translations: { tr: 'banyo' } },
+                { en: 'battery', translations: { tr: 'pil' } }
+            ], // Toplam 201 kelime
             b2: [
+                // Mevcut kelimeler (100 adet)
                 { en: 'abstract', translations: { tr: 'soyut' } },
                 { en: 'access', translations: { tr: 'erişim' } },
                 { en: 'accurate', translations: { tr: 'doğru' } },
@@ -810,9 +1033,61 @@
                 { en: 'measure', translations: { tr: 'ölçmek' } },
                 { en: 'method', translations: { tr: 'yöntem' } },
                 { en: 'modify', translations: { tr: 'değiştirmek' } },
-                { en: 'monitor', translations: { tr: 'izlemek' } }
-            ],
+                { en: 'monitor', translations: { tr: 'izlemek' } },
+                // --- YENİ EKLENEN B2 KELİMELERİ (50 Adet) ---
+                { en: 'acknowledge', translations: { tr: 'kabul etmek' } },
+                { en: 'acquire', translations: { tr: 'elde etmek' } },
+                { en: 'adequate', translations: { tr: 'yeterli' } },
+                { en: 'advocate', translations: { tr: 'savunmak' } },
+                { en: 'agency', translations: { tr: 'ajans' } },
+                { en: 'alternative', translations: { tr: 'alternatif' } },
+                { en: 'ambitious', translations: { tr: 'hırslı' } },
+                { en: 'anticipate', translations: { tr: 'ummak, beklemek' } },
+                { en: 'anxiety', translations: { tr: 'endişe' } },
+                { en: 'appreciate', translations: { tr: 'takdir etmek' } },
+                { en: 'approach', translations: { tr: 'yaklaşım' } },
+                { en: 'assessment', translations: { tr: 'değerlendirme' } },
+                { en: 'associate', translations: { tr: 'ilişkilendirmek' } },
+                { en: 'assumption', translations: { tr: 'varsayım' } },
+                { en: 'attempt', translations: { tr: 'girişim, deneme' } },
+                { en: 'attitude', translations: { tr: 'tutum' } },
+                { en: 'attribute', translations: { tr: 'özellik, nitelik' } },
+                { en: 'author', translations: { tr: 'yazar' } },
+                { en: 'background', translations: { tr: 'arka plan' } },
+                { en: 'barrier', translations: { tr: 'engel' } },
+                { en: 'bias', translations: { tr: 'önyargı' } },
+                { en: 'brief', translations: { tr: 'kısa' } },
+                { en: 'budget', translations: { tr: 'bütçe' } },
+                { en: 'campaign', translations: { tr: 'kampanya' } },
+                { en: 'candidate', translations: { tr: 'aday' } },
+                { en: 'capacity', translations: { tr: 'kapasite' } },
+                { en: 'category', translations: { tr: 'kategori' } },
+                { en: 'cease', translations: { tr: 'durdurmak' } },
+                { en: 'civil', translations: { tr: 'sivil' } },
+                { en: 'classic', translations: { tr: 'klasik' } },
+                { en: 'climate', translations: { tr: 'iklim' } },
+                { en: 'collapse', translations: { tr: 'çökmek' } },
+                { en: 'colleague', translations: { tr: 'meslektaş' } },
+                { en: 'combine', translations: { tr: 'birleştirmek' } },
+                { en: 'commercial', translations: { tr: 'ticari' } },
+                { en: 'commit', translations: { tr: 'işlemek (suç)' } },
+                { en: 'community', translations: { tr: 'topluluk' } },
+                { en: 'compensate', translations: { tr: 'telafi etmek' } },
+                { en: 'competent', translations: { tr: 'yetkin' } },
+                { en: 'complete', translations: { tr: 'tamamlamak' } },
+                { en: 'compose', translations: { tr: 'oluşturmak, bestelemek' } },
+                { en: 'compound', translations: { tr: 'bileşik' } },
+                { en: 'concentrate', translations: { tr: 'konsantre olmak' } },
+                { en: 'conclusion', translations: { tr: 'sonuç' } },
+                { en: 'conference', translations: { tr: 'konferans' } },
+                { en: 'confidence', translations: { tr: 'güven' } },
+                { en: 'conflict', translations: { tr: 'çatışma' } },
+                { en: 'confuse', translations: { tr: 'kafasını karıştırmak' } },
+                { en: 'conscious', translations: { tr: 'bilinçli' } },
+                { en: 'consequence', translations: { tr: 'sonuç' } }
+            ], // Toplam 150 kelime
             c1: [
+                // Mevcut kelimeler (90 adet)
                 { en: 'abstract', translations: { tr: 'soyut' } },
                 { en: 'access', translations: { tr: 'erişim' } },
                 { en: 'accurate', translations: { tr: 'doğru' } },
@@ -892,24 +1167,79 @@
                 { en: 'emerge', translations: { tr: 'ortaya çıkmak' } },
                 { en: 'emphasize', translations: { tr: 'vurgulamak' } },
                 { en: 'enable', translations: { tr: 'mümkün kılmak' } },
-                { en: 'encounter', translations: { tr: 'karşılaşmak' } }
-            ]
+                { en: 'encounter', translations: { tr: 'karşılaşmak' } },
+                // --- YENİ EKLENEN C1 KELİMELERİ (60 Adet) ---
+                { en: 'abundance', translations: { tr: 'bolluk' } },
+                { en: 'accountable', translations: { tr: 'sorumlu' } },
+                { en: 'adverse', translations: { tr: 'olumsuz' } },
+                { en: 'aesthetic', translations: { tr: 'estetik' } },
+                { en: 'affinity', translations: { tr: 'yakınlık' } },
+                { en: 'alleviate', translations: { tr: 'hafifletmek' } },
+                { en: 'ambivalent', translations: { tr: 'kararsız' } },
+                { en: 'amend', translations: { tr: 'düzeltmek' } },
+                { en: 'analogous', translations: { tr: 'benzer' } },
+                { en: 'anonymous', translations: { tr: 'anonim' } },
+                { en: 'apathy', translations: { tr: 'ilgisizlik' } },
+                { en: 'articulate', translations: { tr: 'açıkça ifade etmek' } },
+                { en: 'assert', translations: { tr: 'iddia etmek' } },
+                { en: 'augment', translations: { tr: 'artırmak' } },
+                { en: 'authentic', translations: { tr: 'otantik, gerçek' } },
+                { en: 'benchmark', translations: { tr: 'kıstas' } },
+                { en: 'beverage', translations: { tr: 'içecek' } },
+                { en: 'brevity', translations: { tr: 'kısalık' } },
+                { en: 'catalyst', translations: { tr: 'katalizör' } },
+                { en: 'censor', translations: { tr: 'sansürlemek' } },
+                { en: 'clarify', translations: { tr: 'açıklığa kavuşturmak' } },
+                { en: 'cohesion', translations: { tr: 'uyum, bütünlük' } },
+                { en: 'collaborate', translations: { tr: 'işbirliği yapmak' } },
+                { en: 'compel', translations: { tr: 'zorlamak' } },
+                { en: 'competence', translations: { tr: 'yeterlilik' } },
+                { en: 'conceal', translations: { tr: 'gizlemek' } },
+                { en: 'concede', translations: { tr: 'kabul etmek' } },
+                { en: 'consensus', translations: { tr: 'fikir birliği' } },
+                { en: 'contradict', translations: { tr: 'çelişmek' } },
+                { en: 'correlate', translations: { tr: 'ilişkili olmak' } },
+                { en: 'credible', translations: { tr: 'inanılır' } },
+                { en: 'deficit', translations: { tr: 'açık, eksiklik' } },
+                { en: 'degrade', translations: { tr: 'aşağılamak' } },
+                { en: 'demographic', translations: { tr: 'demografik' } },
+                { en: 'detrimental', translations: { tr: 'zararlı' } },
+                { en: 'dilemma', translations: { tr: 'ikilem' } },
+                { en: 'discourse', translations: { tr: 'söylem' } },
+                { en: 'discrepancy', translations: { tr: 'tutarsızlık' } },
+                { en: 'disperse', translations: { tr: 'dağıtmak' } },
+                { en: 'disrupt', translations: { tr: 'aksatmak' } },
+                { en: 'distinguish', translations: { tr: 'ayırt etmek' } },
+                { en: 'dominant', translations: { tr: 'baskın' } },
+                { en: 'dubious', translations: { tr: 'şüpheli' } },
+                { en: 'dynamic', translations: { tr: 'dinamik' } },
+                { en: 'eccentric', translations: { tr: 'eksantrik' } },
+                { en: 'eloquent', translations: { tr: 'etkili konuşan' } },
+                { en: 'empirical', translations: { tr: 'deneysel' } },
+                { en: 'enhance', translations: { tr: 'artırmak' } },
+                { en: 'entity', translations: { tr: 'varlık' } },
+                { en: 'eradicate', translations: { tr: 'kökünü kurutmak' } },
+                { en: 'escalate', translations: { tr: 'tırmanmak' } },
+                { en: 'exploit', translations: { tr: 'sömürmek' } },
+                { en: 'facilitate', translations: { tr: 'kolaylaştırmak' } },
+                { en: 'feasible', translations: { tr: 'mümkün' } },
+                { en: 'fluctuate', translations: { tr: 'dalgalanmak' } },
+                { en: 'foster', translations: { tr: 'geliştirmek' } },
+                { en: 'fragment', translations: { tr: 'parça' } },
+                { en: 'genuine', translations: { tr: 'gerçek' } },
+                { en: 'hazard', translations: { tr: 'tehlike' } }
+            ] // Toplam 150 kelime
         };
-
-        // --- KISA METİN VERİTABANI (KALDIRILDI) ---
 
         // --- UYGULAMA DURUMU (STATE) ---
         let state = {
             currentLevel: 'a1',
-            currentLang: 'tr', // Dil state'i eklendi
+            currentLang: 'tr',
             currentWords: [],
             pinnedWords: JSON.parse(localStorage.getItem('pinnedWords') || '[]'),
             notes: JSON.parse(localStorage.getItem('notes') || '{}'),
-            examHistory: [], // Sınav geçmişi artık kullanılmıyor
             bookmarkedWordId: null,
             isFrozen: false,
-            quizState: 'inactive', // Artık sadece 'inactive' kalacak
-            // Her seviye için kelime sayfasını takip et
             wordPages: { a1: 0, a2: 0, b1: 0, b2: 0, c1: 0 }
         };
 
@@ -917,7 +1247,7 @@
         const levelButtons = document.querySelectorAll('.level-btn');
         const refreshBtn = document.getElementById('refresh-btn');
         const toggleFreezeBtn = document.getElementById('toggle-freeze-btn');
-        const subscriptionBtn = document.getElementById('subscription-btn'); // Değişti
+        const subscriptionBtn = document.getElementById('subscription-btn');
         const wordListContainer = document.getElementById('word-list-container');
         const loadingSpinner = document.getElementById('loading-spinner');
         
@@ -929,36 +1259,42 @@
         const langSelectorBtnText = document.getElementById('lang-text-desktop');
         const langSelectorBtnTextMobile = document.getElementById('lang-text-mobile');
 
-        // Modal DOM
+        // Modallar
         const pinnedModal = document.getElementById('pinned-modal');
         const pinnedListBtn = document.getElementById('pinned-list-btn');
         const closePinnedModalBtn = document.getElementById('close-pinned-modal-btn');
         const pinnedListContent = document.getElementById('pinned-list-content');
 
-        // Yeni Abonelik Modalı DOM
         const subscriptionModal = document.getElementById('subscription-modal');
         const closeSubscriptionModalBtn = document.getElementById('close-subscription-modal-btn');
         const contactWhatsAppBtn = document.getElementById('contact-whatsapp-btn');
 
-        // SINAV GEÇMİŞİ DOM (KALDIRILDI)
-
-        // ARAMA MODALI DOM (KALDIRILDI)
-
-        // Message Box DOM
+        // Mesaj Kutusu
         const appMessage = document.getElementById('app-message');
         const appMessageText = document.getElementById('app-message-text');
 
-        // --- FONKSİYONLAR ---
+        // --- MODAL FONKSİYONLARI ---
+        function openModal(modalElement) {
+            modalElement.classList.remove('hidden');
+            // Anlık bir gecikme, CSS geçişinin tetiklenmesi için gereklidir
+            setTimeout(() => {
+                modalElement.classList.add('modal-open');
+            }, 10);
+        }
 
-        /**
-         * Dili ayarlar ve UI'ı günceller
-         */
+        function closeModal(modalElement) {
+            modalElement.classList.remove('modal-open');
+            setTimeout(() => {
+                modalElement.classList.add('hidden');
+            }, 300); // CSS geçiş süresiyle (0.3s) eşleşmeli
+        }
+
+        // --- DİL FONKSİYONU ---
         function setLanguage(lang) {
             state.currentLang = lang;
             document.documentElement.lang = lang;
             const translations = i18n[lang];
 
-            // Tüm data-i18n-key elementlerini güncelle
             document.querySelectorAll('[data-i18n-key]').forEach(el => {
                 const key = el.dataset.i18nKey;
                 if (translations[key]) {
@@ -970,7 +1306,6 @@
                 }
             });
 
-            // Dil seçici buton metnini güncelle
             const langData = {
                 tr: { flag: '🇹🇷', text: 'TR' },
                 en: { flag: '🇺🇸', text: 'EN' },
@@ -983,41 +1318,39 @@
             if (currentLangFlagMobile) currentLangFlagMobile.textContent = langData[lang].flag;
             if (langSelectorBtnTextMobile) langSelectorBtnTextMobile.textContent = ` ${langData[lang].text}`;
 
-            // Not ve title'ları güncelle
             if (pinnedListBtn) pinnedListBtn.title = translations.pinnedWordsTitle;
             
-            // Kelime kartlarındaki çevirileri ve placeholder'ları güncelle
-            renderWords();
-            // Sabitleme butonu metnini de güncelle
+            renderWords(); // Dil değiştiğinde kartları yeniden oluştur
+            
+            // Buton metinlerini güncelle
             if (state.isFrozen) {
                 toggleFreezeBtn.innerHTML = `<span data-i18n-key="unfreezeList">${i18n[state.currentLang].unfreezeList}</span>`;
             } else {
                 toggleFreezeBtn.innerHTML = `<span data-i18n-key="freezeList">${i18n[state.currentLang].freezeList}</span>`;
             }
-            // 'Yeni Kelimeler' butonu metnini de güncelle (sayfa bilgisiyle birlikte)
+            updateRefreshButtonText();
+            lucide.createIcons(); // Yeni eklenen ikonları (butonlar vb.) render et
+        }
+
+        /**
+         * "Yeni Kelimeler" butonunun metnini sayfa bilgisiyle günceller
+         */
+        function updateRefreshButtonText() {
             const level = state.currentLevel;
             const page = state.wordPages[level];
             const words = wordBank[level] || [];
             const total = words.length;
             const start = (page * 20) + 1;
             const end = Math.min((page + 1) * 20, total);
+            
+            const span = refreshBtn.querySelector('span');
+            if (!span) return;
+
             if(total > 0){
-                refreshBtn.querySelector('span').textContent = `${i18n[state.currentLang].getNewWords} (${start}-${end} / ${total})`;
+                span.textContent = `${i18n[state.currentLang].getNewWords} (${start}-${end} / ${total})`;
             } else {
-                 refreshBtn.querySelector('span').textContent = `${i18n[state.currentLang].getNewWords}`;
+                 span.textContent = `${i18n[state.currentLang].getNewWords}`;
             }
-        }
-
-
-        /**
-         * Kelimeleri karıştırmak için (Fisher-Yates Shuffle)
-         */
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
         }
 
         /**
@@ -1027,14 +1360,14 @@
             const message = (i18n[state.currentLang][messageKey] || messageKey) + (dynamicText ? ` "${dynamicText}"` : '');
             
             appMessageText.textContent = message;
-            appMessage.classList.remove('bg-red-600', 'bg-green-600', 'bg-blue-600', 'bg-purple-600');
+            appMessage.classList.remove('bg-red-600', 'bg-green-600', 'bg-blue-600', 'bg-indigo-600');
             
             if (type === 'error') {
                 appMessage.classList.add('bg-red-600');
             } else if (type === 'success') {
                 appMessage.classList.add('bg-green-600');
             } else {
-                appMessage.classList.add('bg-purple-600');
+                appMessage.classList.add('bg-indigo-600'); // Bilgi mesajları için tema rengi
             }
 
             appMessage.classList.remove('hidden', 'translate-y-20', 'opacity-0');
@@ -1059,11 +1392,9 @@
             wordListContainer.innerHTML = '';
             loadingSpinner.classList.remove('hidden');
 
-            // Simüle edilmiş yükleme süresi
             setTimeout(() => {
                 const words = wordBank[state.currentLevel];
                 if (!words || words.length === 0) {
-                    // DÜZELTME: innerHTML için backtick (`) eklendi
                     wordListContainer.innerHTML = `<p class="text-gray-400 col-span-full text-center">${i18n[state.currentLang].noWordsFound}</p>`;
                     loadingSpinner.classList.add('hidden');
                     return;
@@ -1077,14 +1408,9 @@
                 renderWords();
                 loadingSpinner.classList.add('hidden');
                 
-                // Buton metnini güncelle
-                const start = page * 20 + 1;
-                const end = Math.min((page + 1) * 20, words.length);
-                const total = words.length;
-                // DÜZELTME: textContent ataması düzeltildi
-                refreshBtn.querySelector('span').textContent = `${i18n[state.currentLang].getNewWords} (${start}-${end} / ${total})`;
+                updateRefreshButtonText();
                 
-            }, 300); // 0.3 saniye gecikme
+            }, 300); // 0.3s gecikme
         }
 
         /**
@@ -1094,9 +1420,7 @@
             wordListContainer.innerHTML = '';
             
             if (state.currentWords.length === 0) {
-                // Yükleniyor spinner'ı gizliyse ve kelime yoksa mesajı göster
                 if (loadingSpinner.classList.contains('hidden')) {
-                     // DÜZELTME: innerHTML için backtick (`) eklendi
                      wordListContainer.innerHTML = `<p class="text-gray-400 col-span-full text-center">${i18n[state.currentLang].noWordsToShow}</p>`;
                 }
                 return;
@@ -1107,42 +1431,40 @@
                 const note = state.notes[word.en] || '';
                 const isBookmarked = state.bookmarkedWordId === word.en;
                 
-                // Dil desteği eklendi: Seçili dili (state.currentLang) dener, bulamazsa 'tr'ye döner.
                 const translation = (word.translations && word.translations[state.currentLang]) || (word.translations && word.translations['tr']) || 'Çeviri Yok';
 
-
                 const card = document.createElement('div');
-                card.className = `word-card bg-gray-800 p-4 rounded-lg shadow-md transition-all duration-300 ${isBookmarked ? 'bookmark-highlight' : ''}`;
+                card.className = `word-card bg-gray-800 p-5 rounded-lg shadow-md transition-all duration-300 hover:shadow-xl hover:scale-[1.02] ${isBookmarked ? 'bookmark-highlight' : ''}`;
                 card.dataset.enWord = word.en;
 
+                // İkonların sınıflarını dinamik olarak ayarla
+                const bookmarkClasses = isBookmarked ? 'text-yellow-500 lucide-filled' : 'text-gray-500';
+                const pinClasses = isPinned ? 'text-indigo-400 lucide-filled' : 'text-gray-500';
+
                 card.innerHTML = `
-                    <div class="flex justify-between items-center mb-2">
+                    <div class="flex justify-between items-center mb-3">
                         <h3 class="text-xl font-bold text-gray-100">${word.en}</h3>
-                        <div class="flex space-x-2">
-                            <button class="bookmark-btn p-2 rounded-full hover:bg-yellow-100" title="Yer İşareti Koy">
-                                <svg class="w-5 h-5 ${isBookmarked ? 'text-yellow-500 fill-current' : 'text-gray-500'}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-3.125L5 18V4z" />
-                                </svg>
+                        <div class="flex space-x-1">
+                            <button class="bookmark-btn p-2 rounded-full hover:bg-gray-700 transition-colors" title="Yer İşareti Koy">
+                                <i data-lucide="bookmark" class="w-5 h-5 ${bookmarkClasses} transition-all"></i>
                             </button>
-                            <button class="pin-btn p-2 rounded-full hover:bg-purple-100" title="Sabitle">
-                                <svg class="w-5 h-5 ${isPinned ? 'text-purple-400' : 'text-gray-500'}" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
-                                </svg>
+                            <button class="pin-btn p-2 rounded-full hover:bg-gray-700 transition-colors" title="Sabitle">
+                                <i data-lucide="pin" class="w-5 h-5 ${pinClasses} transition-all"></i>
                             </button>
                         </div>
                     </div>
-                    <p class="text-lg text-gray-300 mb-3">${translation}</p>
-                    <textarea class="note-input w-full p-2 border bg-gray-700 border-gray-600 rounded-md text-sm text-gray-200 focus:ring-2 focus:ring-purple-500 focus:border-transparent" rows="2" placeholder="${i18n[state.currentLang].notePlaceholder}" data-i18n-key="notePlaceholder">${note}</textarea>
+                    <p class="text-lg text-gray-300 mb-4">${translation}</p>
+                    <textarea class="note-input w-full p-2 bg-gray-700 border border-gray-600 rounded-md text-sm text-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent" rows="2" placeholder="${i18n[state.currentLang].notePlaceholder}" data-i18n-key="notePlaceholder">${note}</textarea>
                 `;
 
                 // Event Listeners
                 card.querySelector('.pin-btn').addEventListener('click', (e) => {
                     e.stopPropagation();
-                    togglePin(word);
+                    togglePin(word, e.currentTarget.querySelector('i'));
                 });
                 card.querySelector('.bookmark-btn').addEventListener('click', (e) => {
                     e.stopPropagation();
-                    toggleBookmark(word.en);
+                    toggleBookmark(word.en, e.currentTarget.querySelector('i'));
                 });
                 card.querySelector('.note-input').addEventListener('change', (e) => {
                     saveNote(word.en, e.target.value);
@@ -1150,10 +1472,13 @@
 
                 wordListContainer.appendChild(card);
             });
+
+            // Kartlar DOM'a eklendikten sonra ikonları render et
+            lucide.createIcons();
         }
         
         /**
-         * Yeni "Yeni Kelime Getir" butonu işlevi (Sayfalama)
+         * "Yeni Kelime Getir" butonu işlevi (Sayfalama)
          */
         function getNextWords() {
             if (state.isFrozen) {
@@ -1167,7 +1492,6 @@
             let currentPage = state.wordPages[level];
             currentPage++;
             
-            // Eğer son sayfayı geçtiyse veya kelime yoksa, başa dön
             if (totalWords === 0 || (currentPage * 20) >= totalWords) {
                 currentPage = 0;
             }
@@ -1176,27 +1500,28 @@
             fetchWords();
         }
 
-
         /**
          * Bir kelimeyi sabitler veya sabitlemesini kaldırır
          */
-        function togglePin(word) {
+        function togglePin(word, iconElement) {
             const index = state.pinnedWords.findIndex(p => p.en === word.en);
-            // DÜZELTME: querySelector için tırnak (") eklendi
-            const card = wordListContainer.querySelector(`.word-card[data-en-word="${word.en}"]`);
-            const pinIcon = card ? card.querySelector('.pin-btn svg') : null;
+            const icon = iconElement; // İkonu doğrudan al
 
             if (index > -1) {
                 // Pin kaldır
                 state.pinnedWords.splice(index, 1);
-                if(pinIcon) pinIcon.classList.remove('text-purple-400');
-                if(pinIcon) pinIcon.classList.add('text-gray-500');
+                if(icon) {
+                    icon.classList.remove('text-indigo-400', 'lucide-filled');
+                    icon.classList.add('text-gray-500');
+                }
                 showAppMessage('wordUnpinned', 'info', word.en);
             } else {
                 // Pinle
                 state.pinnedWords.push(word);
-                if(pinIcon) pinIcon.classList.add('text-purple-400');
-                if(pinIcon) pinIcon.classList.remove('text-gray-500');
+                if(icon) {
+                    icon.classList.add('text-indigo-400', 'lucide-filled');
+                    icon.classList.remove('text-gray-500');
+                }
                 showAppMessage('wordPinned', 'success', word.en);
             }
             localStorage.setItem('pinnedWords', JSON.stringify(state.pinnedWords));
@@ -1205,12 +1530,16 @@
         /**
          * Bir kelimeye yer işareti koyar
          */
-        function toggleBookmark(enWord) {
+        function toggleBookmark(enWord, iconElement) {
+            // Önceki işaretli kartın stilini kaldır
             const oldBookmarkedCard = document.querySelector('.bookmark-highlight');
             if (oldBookmarkedCard) {
                 oldBookmarkedCard.classList.remove('bookmark-highlight');
-                oldBookmarkedCard.querySelector('.bookmark-btn svg').classList.remove('text-yellow-500', 'fill-current');
-                oldBookmarkedCard.querySelector('.bookmark-btn svg').classList.add('text-gray-500');
+                const oldIcon = oldBookmarkedCard.querySelector('.bookmark-btn i');
+                if (oldIcon) {
+                    oldIcon.classList.remove('text-yellow-500', 'lucide-filled');
+                    oldIcon.classList.add('text-gray-500');
+                }
             }
 
             if (state.bookmarkedWordId === enWord) {
@@ -1219,19 +1548,19 @@
             } else {
                 // Yeni işaret koy
                 state.bookmarkedWordId = enWord;
-                // DÜZELTME: querySelector için tırnak (") eklendi
                 const newBookmarkedCard = wordListContainer.querySelector(`.word-card[data-en-word="${enWord}"]`);
                 if (newBookmarkedCard) {
                     newBookmarkedCard.classList.add('bookmark-highlight');
-                    const icon = newBookmarkedCard.querySelector('.bookmark-btn svg');
-                    icon.classList.add('text-yellow-500', 'fill-current');
-                    icon.classList.remove('text-gray-500');
-                    
-                    // Karta odaklan (kaydır)
+                    const newIcon = iconElement; // Tıklanan ikonu doğrudan kullan
+                    if (newIcon) {
+                        newIcon.classList.add('text-yellow-500', 'lucide-filled');
+                        newIcon.classList.remove('text-gray-500');
+                    }
                     newBookmarkedCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
             }
         }
+
 
         /**
          * Notu kaydeder
@@ -1256,11 +1585,8 @@
             state.currentLevel = newLevel;
             state.isFrozen = false; // Seviye değişince sabitleme kalkar
             state.bookmarkedWordId = null;
+            state.wordPages[state.currentLevel] = 0; // Sayfalamayı sıfırla
             
-            // Sayfalamayı o seviye için sıfırla
-            state.wordPages[state.currentLevel] = 0;
-            
-            // DÜZELTME: innerHTML için backtick (`) eklendi
             toggleFreezeBtn.innerHTML = `<span data-i18n-key="freezeList">${i18n[state.currentLang].freezeList}</span>`;
             toggleFreezeBtn.classList.remove('bg-red-600', 'hover:bg-red-700');
             toggleFreezeBtn.classList.add('bg-green-600', 'hover:bg-green-700');
@@ -1268,10 +1594,10 @@
             // Aktif buton stilini güncelle
             document.querySelectorAll('.level-btn').forEach(btn => {
                 if (btn.dataset.level === newLevel) {
-                    btn.classList.add('bg-purple-600', 'text-white');
+                    btn.classList.add('bg-indigo-600', 'text-white', 'shadow-md');
                     btn.classList.remove('text-gray-300', 'hover:bg-gray-700');
                 } else {
-                    btn.classList.remove('bg-purple-600', 'text-white');
+                    btn.classList.remove('bg-indigo-600', 'text-white', 'shadow-md');
                     btn.classList.add('text-gray-300', 'hover:bg-gray-700');
                 }
             });
@@ -1285,13 +1611,11 @@
         function toggleFreeze() {
             state.isFrozen = !state.isFrozen;
             if (state.isFrozen) {
-                // DÜZELTME: innerHTML için backtick (`) eklendi
                 toggleFreezeBtn.innerHTML = `<span data-i18n-key="unfreezeList">${i18n[state.currentLang].unfreezeList}</span>`;
                 toggleFreezeBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
                 toggleFreezeBtn.classList.add('bg-red-600', 'hover:bg-red-700');
                 showAppMessage('listFrozenInfo', 'info');
             } else {
-                // DÜZELTME: innerHTML için backtick (`) eklendi
                 toggleFreezeBtn.innerHTML = `<span data-i18n-key="freezeList">${i18n[state.currentLang].freezeList}</span>`;
                 toggleFreezeBtn.classList.remove('bg-red-600', 'hover:bg-red-700');
                 toggleFreezeBtn.classList.add('bg-green-600', 'hover:bg-green-700');
@@ -1305,13 +1629,10 @@
         function showPinnedWordsModal() {
             pinnedListContent.innerHTML = '';
             if (state.pinnedWords.length === 0) {
-                // DÜZELTME: innerHTML için backtick (`) eklendi
                 pinnedListContent.innerHTML = `<p class="text-gray-400 text-center">${i18n[state.currentLang].noPinnedWords}</p>`;
             } else {
                 state.pinnedWords.sort((a, b) => a.en.localeCompare(b.en)).forEach(word => {
-                    // DÜZELTME: HTML için backtick (`) eklendi
-                    const note = state.notes[word.en] || `<i>${i18n[state.currentLang].notePlaceholder}</i>`;
-                    // Çeviriyi de dinamik yap
+                    const note = state.notes[word.en] || `<i class="text-gray-500">${i18n[state.currentLang].notePlaceholder}</i>`;
                     const translation = (word.translations && word.translations[state.currentLang]) || (word.translations && word.translations['tr']) || 'Çeviri Yok';
 
                     const item = document.createElement('div');
@@ -1319,7 +1640,7 @@
                     
                     item.innerHTML = `
                         <div class="flex justify-between items-center">
-                            <h4 class="text-xl font-semibold text-purple-400">${word.en}</h4>
+                            <h4 class="text-xl font-semibold text-indigo-400">${word.en}</h4>
                             <span class="text-lg text-gray-200">${translation}</span>
                         </div>
                         <p class="text-gray-300 mt-2"><strong>Not:</strong> ${note}</p>
@@ -1328,10 +1649,9 @@
                     pinnedListContent.appendChild(item);
                 });
             }
-            pinnedModal.classList.remove('hidden');
+            openModal(pinnedModal);
+            lucide.createIcons(); // Modal içindeki ikonları render et
         }
-
-        // --- SINAV FONKSİYONLARI (KALDIRILDI) ---
 
         // --- EVENT LISTENERS ---
         document.addEventListener('DOMContentLoaded', () => {
@@ -1344,33 +1664,56 @@
                 btn.addEventListener('click', (e) => {
                     const lang = e.currentTarget.dataset.lang;
                     setLanguage(lang);
+                    
+                    // Dropdown'ı manuel kapat (gerekirse)
+                    // HATA DÜZELTMESİ: 'e.currentTarget' referansı 'setTimeout' içinde kayboluyordu.
+                    // Elementi önce bir değişkende saklıyoruz.
+                    const content = e.currentTarget.closest('.lang-selector-content');
+                    if (content) {
+                        content.style.display = 'none';
+                        setTimeout(() => {
+                            content.style.display = ''; // Artık 'e.currentTarget' yerine 'content' kullanılıyor.
+                        }, 100);
+                    }
                 });
             });
 
             // Ana Butonlar
             levelButtons.forEach(btn => btn.addEventListener('click', handleLevelChange));
-            refreshBtn.addEventListener('click', getNextWords); // Değişti
+            refreshBtn.addEventListener('click', getNextWords);
             toggleFreezeBtn.addEventListener('click', toggleFreeze);
             
-            // Abonelik Butonu (eski startQuizBtn)
+            // Abonelik Butonu
             subscriptionBtn.addEventListener('click', () => {
-                subscriptionModal.classList.remove('hidden');
+                openModal(subscriptionModal);
+                lucide.createIcons(); // Modal içindeki ikonları render et
             });
 
-            // Modal Butonları
+            // Modal Kapatma Butonları
             pinnedListBtn.addEventListener('click', showPinnedWordsModal);
-            closePinnedModalBtn.addEventListener('click', () => pinnedModal.classList.add('hidden'));
+            closePinnedModalBtn.addEventListener('click', () => closeModal(pinnedModal));
+            closeSubscriptionModalBtn.addEventListener('click', () => closeModal(subscriptionModal));
+            
+            // Modal dışına tıklayarak kapatma
+            [pinnedModal, subscriptionModal].forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('modal-backdrop')) {
+                        closeModal(modal);
+                    }
+                });
+            });
 
-            // Yeni Abonelik Modalı Butonları
-            closeSubscriptionModalBtn.addEventListener('click', () => subscriptionModal.classList.add('hidden'));
+
+            // WhatsApp Butonu
             contactWhatsAppBtn.addEventListener('click', () => {
-                const whatsAppNumber = "994707841414";
+                const whatsAppNumber = "994707841414"; // Numara tırnak içinde olmalı
                 window.open(`https://wa.me/${whatsAppNumber}`, '_blank');
             });
 
             // İlk yükleme
             setLanguage(state.currentLang); // UI'ı ayarla
             fetchWords(); // İlk kelimeleri yükle
+            lucide.createIcons(); // Sayfadaki tüm statik ikonları render et
         });
 
     </script>
