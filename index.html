@@ -29,37 +29,52 @@
             box-shadow: 0 0 15px 5px rgba(250, 204, 21, 0.7); /* yellow-400 */
             border: 2px solid #FACC15; /* yellow-400 */
         }
-        /* Sınav Seçenekleri için özel stil */
-        .quiz-option {
+        /* Dil Seçici Dropdown */
+        .lang-selector {
+            position: relative;
+            display: inline-block;
+        }
+        .lang-selector-btn {
+            background-color: #4B5563; /* gray-600 */
+            color: white;
+            padding: 8px 12px;
+            font-size: 14px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+        .lang-selector-btn svg {
+            margin-left: 8px;
+        }
+        .lang-selector-content {
+            display: none;
+            position: absolute;
+            background-color: #374151; /* gray-700 */
+            min-width: 120px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            right: 0;
+        }
+        .lang-selector-content button {
+            color: #E5E7EB; /* gray-200 */
+            padding: 12px 16px;
+            text-decoration: none;
             display: block;
             width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #4B5563; /* gray-600 */
-            background-color: #374151; /* gray-700 */
-            border-radius: 8px;
-            color: #E5E7EB; /* gray-200 */
-            font-medium: 500;
             text-align: left;
-            transition: all 0.2s ease-in-out;
+            background: none;
+            border: none;
             cursor: pointer;
         }
-        .quiz-option:hover {
+        .lang-selector-content button:hover {
             background-color: #4B5563; /* gray-600 */
-            border-color: #A78BFA; /* purple-400 */
         }
-        .quiz-option.correct {
-            background-color: #10B981; /* green-500 */
-            border-color: #059669; /* green-600 */
-            color: #FFFFFF;
-        }
-        .quiz-option.incorrect {
-            background-color: #EF4444; /* red-500 */
-            border-color: #DC2626; /* red-600 */
-            color: #FFFFFF;
-        }
-        .quiz-option:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
+        .lang-selector:hover .lang-selector-content {
+            display: block;
         }
     </style>
 </head>
@@ -71,20 +86,26 @@
             <div class="flex justify-between items-center h-16">
                 <h1 class="text-2xl sm:text-3xl font-bold text-purple-400">English Dream</h1>
                 <div class="flex items-center space-x-2 sm:space-x-4">
-                    <!-- Kelime Arama -->
-                    <div class="hidden md:flex items-center bg-gray-700 rounded-full">
-                        <input id="search-bar" type="text" placeholder="Kelime Ara veya Cümle Çevir..." class="bg-transparent text-white placeholder-gray-400 rounded-l-full py-2 px-4 focus:outline-none w-48">
-                        <button id="search-btn" class="p-2 text-gray-400 hover:text-purple-400">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                        </button>
-                    </div>
+                    <!-- ARAMA ÇUBUĞU KALDIRILDI -->
 
-                    <button id="exam-history-btn" class="p-2 rounded-full text-gray-300 hover:bg-gray-700 hover:text-purple-400 transition" title="Sınav Geçmişi">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.882a2 2 0 01-2 2H7a2 2 0 01-2-2V5.882a2 2 0 012-2h2a2 2 0 012 2zM17 5.882V19.882a2 2 0 002 2h2a2 2 0 002-2V5.882a2 2 0 00-2-2h-2a2 2 0 00-2 2zM6 19v-5H4V9h2m12 10v-5h2V9h-2M12 2v2M9 4h6"></path><path d="M12 4C9.23858 4 7 6.23858 7 9v1h10V9c0-2.76142-2.23858-5-5-5z"></path></svg>
-                    </button>
-                    <button id="pinned-list-btn" class="p-2 rounded-full text-gray-300 hover:bg-gray-700 hover:text-purple-400 transition" title="Sabitlenen Kelimeler">
+                    <button id="pinned-list-btn" class="p-2 rounded-full text-gray-300 hover:bg-gray-700 hover:text-purple-400 transition" data-i18n-key="pinnedWordsTitle" title="Sabitlenen Kelimeler">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
                     </button>
+                    
+                    <!-- Dil Seçici -->
+                    <div class="lang-selector hidden sm:inline-block">
+                        <button class="lang-selector-btn">
+                            <span id="current-lang-flag">🇹🇷</span><span id="lang-text-desktop">TR</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="lang-selector-content" id="lang-options">
+                            <button data-lang="tr">🇹🇷 Türkçe</button>
+                            <button data-lang="en">🇺🇸 English</button>
+                            <button data-lang="az">🇦🇿 Azərbaycanca</button>
+                            <button data-lang="ru">🇷🇺 Русский</button>
+                        </div>
+                    </div>
+
                     <span id="level-selection" class="hidden sm:flex items-center space-x-1">
                         <button data-level="a1" class="level-btn px-3 py-2 rounded-md text-sm font-medium transition bg-purple-600 text-white">A1</button>
                         <button data-level="a2" class="level-btn px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-gray-700 transition">A2</button>
@@ -102,12 +123,22 @@
                 <button data-level="b2" class="level-btn px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-gray-700 transition">B2</button>
                 <button data-level="c1" class="level-btn px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-gray-700 transition">C1</button>
             </div>
-            <!-- Mobil Arama -->
-            <div class="md:hidden flex items-center bg-gray-700 rounded-full mx-4 mb-3">
-                <input id="mobile-search-bar" type="text" placeholder="Kelime Ara veya Cümle Çevir..." class="bg-transparent text-white placeholder-gray-400 rounded-l-full py-2 px-4 focus:outline-none w-full">
-                <button id="mobile-search-btn" class="p-2 text-gray-400 hover:text-purple-400">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                </button>
+            <!-- MOBİL ARAMA KALDIRILDI -->
+            
+            <!-- Mobil Dil Seçici -->
+            <div class="sm:hidden flex justify-center pb-3 pt-2">
+                <div class="lang-selector">
+                    <button class="lang-selector-btn">
+                        <span id="current-lang-flag-mobile">🇹🇷</span><span id="lang-text-mobile">TR</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div class="lang-selector-content" id="lang-options-mobile">
+                        <button data-lang="tr">🇹🇷 Türkçe</button>
+                        <button data-lang="en">🇺🇸 English</button>
+                        <button data-lang="az">🇦🇿 Azərbaycanca</button>
+                        <button data-lang="ru">🇷🇺 Русский</button>
+                    </div>
+                </div>
             </div>
         </nav>
     </header>
@@ -119,13 +150,13 @@
         <div class="mb-6 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
             <button id="refresh-btn" class="flex-1 w-full bg-purple-600 text-white px-5 py-3 rounded-lg font-semibold shadow-md hover:bg-purple-700 transition flex items-center justify-center space-x-2">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9H0v5h.582A8.001 8.001 0 0023.418 15H24v-5h-.582z"></path></svg>
-                <span>Yeni Kelimeler Getir (50)</span>
+                <span data-i18n-key="getNewWords">Yeni Kelimeler Getir</span>
             </button>
             <button id="toggle-freeze-btn" class="flex-1 w-full bg-green-600 text-white px-5 py-3 rounded-lg font-semibold shadow-md hover:bg-green-700 transition">
-                Listeyi Sabitle
+                <span data-i18n-key="freezeList">Listeyi Sabitle</span>
             </button>
-            <button id="start-quiz-btn" class="flex-1 w-full bg-purple-600 text-white px-5 py-3 rounded-lg font-semibold shadow-md hover:bg-purple-700 transition disabled:bg-gray-500 disabled:cursor-not-allowed">
-                Sınava Başla (15 Soru)
+            <button id="subscription-btn" class="flex-1 w-full bg-blue-500 text-white px-5 py-3 rounded-lg font-semibold shadow-md hover:bg-blue-600 transition">
+                <span data-i18n-key="subscription">Abonelik</span>
             </button>
         </div>
 
@@ -140,49 +171,17 @@
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            <p class="mt-2 text-gray-400 font-medium">Kelimeler yükleniyor...</p>
+            <p class="mt-2 text-gray-400 font-medium" data-i18n-key="loadingWords">Kelimeler yükleniyor...</p>
         </div>
     </main>
 
-    <!-- Sınav Arayüzü (Başlangıçta gizli) -->
-    <div id="quiz-container" class="hidden max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-        <div class="bg-gray-800 p-6 sm:p-8 rounded-lg shadow-xl max-w-3xl mx-auto">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold text-gray-100">İngilizce Sınavı</h2>
-                <div class="flex items-center">
-                    <span id="quiz-progress" class="text-gray-300">Soru 1 / 15</span>
-                    <span id="quiz-score" class="ml-4 text-green-400">Puan: 0</span>
-                    <button id="request-exit-quiz-btn" class="ml-4 text-sm bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700 transition" title="Sınavdan Çık">Çık</button>
-                </div>
-            </div>
-            <div id="question-area">
-                <p id="question-text" class="text-xl text-gray-200 mb-6 font-medium">Soru metni buraya gelecek.</p>
-                <div id="options-container" class="space-y-3">
-                    <!-- Seçenekler (çoktan seçmeli VEYA input) buraya eklenecek -->
-                </div>
-                <div id="quiz-feedback" class="mt-4 text-center font-medium hidden"></div>
-            </div>
-            <div id="quiz-results" class="hidden text-center">
-                <h3 class="text-3xl font-bold text-purple-400 mb-4">Sınav Tamamlandı!</h3>
-                <p class="text-2xl text-gray-200 mb-8">Puanınız: <span id="final-score" class="font-bold"></span> / 15</p>
-                <div class="flex justify-center space-x-4">
-                    <button id="restart-quiz-btn" class="bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition">
-                        Yeniden Başla
-                    </button>
-                    <button id="exit-quiz-btn" class="bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-700 transition">
-                        Kelimelere Dön
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
+    <!-- SINAV ARAYÜZÜ KALDIRILDI -->
 
     <!-- Sabitlenen Kelimeler Modalı -->
     <div id="pinned-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
         <div class="bg-gray-800 rounded-lg shadow-xl w-11/12 max-w-2xl h-4/5 flex flex-col">
             <div class="flex justify-between items-center p-5 border-b border-gray-700">
-                <h3 class="text-2xl font-semibold text-gray-100">Sabitlenen Kelimeler</h3>
+                <h3 class="text-2xl font-semibold text-gray-100" data-i18n-key="pinnedWordsHeader">Sabitlenen Kelimeler</h3>
                 <button id="close-pinned-modal-btn" class="text-gray-400 hover:text-white">
                     <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
@@ -193,56 +192,44 @@
         </div>
     </div>
 
-    <!-- Sınav Geçmişi Modalı -->
-    <div id="exam-history-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
-        <div class="bg-gray-800 rounded-lg shadow-xl w-11/12 max-w-2xl h-4/5 flex flex-col">
+    <!-- SINAV GEÇMİŞİ MODALI KALDIRILDI -->
+    
+    <!-- ARAMA SONUÇLARI MODALI KALDIRILDI -->
+    
+    <!-- SINAV ÇIKIŞ MODALI KALDIRILDI -->
+    
+    <!-- ABONELİK MODALI KALDIRILDI -->
+
+    <!-- Yeni Abonelik Modalı -->
+    <div id="subscription-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
+        <div class="bg-gray-800 rounded-lg shadow-xl w-11/12 max-w-lg flex flex-col">
+            <!-- Başlık -->
             <div class="flex justify-between items-center p-5 border-b border-gray-700">
-                <h3 class="text-2xl font-semibold text-gray-100">Sınav Geçmişi</h3>
-                <button id="close-exam-history-modal-btn" class="text-gray-400 hover:text-white">
+                <h3 class="text-2xl font-semibold text-gray-100" data-i18n-key="subscriptionHeader">Abonelik Detayları</h3>
+                <button id="close-subscription-modal-btn" class="text-gray-400 hover:text-white">
                     <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
-            <div id="exam-history-content" class="p-6 overflow-y-auto flex-grow">
-                <!-- Sınav geçmişi buraya eklenecek -->
+            <!-- İçerik -->
+            <div class="p-6 overflow-y-auto text-gray-300">
+                <p class="mb-4" data-i18n-key="subDescription">Premium abonelik ile tüm özelliklerin kilidini açın ve dil öğrenme sürecinizi hızlandırın:</p>
+                <ul class="list-disc list-inside space-y-2 mb-6">
+                    <li data-i18n-key="subFeature1">Kendinizi test etmeniz için 3 adet kapsamlı seviye belirleme sınavı.</li>
+                    <li data-i18n-key="subFeature2">Almanca ve İspanyolca dilleri için özel kelime listeleri ve sınavlar.</li>
+                    <li data-i18n-key="subFeature3">Matematik ve Fizik için özel testler.</li>
+                </ul>
+                <p data-i18n-key="subContact">Fiyatlar ve detaylı bilgi için bizimle iletişime geçin.</p>
             </div>
+            <!-- Buton -->
             <div class="p-4 border-t border-gray-700">
-                <button id="clear-exam-history-btn" class="w-full bg-red-600 text-white px-5 py-3 rounded-lg font-semibold shadow-md hover:bg-red-700 transition">
-                    Geçmişi Temizle
+                <button id="contact-whatsapp-btn" class="w-full bg-green-500 text-white px-5 py-3 rounded-lg font-semibold shadow-md hover:bg-green-600 transition flex items-center justify-center space-x-2">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.0-5.842 4.76-10.584 10.687-10.584 2.991.0 5.798 1.166 7.914 3.282 2.118 2.116 3.287 4.922 3.287 7.912.0 5.841-4.764 10.583-10.686 10.583-1.98.0-3.896-.539-5.57-1.506L.057 24zM12.066 3.387c-4.797 0-8.686 3.884-8.686 8.669.0 1.83.574 3.536 1.631 4.966l-.105.39-.757 2.726 2.793-.737.356-.09.985.549c1.378.761 2.96 1.166 4.605 1.166 4.795 0 8.684-3.886 8.684-8.671.0-4.783-3.887-8.668-8.686-8.668zM17.51 14.66c-.14-.07-.852-.42-1-.49-.141-.07-.251-.12-.361.12-.11.24-.38.49-.46.56-.08.07-.16.07-.3.0l-1.42-.52c-.47-.18-.78-.39-1.09-.69-.3-.29-.49-.46-.69-.78-.18-.31-.03-.48.07-.56.09-.08.18-.19.27-.29l.104-.12c.1-.12.16-.21.22-.34.07-.12.04-.24-.03-.31-.07-.07-.38-.91-.52-1.23-.13-.31-.27-.27-.36-.27a.48.48 0 0 0-.34.15c-.1.12-.38.38-.38.91s.38 1.05.43 1.12c.05.07.76 1.23 1.87 1.76.3.14.46.19.64.24.45.12.68.1.92-.07.27-.08.85-.38.97-.75.12-.38.12-.7.08-.75-.04-.05-.14-.07-.22-.12z"/></svg>
+                    <span data-i18n-key="contactWhatsApp">WhatsApp ile İletişime Geçin</span>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Arama Sonuçları Modalı -->
-    <div id="search-results-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
-        <div class="bg-gray-800 rounded-lg shadow-xl w-11/12 max-w-2xl h-4/5 flex flex-col">
-            <div class="flex justify-between items-center p-5 border-b border-gray-700">
-                <h3 class="text-2xl font-semibold text-gray-100">Arama / Çeviri Sonuçları</h3>
-                <button id="close-search-results-modal-btn" class="text-gray-400 hover:text-white">
-                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-            <div id="search-results-content" class="p-6 overflow-y-auto">
-                <!-- Arama sonuçları buraya eklenecek -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Sınavdan Çıkış Onay Modalı -->
-    <div id="exit-quiz-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
-        <div class="bg-gray-800 rounded-lg shadow-xl w-11/12 max-w-md p-6">
-            <h3 class="text-xl font-semibold text-white mb-4">Sınavdan Çıkmak Üzeresiniz</h3>
-            <p class="text-gray-300 mb-6">Sınavdan şimdi çıkarsanız mevcut ilerlemeniz sıfırlanacaktır. Emin misiniz?</p>
-            <div class="flex justify-end space-x-4">
-                <button id="cancel-exit-quiz-btn" class="px-5 py-2 rounded-lg bg-gray-600 text-white font-medium hover:bg-gray-500 transition">
-                    İptal
-                </button>
-                <button id="confirm-exit-quiz-btn" class="px-5 py-2 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition">
-                    Evet, Çık
-                </button>
-            </div>
-        </div>
-    </div>
 
     <!-- Özel Mesaj Kutusu -->
     <div id="app-message" class="fixed bottom-5 right-5 bg-red-600 text-white px-6 py-4 rounded-lg shadow-xl z-50 hidden transition-all duration-300 transform translate-y-20 opacity-0">
@@ -250,269 +237,697 @@
     </div>
 
     <script>
-        // --- KELİME VERİTABANI (ÖRNEK) ---
-        // Gerçek bir uygulamada bu veritabanı çok daha büyük olurdu ve bir sunucudan gelirdi.
+        // --- DİL VERİLERİ (i18n) ---
+        const i18n = {
+            'tr': {
+                examHistoryTitle: 'Sınav Geçmişi',
+                pinnedWordsTitle: 'Sabitlenen Kelimeler',
+                getNewWords: 'Yeni Kelimeler Getir',
+                freezeList: 'Listeyi Sabitle',
+                unfreezeList: 'Sabitlemeyi Kaldır',
+                subscription: 'Abonelik',
+                loadingWords: 'Kelimeler yükleniyor...',
+                pinnedWordsHeader: 'Sabitlenen Kelimeler',
+                notePlaceholder: 'Kişisel notunuzu buraya yazın...',
+                noPinnedWords: 'Henüz sabitlenmiş kelimeniz yok.',
+                noWordsFound: 'Bu seviye için kelime bulunamadı.',
+                noWordsToShow: 'Gösterilecek kelime yok. Lütfen seviye seçin ve "Yeni Kelimeler" butonuna basın.',
+                listFrozen: 'Liste sabitlenmiş. Yenilemek için sabitlemeyi kaldırın.',
+                listUnfrozen: 'Sabitleme kaldırıldı.',
+                listFrozenInfo: 'Liste sabitlendi. Kelimeler değişmeyecek.',
+                noteSaved: 'için not kaydedildi.',
+                wordPinned: 'sabitlendi.',
+                wordUnpinned: 'sabitlemesi kaldırıldı.',
+                wordsLoaded: 'Kelimeler yüklendi',
+                subscriptionHeader: 'Abonelik Detayları',
+                subDescription: 'Premium abonelik ile tüm özelliklerin kilidini açın ve dil öğrenme sürecinizi hızlandırın:',
+                subFeature1: 'Kendinizi test etmeniz için 3 adet kapsamlı seviye belirleme sınavı.',
+                subFeature2: 'Almanca ve İspanyolca dilleri için özel kelime listeleri ve sınavlar.',
+                subFeature3: 'Matematik ve Fizik için özel testler.',
+                subContact: 'Fiyatlar ve detaylı bilgi için bizimle iletişime geçin.',
+                contactWhatsApp: 'WhatsApp ile İletişime Geçin'
+            },
+            'en': {
+                pinnedWordsTitle: 'Pinned Words',
+                getNewWords: 'Get New Words',
+                freezeList: 'Freeze List',
+                unfreezeList: 'Unfreeze List',
+                subscription: 'Subscription',
+                loadingWords: 'Loading words...',
+                pinnedWordsHeader: 'Pinned Words',
+                notePlaceholder: 'Write your personal note here...',
+                noPinnedWords: 'You have no pinned words yet.',
+                noWordsFound: 'No words found for this level.',
+                noWordsToShow: 'No words to show. Please select a level and press "Get New Words".',
+                listFrozen: 'List is frozen. Unfreeze to refresh.',
+                listUnfrozen: 'List unfrozen.',
+                listFrozenInfo: 'List is frozen. Words will not change.',
+                noteSaved: 'Note saved for',
+                wordPinned: 'pinned.',
+                wordUnpinned: 'unpinned.',
+                wordsLoaded: 'Words loaded',
+                subscriptionHeader: 'Subscription Details',
+                subDescription: 'Unlock all features and accelerate your language learning with a premium subscription:',
+                subFeature1: '3 comprehensive placement exams to test yourself.',
+                subFeature2: 'Special word lists and exams for German and Spanish languages.',
+                subFeature3: 'Special tests for Mathematics and Physics.',
+                subContact: 'Contact us for prices and detailed information.',
+                contactWhatsApp: 'Contact via WhatsApp'
+            },
+            'az': {
+                pinnedWordsTitle: 'Bərkidilmiş Sözlər',
+                getNewWords: 'Yeni Sözlər Gətir',
+                freezeList: 'Siyahını Dondur',
+                unfreezeList: 'Dondurmanı Aç',
+                subscription: 'Abunəlik',
+                loadingWords: 'Sözlər yüklənir...',
+                pinnedWordsHeader: 'Bərkidilmiş Sözlər',
+                notePlaceholder: 'Şəxsi qeydinizi bura yazın...',
+                noPinnedWords: 'Hələ bərkidilmiş sözünüz yoxdur.',
+                noWordsFound: 'Bu səviyyə üçün söz tapılmadı.',
+                noWordsToShow: 'Göstəriləcək söz yoxdur. Lütfən bir səviyyə seçin və "Yeni Sözlər" düyməsinə basın.',
+                listFrozen: 'Siyahı dondurulub. Yeniləmək üçün dondurmanı açın.',
+                listUnfrozen: 'Dondurma açıldı.',
+                listFrozenInfo: 'Siyahı donduruldu. Sözlər dəyişməyəcək.',
+                noteSaved: 'üçün qeyd saxlanıldı.',
+                wordPinned: 'bərkidildi.',
+                wordUnpinned: 'bərkitmə ləğv edildi.',
+                wordsLoaded: 'Sözlər yükləndi',
+                subscriptionHeader: 'Abunəlik Məlumatları',
+                subDescription: 'Premium abunəlik ilə bütün funksiyaları açın və dil öyrənmə prosesinizi sürətləndirin:',
+                subFeature1: 'Özünüzü yoxlamaq üçün 3 ədəd əhatəli səviyyə təyin etmə imtahanı.',
+                subFeature2: 'Alman və İspan dilləri üçün xüsusi söz siyahıları və imtahanlar.',
+                subFeature3: 'Riyaziyyat və Fizika üçün xüsusi testlər.',
+                subContact: 'Qiymətlər və ətraflı məlumat üçün bizimlə əlaqə saxlayın.',
+                contactWhatsApp: 'WhatsApp ilə Əlaqə Saxlayın'
+            },
+            'ru': {
+                pinnedWordsTitle: 'Закрепленные Слова',
+                getNewWords: 'Новые Слова',
+                freezeList: 'Заморозить Список',
+                unfreezeList: 'Разморозить',
+                subscription: 'Подписка',
+                loadingWords: 'Загрузка слов...',
+                pinnedWordsHeader: 'Закрепленные Слова',
+                notePlaceholder: 'Напишите вашу личную заметку здесь...',
+                noPinnedWords: 'У вас пока нет закрепленных слов.',
+                noWordsFound: 'Слова для этого уровня не найдены.',
+                noWordsToShow: 'Нет слов для отображения. Выберите уровень и нажмите "Новые Слова".',
+                listFrozen: 'Список заморожен. Разморозьте, чтобы обновить.',
+                listUnfrozen: 'Список разморожен.',
+                listFrozenInfo: 'Список заморожен. Слова не изменятся.',
+                noteSaved: 'Заметка сохранена для',
+                wordPinned: 'закреплено.',
+                wordUnpinned: 'откреплено.',
+                wordsLoaded: 'Слова загружены',
+                subscriptionHeader: 'Детали Подписки',
+                subDescription: 'Разблокируйте все функции и ускорьте изучение языка с премиум-подпиской:',
+                subFeature1: '3 комплексных экзамена для определения вашего уровня.',
+                subFeature2: 'Специальные списки слов и экзамены по немецкому и испанскому языкам.',
+                subFeature3: 'Специальные тесты по математике и физике.',
+                subContact: 'Свяжитесь с нами для получения информации о ценах и подробностях.',
+                contactWhatsApp: 'Связаться через WhatsApp'
+            }
+        };
+
+        // --- YENİ KELİME VERİTABANI ---
         const wordBank = {
             a1: [
-                { en: 'Hello', tr: 'Merhaba', en_sentence: 'Hello, how are you?', tr_sentence: 'Merhaba, nasılsın?' },
-                { en: 'Goodbye', tr: 'Güle güle', en_sentence: 'Goodbye, see you tomorrow.', tr_sentence: 'Güle güle, yarın görüşürüz.' },
-                { en: 'Cat', tr: 'Kedi', en_sentence: 'The cat is sleeping.', tr_sentence: 'Kedi uyuyor.' },
-                { en: 'Dog', tr: 'Köpek', en_sentence: 'I have a small dog.', tr_sentence: 'Küçük bir köpeğim var.' },
-                { en: 'Book', tr: 'Kitap', en_sentence: 'Please read this book.', tr_sentence: 'Lütfen bu kitabı oku.' },
-                { en: 'Water', tr: 'Su', en_sentence: 'Can I have some water?', tr_sentence: 'Biraz su alabilir miyim?' },
-                { en: 'Apple', tr: 'Elma', en_sentence: 'She is eating an apple.', tr_sentence: 'O, bir elma yiyor.' },
-                { en: 'House', tr: 'Ev', en_sentence: 'My house is big.', tr_sentence: 'Evim büyük.' },
-                { en: 'Car', tr: 'Araba', en_sentence: 'He has a red car.', tr_sentence: 'Onun kırmızı bir arabası var.' },
-                { en: 'Man', tr: 'Adam', en_sentence: 'The man is tall.', tr_sentence: 'Adam uzun boylu.' },
-                { en: 'Woman', tr: 'Kadın', en_sentence: 'The woman is reading.', tr_sentence: 'Kadın okuyor.' },
-                { en: 'Child', tr: 'Çocuk', en_sentence: 'The child is playing.', tr_sentence: 'Çocuk oynuyor.' },
-                { en: 'Time', tr: 'Zaman', en_sentence: 'What time is it?', tr_sentence: 'Saat kaç?' },
-                { en: 'Money', tr: 'Para', en_sentence: 'I need more money.', tr_sentence: 'Daha fazla paraya ihtiyacım var.' },
-                { en: 'School', tr: 'Okul', en_sentence: 'They go to school.', tr_sentence: 'Onlar okula gider.' },
-                { en: 'Food', tr: 'Yiyecek', en_sentence: 'This food is delicious.', tr_sentence: 'Bu yiyecek lezzetli.' },
-                { en: 'Friend', tr: 'Arkadaş', en_sentence: 'He is my best friend.', tr_sentence: 'O benim en iyi arkadaşım.' },
-                { en: 'Today', tr: 'Bugün', en_sentence: 'Today is Monday.', tr_sentence: 'Bugün Pazartesi.' },
-                { en: 'Morning', tr: 'Sabah', en_sentence: 'Good morning!', tr_sentence: 'Günaydın!' },
-                { en: 'Night', tr: 'Gece', en_sentence: 'Good night!', tr_sentence: 'İyi geceler!' },
-                { en: 'Red', tr: 'Kırmızı', en_sentence: 'I like the color red.', tr_sentence: 'Kırmızı rengi severim.' },
-                { en: 'Blue', tr: 'Mavi', en_sentence: 'The sky is blue.', tr_sentence: 'Gökyüzü mavidir.' },
-                { en: 'Green', tr: 'Yeşil', en_sentence: 'The grass is green.', tr_sentence: 'Çimen yeşildir.' },
-                { en: 'Big', tr: 'Büyük', en_sentence: 'It is a big city.', tr_sentence: 'O büyük bir şehir.' },
-                { en: 'Small', tr: 'Küçük', en_sentence: 'I have a small problem.', tr_sentence: 'Küçük bir problemim var.' },
-                { en: 'Good', tr: 'İyi', en_sentence: 'This is a good movie.', tr_sentence: 'Bu iyi bir film.' },
-                { en: 'Bad', tr: 'Kötü', en_sentence: 'The weather is bad.', tr_sentence: 'Hava kötü.' },
-                { en: 'Happy', tr: 'Mutlu', en_sentence: 'I am very happy.', tr_sentence: 'Çok mutluyum.' },
-                { en: 'Sad', tr: 'Üzgün', en_sentence: 'Why are you sad?', tr_sentence: 'Neden üzgünsün?' },
-                { en: 'Eat', tr: 'Yemek', en_sentence: 'I want to eat pizza.', tr_sentence: 'Pizza yemek istiyorum.' },
-                { en: 'Drink', tr: 'İçmek', en_sentence: 'He drinks coffee.', tr_sentence: 'O, kahve içer.' },
-                { en: 'Go', tr: 'Gitmek', en_sentence: 'Let\'s go to the park.', tr_sentence: 'Hadi parka gidelim.' },
-                { en: 'See', tr: 'Görmek', en_sentence: 'I can see the moon.', tr_sentence: 'Ay\'ı görebiliyorum.' },
-                { en: 'Run', tr: 'Koşmak', en_sentence: 'The dog can run fast.', tr_sentence: 'Köpek hızlı koşabilir.' },
-                { en: 'Walk', tr: 'Yürümek', en_sentence: 'I walk to school.', tr_sentence: 'Okula yürüyerek giderim.' },
-                { en: 'Read', tr: 'Okumak', en_sentence: 'She likes to read books.', tr_sentence: 'O, kitap okumayı sever.' },
-                { en: 'Write', tr: 'Yazmak', en_sentence: 'Write your name here.', tr_sentence: 'Adını buraya yaz.' },
-                { en: 'Help', tr: 'Yardım', en_sentence: 'Can you help me?', tr_sentence: 'Bana yardım edebilir misin?' },
-                { en: 'Love', tr: 'Sevmek', en_sentence: 'I love my family.', tr_sentence: 'Ailemi seviyorum.' },
-                { en: 'Work', tr: 'Çalışmak', en_sentence: 'My father works hard.', tr_sentence: 'Babam çok çalışır.' },
-                { en: 'Play', tr: 'Oynamak', en_sentence: 'Children love to play.', tr_sentence: 'Çocuklar oynamayı sever.' },
-                { en: 'Sleep', tr: 'Uyumak', en_sentence: 'The baby is sleeping.', tr_sentence: 'Bebek uyuyor.' },
-                { en: 'Old', tr: 'Eski', en_sentence: 'This is an old house.', tr_sentence: 'Bu eski bir ev.' },
-                { en: 'New', tr: 'Yeni', en_sentence: 'I bought a new phone.', tr_sentence: 'Yeni bir telefon aldım.' },
-                { en: 'Cold', tr: 'Soğuk', en_sentence: 'The weather is cold.', tr_sentence: 'Hava soğuk.' },
-                { en: 'Hot', tr: 'Sıcak', en_sentence: 'The coffee is hot.', tr_sentence: 'Kahve sıcak.' },
-                { en: 'Easy', tr: 'Kolay', en_sentence: 'The test was easy.', tr_sentence: 'Test kolaydı.' },
-                { en: 'Hard', tr: 'Zor', en_sentence: 'This is a hard question.', tr_sentence: 'Bu zor bir soru.' },
-                { en: 'Yes', tr: 'Evet', en_sentence: 'Yes, I understand.', tr_sentence: 'Evet, anlıyorum.' },
-                { en: 'No', tr: 'Hayır', en_sentence: 'No, thank you.', tr_sentence: 'Hayır, teşekkürler.' },
-                { en: 'Thank you', tr: 'Teşekkürler', en_sentence: 'Thank you for your help.', tr_sentence: 'Yardımın için teşekkürler.' },
-                { en: 'Please', tr: 'Lütfen', en_sentence: 'Please sit down.', tr_sentence: 'Lütfen otur.' },
-                { en: 'Family', tr: 'Aile', en_sentence: 'I have a big family.', tr_sentence: 'Büyük bir ailem var.' },
-                { en: 'Mother', tr: 'Anne', en_sentence: 'My mother is a doctor.', tr_sentence: 'Annem bir doktor.' },
-                { en: 'Father', tr: 'Baba', en_sentence: 'My father is tall.', tr_sentence: 'Babam uzundur.' },
-                { en: 'Sister', tr: 'Kız kardeş', en_sentence: 'I have one sister.', tr_sentence: 'Bir kız kardeşim var.' },
-                { en: 'Brother', tr: 'Erkek kardeş', en_sentence: 'My brother is young.', tr_sentence: 'Erkek kardeşim genç.' },
-                { en: 'Sun', tr: 'Güneş', en_sentence: 'The sun is shining.', tr_sentence: 'Güneş parlıyor.' },
-                { en: 'Moon', tr: 'Ay', en_sentence: 'The moon is bright.', tr_sentence: 'Ay parlak.' },
-                { en: 'Tree', tr: 'Ağaç', en_sentence: 'That is a big tree.', tr_sentence: 'O büyük bir ağaç.' },
+                // Örnek olarak AZ ve RU çevirileri eklendi.
+                // Geri kalanlar için siz de ekleyebilirsiniz.
+                { en: 'apple', translations: { tr: 'elma', az: 'alma', ru: 'яблоко' } },
+                { en: 'book', translations: { tr: 'kitap', az: 'kitab', ru: 'книга' } },
+                { en: 'cat', translations: { tr: 'kedi', az: 'pişik', ru: 'кошка' } },
+                { en: 'dog', translations: { tr: 'köpek', az: 'it', ru: 'собака' } },
+                { en: 'egg', translations: { tr: 'yumurta', az: 'yumurta', ru: 'яйцо' } },
+                { en: 'fish', translations: { tr: 'balık', az: 'balıq', ru: 'рыба' } },
+                { en: 'girl', translations: { tr: 'kız' } },
+                { en: 'house', translations: { tr: 'ev' } },
+                { en: 'ice', translations: { tr: 'buz' } },
+                { en: 'juice', translations: { tr: 'meyve suyu' } },
+                { en: 'key', translations: { tr: 'anahtar' } },
+                { en: 'lamp', translations: { tr: 'lamba' } },
+                { en: 'man', translations: { tr: 'adam' } },
+                { en: 'nose', translations: { tr: 'burun' } },
+                { en: 'orange', translations: { tr: 'portakal' } },
+                { en: 'pen', translations: { tr: 'kalem' } },
+                { en: 'queen', translations: { tr: 'kraliçe' } },
+                { en: 'rain', translations: { tr: 'yağmur' } },
+                { en: 'sun', translations: { tr: 'güneş' } },
+                { en: 'table', translations: { tr: 'masa' } },
+                { en: 'umbrella', translations: { tr: 'şemsiye' } },
+                { en: 'violin', translations: { tr: 'keman' } },
+                { en: 'window', translations: { tr: 'pencere' } },
+                { en: 'yellow', translations: { tr: 'sarı' } },
+                { en: 'zoo', translations: { tr: 'hayvanat bahçesi' } },
+                { en: 'ball', translations: { tr: 'top' } },
+                { en: 'car', translations: { tr: 'araba' } },
+                { en: 'door', translations: { tr: 'kapı' } },
+                { en: 'eat', translations: { tr: 'yemek' } },
+                { en: 'fun', translations: { tr: 'eğlence' } },
+                { en: 'good', translations: { tr: 'iyi' } },
+                { en: 'happy', translations: { tr: 'mutlu' } },
+                { en: 'jump', translations: { tr: 'zıplamak' } },
+                { en: 'kind', translations: { tr: 'kibar' } },
+                { en: 'love', translations: { tr: 'sevmek' } },
+                { en: 'mother', translations: { tr: 'anne' } },
+                { en: 'new', translations: { tr: 'yeni' } },
+                { en: 'old', translations: { tr: 'eski' } },
+                { en: 'play', translations: { tr: 'oynamak' } },
+                { en: 'quick', translations: { tr: 'hızlı' } },
+                { en: 'red', translations: { tr: 'kırmızı' } },
+                { en: 'sit', translations: { tr: 'oturmak' } },
+                { en: 'tall', translations: { tr: 'uzun' } },
+                { en: 'up', translations: { tr: 'yukarı' } },
+                { en: 'very', translations: { tr: 'çok' } },
+                { en: 'water', translations: { tr: 'su' } },
+                { en: 'yes', translations: { tr: 'evet' } },
+                { en: 'no', translations: { tr: 'hayır' } },
+                { en: 'boy', translations: { tr: 'erkek çocuk' } },
+                { en: 'friend', translations: { tr: 'arkadaş' } },
+                { en: 'school', translations: { tr: 'okul' } },
+                { en: 'teacher', translations: { tr: 'öğretmen' } },
+                { en: 'bag', translations: { tr: 'çanta' } },
+                { en: 'chair', translations: { tr: 'sandalye' } },
+                { en: 'clock', translations: { tr: 'saat' } },
+                { en: 'color', translations: { tr: 'renk' } },
+                { en: 'dance', translations: { tr: 'dans' } },
+                { en: 'door', translations: { tr: 'kapı' } },
+                { en: 'drink', translations: { tr: 'içmek' } },
+                { en: 'family', translations: { tr: 'aile' } },
+                { en: 'father', translations: { tr: 'baba' } },
+                { en: 'happy', translations: { tr: 'mutlu' } },
+                { en: 'home', translations: { tr: 'ev' } },
+                { en: 'job', translations: { tr: 'iş' } },
+                { en: 'letter', translations: { tr: 'mektup' } },
+                { en: 'music', translations: { tr: 'müzik' } },
+                { en: 'park', translations: { tr: 'park' } },
+                { en: 'picture', translations: { tr: 'resim' } },
+                { en: 'room', translations: { tr: 'oda' } },
+                { en: 'shop', translations: { tr: 'mağaza' } },
+                { en: 'sing', translations: { tr: 'şarkı söylemek' } },
+                { en: 'sleep', translations: { tr: 'uyumak' } },
+                { en: 'street', translations: { tr: 'sokak' } },
+                { en: 'swim', translations: { tr: 'yüzmek' } },
+                { en: 'time', translations: { tr: 'zaman' } },
+                { en: 'walk', translations: { tr: 'yürümek' } },
+                { en: 'work', translations: { tr: 'çalışmak' } },
+                { en: 'year', translations: { tr: 'yıl' } },
+                { en: 'breakfast', translations: { tr: 'kahvaltı' } },
+                { en: 'lunch', translations: { tr: 'öğle yemeği' } },
+                { en: 'dinner', translations: { tr: 'akşam yemeği' } },
+                { en: 'market', translations: { tr: 'pazar' } },
+                { en: 'milk', translations: { tr: 'süt' } },
+                { en: 'bread', translations: { tr: 'ekmek' } },
+                { en: 'cheese', translations: { tr: 'peynir' } },
+                { en: 'butter', translations: { tr: 'tereyağı' } },
+                { en: 'friend', translations: { tr: 'arkadaş' } },
+                { en: 'happy', translations: { tr: 'mutlu' } },
+                { en: 'cold', translations: { tr: 'soğuk' } },
+                { en: 'hot', translations: { tr: 'sıcak' } },
+                { en: 'fast', translations: { tr: 'hızlı' } },
+                { en: 'slow', translations: { tr: 'yavaş' } },
+                { en: 'near', translations: { tr: 'yakın' } },
+                { en: 'far', translations: { tr: 'uzak' } },
+                { en: 'open', translations: { tr: 'açık' } },
+                { en: 'closed', translations: { tr: 'kapalı' } },
+                { en: 'start', translations: { tr: 'başlamak' } },
+                { en: 'finish', translations: { tr: 'bitirmek' } },
+                { en: 'small', translations: { tr: 'küçük' } },
+                { en: 'big', translations: { tr: 'büyük' } }
             ],
             a2: [
-                { en: 'Kitchen', tr: 'Mutfak', en_sentence: 'We cook in the kitchen.', tr_sentence: 'Mutfakta yemek yaparız.' },
-                { en: 'Library', tr: 'Kütüphane', en_sentence: 'I borrow books from the library.', tr_sentence: 'Kütüphaneden kitap ödünç alırım.' },
-                { en: 'Restaurant', tr: 'Restoran', en_sentence: 'Let\'s eat at a restaurant.', tr_sentence: 'Hadi bir restoranda yiyelim.' },
-                { en: 'Hospital', tr: 'Hastane', en_sentence: 'The doctor works at the hospital.', tr_sentence: 'Doktor hastanede çalışır.' },
-                { en: 'Weather', tr: 'Hava durumu', en_sentence: 'How is the weather today?', tr_sentence: 'Bugün hava nasıl?' },
-                { en: 'Computer', tr: 'Bilgisayar', en_sentence: 'I use my computer every day.', tr_sentence: 'Bilgisayarımı her gün kullanırım.' },
-                { en: 'Music', tr: 'Müzik', en_sentence: 'She loves listening to music.', tr_sentence: 'O, müzik dinlemeyi sever.' },
-                { en: 'Movie', tr: 'Film', en_sentence: 'We watched a movie last night.', tr_sentence: 'Dün gece bir film izledik.' },
-                { en: 'Morning', tr: 'Sabah', en_sentence: 'I wake up early in the morning.', tr_sentence: 'Sabahları erken kalkarım.' },
-                { en: 'Evening', tr: 'Akşam', en_sentence: 'We will meet in the evening.', tr_sentence: 'Akşam buluşacağız.' },
-                { en: 'Telephone', tr: 'Telefon', en_sentence: 'The telephone is ringing.', tr_sentence: 'Telefon çalıyor.' },
-                { en: 'Beautiful', tr: 'Güzel', en_sentence: 'This flower is beautiful.', tr_sentence: 'Bu çiçek güzel.' },
-                { en: 'Difficult', tr: 'Zor', en_sentence: 'This homework is difficult.', tr_sentence: 'Bu ev ödevi zor.' },
-                { en: 'Interesting', tr: 'İlginç', en_sentence: 'It is an interesting story.', tr_sentence: 'Bu ilginç bir hikaye.' },
-                { en: 'Expensive', tr: 'Pahalı', en_sentence: 'This car is very expensive.', tr_sentence: 'Bu araba çok pahalı.' },
-                { en: 'Cheap', tr: 'Ucuz', en_sentence: 'I found a cheap ticket.', tr_sentence: 'Ucuz bir bilet buldum.' },
-                { en: 'Always', tr: 'Her zaman', en_sentence: 'He is always late.', tr_sentence: 'O her zaman geç kalır.' },
-                { en: 'Usually', tr: 'Genellikle', en_sentence: 'I usually drink tea.', tr_sentence: 'Genellikle çay içerim.' },
-                { en: 'Sometimes', tr: 'Bazen', en_sentence: 'Sometimes I go to the cinema.', tr_sentence: 'Bazen sinemaya giderim.' },
-                { en: 'Never', tr: 'Asla', en_sentence: 'I never eat meat.', tr_sentence: 'Asla et yemem.' },
-                { en: 'Travel', tr: 'Seyahat etmek', en_sentence: 'I like to travel.', tr_sentence: 'Seyahat etmeyi severim.' },
-                { en: 'Study', tr: 'Ders çalışmak', en_sentence: 'You need to study hard.', tr_sentence: 'Çok ders çalışman gerek.' },
-                { en: 'Listen', tr: 'Dinlemek', en_sentence: 'Please listen to me.', tr_sentence: 'Lütfen beni dinle.' },
-                { en: 'Speak', tr: 'Konuşmak', en_sentence: 'Can you speak English?', tr_sentence: 'İngilizce konuşabiliyor musun?' },
-                { en: 'Understand', tr: 'Anlamak', en_sentence: 'I don\'t understand this word.', tr_sentence: 'Bu kelimeyi anlamıyorum.' },
-                { en: 'Forget', tr: 'Unutmak', en_sentence: 'Don\'t forget your keys.', tr_sentence: 'Anahtarlarını unutma.' },
-                { en: 'Remember', tr: 'Hatırlamak', en_sentence: 'I remember his name.', tr_sentence: 'Onun adını hatırlıyorum.' },
-                { en: 'Holiday', tr: 'Tatil', en_sentence: 'We are on holiday.', tr_sentence: 'Tatildeyiz.' },
-                { en: 'Beach', tr: 'Plaj', en_sentence: 'Let\'s go to the beach.', tr_sentence: 'Hadi plaja gidelim.' },
-                { en: 'Mountain', tr: 'Dağ', en_sentence: 'The mountain is high.', tr_sentence: 'Dağ yüksek.' },
+                { en: 'above', translations: { tr: 'yukarıda' } },
+                { en: 'across', translations: { tr: 'karşısında' } },
+                { en: 'afraid', translations: { tr: 'korkmuş' } },
+                { en: 'airport', translations: { tr: 'havaalanı' } },
+                { en: 'along', translations: { tr: 'boyunca' } },
+                { en: 'always', translations: { tr: 'her zaman' } },
+                { en: 'amazing', translations: { tr: 'şaşırtıcı' } },
+                { en: 'answer', translations: { tr: 'cevap' } },
+                { en: 'around', translations: { tr: 'etrafında' } },
+                { en: 'arrive', translations: { tr: 'varmak' } },
+                { en: 'art', translations: { tr: 'sanat' } },
+                { en: 'bag', translations: { tr: 'çanta' } },
+                { en: 'beach', translations: { tr: 'plaj' } },
+                { en: 'beautiful', translations: { tr: 'güzel' } },
+                { en: 'believe', translations: { tr: 'inanmak' } },
+                { en: 'between', translations: { tr: 'arasında' } },
+                { en: 'bicycle', translations: { tr: 'bisiklet' } },
+                { en: 'bird', translations: { tr: 'kuş' } },
+                { en: 'birthday', translations: { tr: 'doğum günü' } },
+                { en: 'black', translations: { tr: 'siyah' } },
+                { en: 'blue', translations: { tr: 'mavi' } },
+                { en: 'bookshop', translations: { tr: 'kitapçı' } },
+                { en: 'busy', translations: { tr: 'meşgul' } },
+                { en: 'cafe', translations: { tr: 'kafe' } },
+                { en: 'call', translations: { tr: 'aramak' } },
+                { en: 'car park', translations: { tr: 'otopark' } },
+                { en: 'carry', translations: { tr: 'taşımak' } },
+                { en: 'cheap', translations: { tr: 'ucuz' } },
+                { en: 'clean', translations: { tr: 'temiz' } },
+                { en: 'climb', translations: { tr: 'tırmanmak' } },
+                { en: 'cold', translations: { tr: 'soğuk' } },
+                { en: 'cook', translations: { tr: 'pişirmek' } },
+                { en: 'country', translations: { tr: 'ülke' } },
+                { en: 'dangerous', translations: { tr: 'tehlikeli' } },
+                { en: 'dark', translations: { tr: 'karanlık' } },
+                { en: 'date', translations: { tr: 'tarih' } },
+                { en: 'decide', translations: { tr: 'karar vermek' } },
+                { en: 'dictionary', translations: { tr: 'sözlük' } },
+                { en: 'different', translations: { tr: 'farklı' } },
+                { en: 'drink', translations: { tr: 'içmek' } },
+                { en: 'during', translations: { tr: 'sırasında' } },
+                { en: 'easy', translations: { tr: 'kolay' } },
+                { en: 'enough', translations: { tr: 'yeterli' } },
+                { en: 'evening', translations: { tr: 'akşam' } },
+                { en: 'expensive', translations: { tr: 'pahalı' } },
+                { en: 'famous', translations: { tr: 'ünlü' } },
+                { en: 'father', translations: { tr: 'baba' } },
+                { en: 'favourite', translations: { tr: 'favori' } },
+                { en: 'first', translations: { tr: 'ilk' } },
+                { en: 'floor', translations: { tr: 'kat' } },
+                { en: 'football', translations: { tr: 'futbol' } },
+                { en: 'garden', translations: { tr: 'bahçe' } },
+                { en: 'get up', translations: { tr: 'kalkmak' } },
+                { en: 'girl', translations: { tr: 'kız' } },
+                { en: 'go out', translations: { tr: 'dışarı çıkmak' } },
+                { en: 'good-looking', translations: { tr: 'iyi görünümlü' } },
+                { en: 'group', translations: { tr: 'grup' } },
+                { en: 'hair', translations: { tr: 'saç' } },
+                { en: 'happy', translations: { tr: 'mutlu' } },
+                { en: 'have breakfast', translations: { tr: 'kahvaltı yapmak' } },
+                { en: 'hear', translations: { tr: 'duymak' } },
+                { en: 'help', translations: { tr: 'yardım etmek' } },
+                { en: 'holiday', translations: { tr: 'tatil' } },
+                { en: 'hotel', translations: { tr: 'otel' } },
+                { en: 'house', translations: { tr: 'ev' } },
+                { en: 'important', translations: { tr: 'önemli' } },
+                { en: 'interesting', translations: { tr: 'ilginç' } },
+                { en: 'island', translations: { tr: 'ada' } },
+                { en: 'juice', translations: { tr: 'meyve suyu' } },
+                { en: 'key', translations: { tr: 'anahtar' } },
+                { en: 'kitchen', translations: { tr: 'mutfak' } },
+                { en: 'know', translations: { tr: 'bilmek' } },
+                { en: 'last', translations: { tr: 'son' } },
+                { en: 'laugh', translations: { tr: 'gülmek' } },
+                { en: 'learn', translations: { tr: 'öğrenmek' } },
+                { en: 'library', translations: { tr: 'kütüphane' } },
+                { en: 'listen', translations: { tr: 'dinlemek' } },
+                { en: 'live', translations: { tr: 'yaşamak' } },
+                { en: 'look', translations: { tr: 'bakmak' } },
+                { en: 'lunch', translations: { tr: 'öğle yemeği' } },
+                { en: 'machine', translations: { tr: 'makine' } },
+                { en: 'magazine', translations: { tr: 'dergi' } },
+                { en: 'market', translations: { tr: 'pazar' } },
+                { en: 'meet', translations: { tr: 'buluşmak' } },
+                { en: 'message', translations: { tr: 'mesaj' } },
+                { en: 'milk', translations: { tr: 'süt' } },
+                { en: 'minute', translations: { tr: 'dakika' } },
+                { en: 'money', translations: { tr: 'para' } },
+                { en: 'morning', translations: { tr: 'sabah' } },
+                { en: 'move', translations: { tr: 'hareket etmek' } },
+                { en: 'music', translations: { tr: 'müzik' } },
+                { en: 'near', translations: { tr: 'yakın' } },
+                { en: 'need', translations: { tr: 'ihtiyaç duymak' } },
+                { en: 'newspaper', translations: { tr: 'gazete' } },
+                { en: 'next', translations: { tr: 'sonraki' } },
+                { en: 'night', translations: { tr: 'gece' } },
+                { en: 'open', translations: { tr: 'açmak' } },
+                { en: 'party', translations: { tr: 'parti' } },
+                { en: 'picture', translations: { tr: 'resim' } },
+                { en: 'play', translations: { tr: 'oynamak' } }
             ],
             b1: [
-                { en: 'Environment', tr: 'Çevre', en_sentence: 'We must protect the environment.', tr_sentence: 'Çevreyi korumalıyız.' },
-                { en: 'Opportunity', tr: 'Fırsat', en_sentence: 'This is a great opportunity.', tr_sentence: 'Bu harika bir fırsat.' },
-                { en: 'Government', tr: 'Hükümet', en_sentence: 'The government made a new law.', tr_sentence: 'Hükümet yeni bir yasa çıkardı.' },
-                { en: 'Confidence', tr: 'Özgüven', en_sentence: 'He lacks confidence.', tr_sentence: 'Onun özgüveni eksik.' },
-                { en: 'Conversation', tr: 'Sohbet', en_sentence: 'We had a long conversation.', tr_sentence: 'Uzun bir sohbet ettik.' },
-                { en: 'Development', tr: 'Gelişim', en_sentence: 'Personal development is important.', tr_sentence: 'Kişisel gelişim önemlidir.' },
-                { en: 'Education', tr: 'Eğitim', en_sentence: 'Education is the key to success.', tr_sentence: 'Eğitim, başarının anahtarıdır.' },
-                { en: 'Experience', tr: 'Deneyim', en_sentence: 'I have 5 years of experience.', tr_sentence: '5 yıllık deneyimim var.' },
-                { en: 'Relationship', tr: 'İlişki', en_sentence: 'They have a strong relationship.', tr_sentence: 'Onların güçlü bir ilişkisi var.' },
-                { en: 'Responsible', tr: 'Sorumlu', en_sentence: 'You are responsible for this.', tr_sentence: 'Bundan sen sorumlusun.' },
-                { en: 'Suggestion', tr: 'Öneri', en_sentence: 'Do you have any suggestions?', tr_sentence: 'Herhangi bir önerin var mı?' },
-                { en: 'Knowledge', tr: 'Bilgi', en_sentence: 'Knowledge is power.', tr_sentence: 'Bilgi güçtür.' },
-                { en: 'Improve', tr: 'Geliştirmek', en_sentence: 'I want to improve my English.', tr_sentence: 'İngilizcemi geliştirmek istiyorum.' },
-                { en: 'Achieve', tr: 'Başarmak', en_sentence: 'You can achieve your goals.', tr_sentence: 'Hedeflerine ulaşabilirsin.' },
-                { en: 'However', tr: 'Ancak', en_sentence: 'He is rich. However, he is not happy.', tr_sentence: 'O zengin. Ancak, mutlu değil.' },
-                { en: 'Therefore', tr: 'Bu yüzden', en_sentence: 'She was late. Therefore, she missed the bus.', tr_sentence: 'Geç kalmıştı. Bu yüzden otobüsü kaçırdı.' },
+                { en: 'ability', translations: { tr: 'yetenek' } },
+                { en: 'achieve', translations: { tr: 'başarmak' } },
+                { en: 'action', translations: { tr: 'eylem' } },
+                { en: 'active', translations: { tr: 'aktif' } },
+                { en: 'actor', translations: { tr: 'aktör' } },
+                { en: 'actress', translations: { tr: 'aktris' } },
+                { en: 'actually', translations: { tr: 'aslında' } },
+                { en: 'advice', translations: { tr: 'tavsiye' } },
+                { en: 'afford', translations: { tr: 'gücü yetmek' } },
+                { en: 'against', translations: { tr: 'karşı' } },
+                { en: 'agree', translations: { tr: 'katılmak' } },
+                { en: 'aim', translations: { tr: 'hedeflemek' } },
+                { en: 'almost', translations: { tr: 'neredeyse' } },
+                { en: 'alone', translations: { tr: 'yalnız' } },
+                { en: 'amazing', translations: { tr: 'şaşırtıcı' } },
+                { en: 'ancient', translations: { tr: 'antik' } },
+                { en: 'angry', translations: { tr: 'kızgın' } },
+                { en: 'animal', translations: { tr: 'hayvan' } },
+                { en: 'answer', translations: { tr: 'cevap' } },
+                { en: 'appear', translations: { tr: 'görünmek' } },
+                { en: 'appointment', translations: { tr: 'randevu' } },
+                { en: 'area', translations: { tr: 'alan' } },
+                { en: 'argue', translations: { tr: 'tartışmak' } },
+                { en: 'arrange', translations: { tr: 'düzenlemek' } },
+                { en: 'article', translations: { tr: 'makale' } },
+                { en: 'artist', translations: { tr: 'sanatçı' } },
+                { en: 'aspect', translations: { tr: 'yön' } },
+                { en: 'assist', translations: { tr: 'yardım etmek' } },
+                { en: 'assume', translations: { tr: 'varsaymak' } },
+                { en: 'attention', translations: { tr: 'dikkat' } },
+                { en: 'avoid', translations: { tr: 'kaçınmak' } },
+                { en: 'award', translations: { tr: 'ödül' } },
+                { en: 'aware', translations: { tr: 'farkında' } },
+                { en: 'background', translations: { tr: 'arka plan' } },
+                { en: 'balance', translations: { tr: 'denge' } },
+                { en: 'bank', translations: { tr: 'banka' } },
+                { en: 'base', translations: { tr: 'temel' } },
+                { en: 'basic', translations: { tr: 'temel' } },
+                { en: 'battle', translations: { tr: 'savaş' } },
+                { en: 'beauty', translations: { tr: 'güzellik' } },
+                { en: 'behaviour', translations: { tr: 'davranış' } },
+                { en: 'believe', translations: { tr: 'inanmak' } },
+                { en: 'benefit', translations: { tr: 'fayda' } },
+                { en: 'beyond', translations: { tr: 'ötesinde' } },
+                { en: 'birth', translations: { tr: 'doğum' } },
+                { en: 'blame', translations: { tr: 'suçlamak' } },
+                { en: 'block', translations: { tr: 'engellemek' } },
+                { en: 'blood', translations: { tr: 'kan' } },
+                { en: 'board', translations: { tr: 'tahta / binmek' } },
+                { en: 'body', translations: { tr: 'vücut' } },
+                { en: 'book', translations: { tr: 'kitap' } },
+                { en: 'born', translations: { tr: 'doğmuş' } },
+                { en: 'boss', translations: { tr: 'patron' } },
+                { en: 'bottom', translations: { tr: 'alt' } },
+                { en: 'break', translations: { tr: 'kırmak' } },
+                { en: 'breathe', translations: { tr: 'nefes almak' } },
+                { en: 'bright', translations: { tr: 'parlak' } },
+                { en: 'bring', translations: { tr: 'getirmek' } },
+                { en: 'brother', translations: { tr: 'erkek kardeş' } },
+                { en: 'build', translations: { tr: 'inşa etmek' } },
+                { en: 'burn', translations: { tr: 'yakmak' } },
+                { en: 'business', translations: { tr: 'iş' } },
+                { en: 'busy', translations: { tr: 'meşgul' } },
+                { en: 'buy', translations: { tr: 'satın almak' } },
+                { en: 'calculate', translations: { tr: 'hesaplamak' } },
+                { en: 'call', translations: { tr: 'aramak' } },
+                { en: 'camera', translations: { tr: 'kamera' } },
+                { en: 'campaign', translations: { tr: 'kampanya' } },
+                { en: 'capital', translations: { tr: 'başkent' } },
+                { en: 'capture', translations: { tr: 'yakalamak' } },
+                { en: 'care', translations: { tr: 'dikkat / önemsemek' } },
+                { en: 'carry', translations: { tr: 'taşımak' } },
+                { en: 'cause', translations: { tr: 'sebep olmak' } },
+                { en: 'celebrate', translations: { tr: 'kutlamak' } },
+                { en: 'centre', translations: { tr: 'merkez' } },
+                { en: 'certain', translations: { tr: 'belirli' } },
+                { en: 'chance', translations: { tr: 'şans' } },
+                { en: 'change', translations: { tr: 'değişmek' } },
+                { en: 'character', translations: { tr: 'karakter' } },
+                { en: 'charge', translations: { tr: 'şarj etmek / suçlamak' } },
+                { en: 'check', translations: { tr: 'kontrol etmek' } },
+                { en: 'child', translations: { tr: 'çocuk' } },
+                { en: 'choice', translations: { tr: 'seçim' } },
+                { en: 'choose', translations: { tr: 'seçmek' } },
+                { en: 'church', translations: { tr: 'kilise' } },
+                { en: 'city', translations: { tr: 'şehir' } },
+                { en: 'claim', translations: { tr: 'iddia etmek' } },
+                { en: 'class', translations: { tr: 'sınıf' } },
+                { en: 'clean', translations: { tr: 'temiz' } },
+                { en: 'clear', translations: { tr: 'net' } },
+                { en: 'close', translations: { tr: 'kapatmak / yakın' } },
+                { en: 'clothes', translations: { tr: 'giysiler' } },
+                { en: 'club', translations: { tr: 'kulüp' } },
+                { en: 'coach', translations: { tr: 'antrenör / otobüs' } },
+                { en: 'cold', translations: { tr: 'soğuk' } },
+                { en: 'collect', translations: { tr: 'toplamak' } },
+                { en: 'colour', translations: { tr: 'renk' } },
+                { en: 'come', translations: { tr: 'gelmek' } },
+                { en: 'common', translations: { tr: 'yaygın' } },
+                { en: 'compare', translations: { tr: 'karşılaştırmak' } },
+                { en: 'complete', translations: { tr: 'tamamlamak' } },
+                { en: 'computer', translations: { tr: 'bilgisayar' } },
+                { en: 'concern', translations: { tr: 'endişe' } },
+                { en: 'condition', translations: { tr: 'koşul' } },
+                { en: 'confirm', translations: { tr: 'doğrulamak' } },
+                { en: 'connect', translations: { tr: 'bağlamak' } },
+                { en: 'consider', translations: { tr: 'düşünmek' } },
+                { en: 'contain', translations: { tr: 'içermek' } },
+                { en: 'continue', translations: { tr: 'devam etmek' } },
+                { en: 'control', translations: { tr: 'kontrol' } },
+                { en: 'conversation', translations: { tr: 'konuşma' } },
+                { en: 'cook', translations: { tr: 'pişirmek' } },
+                { en: 'cool', translations: { tr: 'serin / havalı' } },
+                { en: 'copy', translations: { tr: 'kopya' } },
+                { en: 'correct', translations: { tr: 'doğru' } },
+                { en: 'cost', translations: { tr: 'maliyet' } },
+                { en: 'could', translations: { tr: 'yapabilirdi' } },
+                { en: 'country', translations: { tr: 'ülke' } },
+                { en: 'couple', translations: { tr: 'çift' } },
+                { en: 'course', translations: { tr: 'kurs / ders' } },
+                { en: 'cover', translations: { tr: 'örtmek' } },
+                { en: 'create', translations: { tr: 'yaratmak' } },
+                { en: 'culture', translations: { tr: 'kültür' } },
+                { en: 'customer', translations: { tr: 'müşteri' } },
+                { en: 'cut', translations: { tr: 'kesmek' } },
+                { en: 'dad', translations: { tr: 'baba' } },
+                { en: 'damage', translations: { tr: 'zarar' } },
+                { en: 'danger', translations: { tr: 'tehlike' } },
+                { en: 'dark', translations: { tr: 'karanlık' } },
+                { en: 'data', translations: { tr: 'veri' } },
+                { en: 'daughter', translations: { tr: 'kız evlat' } },
+                { en: 'day', translations: { tr: 'gün' } },
+                { en: 'deal', translations: { tr: 'anlaşma' } },
+                { en: 'decide', translations: { tr: 'karar vermek' } },
+                { en: 'decision', translations: { tr: 'karar' } },
+                { en: 'deep', translations: { tr: 'derin' } },
+                { en: 'degree', translations: { tr: 'derece' } },
+                { en: 'deliver', translations: { tr: 'teslim etmek' } },
+                { en: 'demand', translations: { tr: 'talep' } },
+                { en: 'describe', translations: { tr: 'tanımlamak' } },
+                { en: 'design', translations: { tr: 'tasarım' } },
+                { en: 'develop', translations: { tr: 'geliştirmek' } },
+                { en: 'die', translations: { tr: 'ölmek' } },
+                { en: 'difference', translations: { tr: 'fark' } },
+                { en: 'different', translations: { tr: 'farklı' } },
+                { en: 'difficult', translations: { tr: 'zor' } },
+                { en: 'discover', translations: { tr: 'keşfetmek' } },
+                { en: 'discuss', translations: { tr: 'tartışmak' } },
+                { en: 'disease', translations: { tr: 'hastalık' } },
+                { en: 'do', translations: { tr: 'yapmak' } }
             ],
             b2: [
-                { en: 'Consequence', tr: 'Sonuç', en_sentence: 'Every action has a consequence.', tr_sentence: 'Her eylemin bir sonucu vardır.' },
-                { en: 'Significant', tr: 'Önemli', en_sentence: 'There is a significant difference.', tr_sentence: 'Önemli bir fark var.' },
-                { en: 'Furthermore', tr: 'Ayrıca', en_sentence: 'He is smart. Furthermore, he is kind.', tr_sentence: 'O zeki. Ayrıca, nazik.' },
-                { en: 'Nevertheless', tr: 'Yine de', en_sentence: 'It was raining. Nevertheless, we went out.', tr_sentence: 'Yağmur yağıyordu. Yine de dışarı çıktık.' },
-                { en: 'Controversial', tr: 'Tartışmalı', en_sentence: 'It is a controversial topic.', tr_sentence: 'Bu tartışmalı bir konu.' },
-                { en: 'Sophisticated', tr: 'Sofistike', en_sentence: 'She has a sophisticated style.', tr_sentence: 'Onun sofistike bir tarzı var.' },
-                { en: 'Influence', tr: 'Etkilemek', en_sentence: 'His speech influenced many people.', tr_sentence: 'Onun konuşması birçok insanı etkiledi.' },
-                { en: 'In-depth', tr: 'Derinlemesine', en_sentence: 'We need an in-depth analysis.', tr_sentence: 'Derinlemesine bir analize ihtiyacımız var.' },
-                { en: 'Negotiate', tr: 'Müzakere etmek', en_sentence: 'They will negotiate the contract.', tr_sentence: 'Sözleşmeyi müzakere edecekler.' },
-                { en: 'Apparently', tr: 'Görünüşe göre', en_sentence: 'Apparently, he is not coming.', tr_sentence: 'Görünüşe göre o gelmiyor.' },
-                { en: 'Ubiquitous', tr: 'Her yerde bulunan', en_sentence: 'The internet is ubiquitous.', tr_sentence: 'İnternet her yerde bulunur.' },
-                { en: 'Alleviate', tr: 'Hafifletmek', en_sentence: 'This medicine will alleviate the pain.', tr_sentence: 'Bu ilaç ağrıyı hafifletecek.' },
-                { en: 'Meticulous', tr: 'Titiz', en_sentence: 'She is meticulous in her work.', tr_sentence: 'İşinde çok titizdir.' },
-                { en: 'Exacerbate', tr: 'Şiddetlendirmek', en_sentence: 'His comments exacerbated the situation.', tr_sentence: 'Onun yorumları durumu şiddetlendirdi.' },
-                { en: 'Resilient', tr: 'Dirençli', en_sentence: 'Children are often very resilient.', tr_sentence: 'Çocuklar genellikle çok dirençlidir.' },
-                { en: 'Ambiguous', tr: 'Belirsiz', en_sentence: 'The instructions were ambiguous.', tr_sentence: 'Talimatlar belirsizdi.' },
-                { en: 'Consensus', tr: 'Fikir birliği', en_sentence: 'The committee reached a consensus.', tr_sentence: 'Komite bir fikir birliğine vardı.' },
-                { en: 'Prerequisite', tr: 'Ön koşul', en_sentence: 'This course is a prerequisite for the next one.', tr_sentence: 'Bu ders bir sonraki için ön koşuldur.' },
-                { en: 'Superficial', tr: 'Yüzeysel', en_sentence: 'It was a superficial analysis.', tr_sentence: 'Bu yüzeysel bir analisti.' },
-                { en: 'Tentative', tr: 'Geçici', en_sentence: 'We have a tentative agreement.', tr_sentence: 'Geçici bir anlaşmamız var.' },
-                { en: 'Discrepancy', tr: 'Tutarsızlık', en_sentence: 'There is a discrepancy in the accounts.', tr_sentence: 'Hesaplarda bir tutarsızlık var.' },
-                { en: 'Comprehensive', tr: 'Kapsamlı', en_sentence: 'He has a comprehensive knowledge of the subject.', tr_sentence: 'Konu hakkında kapsamlı bir bilgisi var.' },
-                { en: 'Lucrative', tr: 'Kazançlı', en_sentence: 'He found a lucrative business.', tr_sentence: 'Kazançlı bir iş buldu.' },
-                { en: 'Mitigate', tr: 'Azaltmak', en_sentence: 'We need to mitigate the risks.', tr_sentence: 'Riskleri azaltmamız gerekiyor.' },
-                { en: 'Plethora', tr: 'Fazlalık', en_sentence: 'There is a plethora of options.', tr_sentence: 'Bir sürü seçenek fazlalığı var.' },
-                { en: 'To keep an eye on', tr: 'Göz kulak olmak', en_sentence: 'Can you keep an eye on my bag?', tr_sentence: 'Çantama göz kulak olabilir misin?' },
-                { en: 'As a matter of fact', tr: 'Aslına bakarsan', en_sentence: 'As a matter of fact, I was just leaving.', tr_sentence: 'Aslına bakarsan, tam da gidiyordum.' }
+                { en: 'abstract', translations: { tr: 'soyut' } },
+                { en: 'access', translations: { tr: 'erişim' } },
+                { en: 'accurate', translations: { tr: 'doğru' } },
+                { en: 'achieve', translations: { tr: 'başarmak' } },
+                { en: 'adapt', translations: { tr: 'uyum sağlamak' } },
+                { en: 'adjust', translations: { tr: 'ayarlamak' } },
+                { en: 'administration', translations: { tr: 'yönetim' } },
+                { en: 'advanced', translations: { tr: 'ileri' } },
+                { en: 'affect', translations: { tr: 'etkilemek' } },
+                { en: 'allocate', translations: { tr: 'tahsis etmek' } },
+                { en: 'analysis', translations: { tr: 'analiz' } },
+                { en: 'annual', translations: { tr: 'yıllık' } },
+                { en: 'apparent', translations: { tr: 'belli' } },
+                { en: 'appropriate', translations: { tr: 'uygun' } },
+                { en: 'area', translations: { tr: 'alan' } },
+                { en: 'aspect', translations: { tr: 'yön' } },
+                { en: 'assess', translations: { tr: 'değerlendirmek' } },
+                { en: 'assign', translations: { tr: 'atamak' } },
+                { en: 'assume', translations: { tr: 'varsaymak' } },
+                { en: 'authority', translations: { tr: 'yetki' } },
+                { en: 'available', translations: { tr: 'mevcut' } },
+                { en: 'aware', translations: { tr: 'farkında' } },
+                { en: 'benefit', translations: { tr: 'fayda' } },
+                { en: 'capable', translations: { tr: 'yetenekli' } },
+                { en: 'challenge', translations: { tr: 'meydan okuma' } },
+                { en: 'change', translations: { tr: 'değişim' } },
+                { en: 'clarify', translations: { tr: 'açıklamak' } },
+                { en: 'comment', translations: { tr: 'yorum' } },
+                { en: 'complex', translations: { tr: 'karmaşık' } },
+                { en: 'component', translations: { tr: 'bileşen' } },
+                { en: 'concept', translations: { tr: 'kavram' } },
+                { en: 'conclude', translations: { tr: 'sonuçlandırmak' } },
+                { en: 'conduct', translations: { tr: 'yürütmek' } },
+                { en: 'confirm', translations: { tr: 'doğrulamak' } },
+                { en: 'consistent', translations: { tr: 'tutarlı' } },
+                { en: 'construct', translations: { tr: 'inşa etmek' } },
+                { en: 'contribute', translations: { tr: 'katkıda bulunmak' } },
+                { en: 'create', translations: { tr: 'yaratmak' } },
+                { en: 'criteria', translations: { tr: 'kriterler' } },
+                { en: 'crucial', translations: { tr: 'kritik' } },
+                { en: 'data', translations: { tr: 'veri' } },
+                { en: 'define', translations: { tr: 'tanımlamak' } },
+                { en: 'demonstrate', translations: { tr: 'göstermek' } },
+                { en: 'depend', translations: { tr: 'bağlı olmak' } },
+                { en: 'derive', translations: { tr: 'türetmek' } },
+                { en: 'design', translations: { tr: 'tasarım' } },
+                { en: 'distinct', translations: { tr: 'farklı' } },
+                { en: 'distribute', translations: { tr: 'dağıtmak' } },
+                { en: 'diverse', translations: { tr: 'çeşitli' } },
+                { en: 'economic', translations: { tr: 'ekonomik' } },
+                { en: 'effective', translations: { tr: 'etkili' } },
+                { en: 'efficient', translations: { tr: 'verimli' } },
+                { en: 'element', translations: { tr: 'öğe' } },
+                { en: 'emerge', translations: { tr: 'ortaya çıkmak' } },
+                { en: 'emphasize', translations: { tr: 'vurgulamak' } },
+                { en: 'enable', translations: { tr: 'mümkün kılmak' } },
+                { en: 'encounter', translations: { tr: 'karşılaşmak' } },
+                { en: 'environment', translations: { tr: 'çevre' } },
+                { en: 'establish', translations: { tr: 'kurmak' } },
+                { en: 'evaluate', translations: { tr: 'değerlendirmek' } },
+                { en: 'evidence', translations: { tr: 'kanıt' } },
+                { en: 'evolve', translations: { tr: 'evrim geçirmek' } },
+                { en: 'expand', translations: { tr: 'genişletmek' } },
+                { en: 'experience', translations: { tr: 'deneyim' } },
+                { en: 'expert', translations: { tr: 'uzman' } },
+                { en: 'factor', translations: { tr: 'faktör' } },
+                { en: 'feature', translations: { tr: 'özellik' } },
+                { en: 'final', translations: { tr: 'son' } },
+                { en: 'focus', translations: { tr: 'odaklanmak' } },
+                { en: 'function', translations: { tr: 'işlev' } },
+                { en: 'generate', translations: { tr: 'üretmek' } },
+                { en: 'identify', translations: { tr: 'tanımlamak' } },
+                { en: 'illustrate', translations: { tr: 'göstermek' } },
+                { en: 'impact', translations: { tr: 'etki' } },
+                { en: 'implement', translations: { tr: 'uygulamak' } },
+                { en: 'imply', translations: { tr: 'ima etmek' } },
+                { en: 'improve', translations: { tr: 'geliştirmek' } },
+                { en: 'include', translations: { tr: 'dahil etmek' } },
+                { en: 'indicate', translations: { tr: 'göstermek' } },
+                { en: 'individual', translations: { tr: 'birey' } },
+                { en: 'influence', translations: { tr: 'etki' } },
+                { en: 'inform', translations: { tr: 'bilgilendirmek' } },
+                { en: 'initial', translations: { tr: 'başlangıç' } },
+                { en: 'interpret', translations: { tr: 'yorumlamak' } },
+                { en: 'involve', translations: { tr: 'içermek' } },
+                { en: 'issue', translations: { tr: 'konu' } },
+                { en: 'item', translations: { tr: 'madde' } },
+                { en: 'journal', translations: { tr: 'dergi' } },
+                { en: 'justify', translations: { tr: 'haklı çıkarmak' } },
+                { en: 'knowledge', translations: { tr: 'bilgi' } },
+                { en: 'labour', translations: { tr: 'iş gücü' } },
+                { en: 'legal', translations: { tr: 'yasal' } },
+                { en: 'legislation', translations: { tr: 'mevzuat' } },
+                { en: 'maintain', translations: { tr: 'sürdürmek' } },
+                { en: 'major', translations: { tr: 'ana / büyük' } },
+                { en: 'manage', translations: { tr: 'yönetmek' } },
+                { en: 'measure', translations: { tr: 'ölçmek' } },
+                { en: 'method', translations: { tr: 'yöntem' } },
+                { en: 'modify', translations: { tr: 'değiştirmek' } },
+                { en: 'monitor', translations: { tr: 'izlemek' } }
             ],
             c1: [
-                { en: 'Aberration', tr: 'Sapma', en_sentence: 'This result is an aberration from the norm.', tr_sentence: 'Bu sonuç, normdan bir sapmadır.' },
-                { en: 'Ephemeral', tr: 'Kısa ömürlü', en_sentence: 'Fashion is ephemeral, but style is eternal.', tr_sentence: 'Moda kısa ömürlüdür, ancak stil ebedidir.' },
-                { en: 'Obfuscate', tr: 'Kafa karıştırmak', en_sentence: 'The politician tried to obfuscate the issue.', tr_sentence: 'Politikacı konuyu saptırmaya çalıştı.' },
-                { en: 'Proclivity', tr: 'Eğilim', en_sentence: 'He has a proclivity for making bad decisions.', tr_sentence: 'Kötü kararlar verme eğilimi var.' },
-                { en: 'Quixotic', tr: 'Hayalperest', en_sentence: 'It was a quixotic quest to find the lost city.', tr_sentence: 'Kayıp şehri bulmak hayalperest bir arayıştı.' },
-                { en: 'Salient', tr: 'Belirgin', en_sentence: 'What are the salient points of your argument?', tr_sentence: 'Argümanınızın belirgin noktaları nelerdir?' },
-                { en: 'Taciturn', tr: 'Sessiz', en_sentence: 'He was a taciturn man who rarely spoke.', tr_sentence: 'Nadiren konuşan sessiz bir adamdı.' },
-                { en: 'Vicissitude', tr: 'Değişim', en_sentence: 'They endured the vicissitudes of life.', tr_sentence: 'Hayatın değişimlerine katlandılar.' },
-                { en: 'Zephyr', tr: 'Hafif esinti', en_sentence: 'A gentle zephyr rustled the leaves.', tr_sentence: 'Hafif bir esinti yaprakları hışırdatıyordu.' },
-                { en: 'Acrimony', tr: 'Sertlik', en_sentence: 'The dispute was settled without acrimony.', tr_sentence: 'Anlaşmazlık sertlik olmadan çözüldü.' },
-                { en: 'Capricious', tr: 'Kaprisli', en_sentence: 'The weather is capricious in the mountains.', tr_sentence: 'Dağlarda hava kaprislidir.' },
-                { en: 'Equivocate', tr: 'Kaçamaklı konuşmak', en_sentence: 'Don\'t equivocate, just give me a straight answer.', tr_sentence: 'Kaçamaklı konuşma, bana net bir cevap ver.' },
-                { en: 'Fastidious', tr: 'Titiz', en_sentence: 'She is fastidious about her appearance.', tr_sentence: 'Dış görünüşü konusunda çok titizdir.' },
-                { en: 'Gregarious', tr: 'Sokulgan', en_sentence: 'Dolphins are gregarious animals.', tr_sentence: 'Yunuslar sokulgan hayvanlardır.' },
-                { en: 'Iconoclast', tr: 'Yerleşik değerleri yıkan', en_sentence: 'He was an iconoclast who challenged all traditions.', tr_sentence: 'Tüm geleneklere meydan okuyan, yerleşik değerleri yıkan biriydi.' },
-                { en: 'Juxtaposition', tr: 'Yan yana koyma', en_sentence: 'The juxtaposition of wealth and poverty was striking.', tr_sentence: 'Zenginlik ve fakirliğin yan yana konulması çarpıcıydı.' },
-                { en: 'Mellifluous', tr: 'Tatlı sesli', en_sentence: 'She has a mellifluous voice.', tr_sentence: 'Onun tatlı bir sesi var.' },
-                { en: 'Perfunctory', tr: 'Üstünkörü', en_sentence: 'He gave a perfunctory nod.', tr_sentence: 'Üstünkörü bir baş sallaması verdi.' },
-                { en: 'Rambunctious', tr: 'Gürültücü', en_sentence: 'The rambunctious children were hard to control.', tr_sentence: 'Gürültücü çocukları kontrol etmek zordu.' },
-                { en: 'Sycophant', tr: 'Dalkavuk', en_sentence: 'The king was surrounded by sycophants.', tr_sentence: 'Kralın etrafı dalkavuklarla çevriliydi.' },
-                { en: 'To bite the bullet', tr: 'Dişini sıkmak', en_sentence: 'He had to bite the bullet and accept the demotion.', tr_sentence: 'Dişini sıkmak ve tenzili rütbeyi kabul etmek zorundaydı.' },
-                { en: 'Par for the course', tr: 'Beklendiği gibi', en_sentence: 'Long hours are par for the course in this job.', tr_sentence: 'Bu işte uzun saatler çalışmak beklendiği gibidir.' }
+                { en: 'abstract', translations: { tr: 'soyut' } },
+                { en: 'access', translations: { tr: 'erişim' } },
+                { en: 'accurate', translations: { tr: 'doğru' } },
+                { en: 'acknowledge', translations: { tr: 'kabul etmek' } },
+                { en: 'acquire', translations: { tr: 'kazanmak' } },
+                { en: 'adapt', translations: { tr: 'uyum sağlamak' } },
+                { en: 'adequate', translations: { tr: 'yeterli' } },
+                { en: 'adjacent', translations: { tr: 'bitişik' } },
+                { en: 'advocate', translations: { tr: 'savunmak' } },
+                { en: 'allocate', translations: { tr: 'tahsis etmek' } },
+                { en: 'ambiguous', translations: { tr: 'belirsiz' } },
+                { en: 'analyze', translations: { tr: 'analiz etmek' } },
+                { en: 'anticipate', translations: { tr: 'beklemek' } },
+                { en: 'apparent', translations: { tr: 'açık' } },
+                { en: 'appreciate', translations: { tr: 'takdir etmek' } },
+                { en: 'appropriate', translations: { tr: 'uygun' } },
+                { en: 'arbitrary', translations: { tr: 'keyfi' } },
+                { en: 'assess', translations: { tr: 'değerlendirmek' } },
+                { en: 'assign', translations: { tr: 'atamak' } },
+                { en: 'assume', translations: { tr: 'varsaymak' } },
+                { en: 'attain', translations: { tr: 'ulaşmak' } },
+                { en: 'aware', translations: { tr: 'farkında' } },
+                { en: 'beneficial', translations: { tr: 'faydalı' } },
+                { en: 'coherent', translations: { tr: 'tutarlı' } },
+                { en: 'coincide', translations: { tr: 'rastlamak' } },
+                { en: 'collapse', translations: { tr: 'çökmek' } },
+                { en: 'colleague', translations: { tr: 'meslektaş' } },
+                { en: 'commence', translations: { tr: 'başlamak' } },
+                { en: 'commodity', translations: { tr: 'mal / ürün' } },
+                { en: 'compatible', translations: { tr: 'uyumlu' } },
+                { en: 'compensate', translations: { tr: 'telafi etmek' } },
+                { en: 'compile', translations: { tr: 'derlemek' } },
+                { en: 'complement', translations: { tr: 'tamamlamak' } },
+                { en: 'complex', translations: { tr: 'karmaşık' } },
+                { en: 'comprehensive', translations: { tr: 'kapsamlı' } },
+                { en: 'comprise', translations: { tr: 'içermek' } },
+                { en: 'conceive', translations: { tr: 'tasarlamak' } },
+                { en: 'concurrent', translations: { tr: 'eş zamanlı' } },
+                { en: 'conduct', translations: { tr: 'yürütmek' } },
+                { en: 'confine', translations: { tr: 'sınırlandırmak' } },
+                { en: 'conform', translations: { tr: 'uymak' } },
+                { en: 'consent', translations: { tr: 'onay' } },
+                { en: 'considerable', translations: { tr: 'önemli' } },
+                { en: 'consistent', translations: { tr: 'tutarlı' } },
+                { en: 'constrain', translations: { tr: 'zorlamak' } },
+                { en: 'consult', translations: { tr: 'danışmak' } },
+                { en: 'contemporary', translations: { tr: 'çağdaş' } },
+                { en: 'context', translations: { tr: 'bağlam' } },
+                { en: 'contrast', translations: { tr: 'karşılaştırmak' } },
+                { en: 'contribute', translations: { tr: 'katkıda bulunmak' } },
+                { en: 'controversy', translations: { tr: 'tartışma' } },
+                { en: 'convene', translations: { tr: 'toplamak' } },
+                { en: 'conversely', translations: { tr: 'aksine' } },
+                { en: 'convert', translations: { tr: 'dönüştürmek' } },
+                { en: 'convince', translations: { tr: 'ikna etmek' } },
+                { en: 'cooperate', translations: { tr: 'iş birliği yapmak' } },
+                { en: 'coordinate', translations: { tr: 'koordine etmek' } },
+                { en: 'core', translations: { tr: 'çekirdek / ana' } },
+                { en: 'crucial', translations: { tr: 'kritik' } },
+                { en: 'cumulative', translations: { tr: 'birikimli' } },
+                { en: 'deduce', translations: { tr: 'sonuç çıkarmak' } },
+                { en: 'define', translations: { tr: 'tanımlamak' } },
+                { en: 'demonstrate', translations: { tr: 'göstermek' } },
+                { en: 'denote', translations: { tr: 'göstermek' } },
+                { en: 'derive', translations: { tr: 'türetmek' } },
+                { en: 'detect', translations: { tr: 'tespit etmek' } },
+                { en: 'deviate', translations: { tr: 'sapmak' } },
+                { en: 'differentiate', translations: { tr: 'ayırt etmek' } },
+                { en: 'diminish', translations: { tr: 'azaltmak' } },
+                { en: 'discrete', translations: { tr: 'ayrı' } },
+                { en: 'discriminate', translations: { tr: 'ayırt etmek' } },
+                { en: 'display', translations: { tr: 'sergilemek' } },
+                { en: 'distinct', translations: { tr: 'farklı' } },
+                { en: 'distort', translations: { tr: 'çarpıtmak' } },
+                { en: 'diverse', translations: { tr: 'çeşitli' } },
+                { en: 'eliminate', translations: { tr: 'ortadan kaldırmak' } },
+                { en: 'emerge', translations: { tr: 'ortaya çıkmak' } },
+                { en: 'emphasize', translations: { tr: 'vurgulamak' } },
+                { en: 'enable', translations: { tr: 'mümkün kılmak' } },
+                { en: 'encounter', translations: { tr: 'karşılaşmak' } }
             ]
         };
 
-        // --- KISA METİN VERİTABANI (B2/C1) ---
-        const shortTexts = {
-            b2: [
-                { 
-                    id: 'b2_text_1', 
-                    text: "The rise of remote work has significantly changed urban landscapes. With fewer people commuting daily, city centers are less crowded, and local businesses in residential areas are seeing more traffic. This shift, while beneficial for work-life balance, poses challenges for commercial real estate and public transportation revenue.",
-                    questions: [
-                        { 
-                            q: 'Metne göre, uzaktan çalışmanın toplu taşıma için oluşturduğu zorluk nedir?', 
-                            type: 'mcq', 
-                            options: ['Çok kalabalık olması', 'Gelir kaybı yaşaması', 'Yeterince hızlı olmaması', 'Sakin olması'], 
-                            correctAnswer: 'Gelir kaybı yaşaması' 
-                        }
-                    ] 
-                },
-                { 
-                    id: 'b2_text_2', 
-                    text: "Fast fashion' heavily relies on rapid production cycles and low-cost materials to deliver trendy clothing quickly. However, this model is criticized for its severe environmental impact, including water pollution and massive landfill waste. Consumers are becoming more aware, leading to a slow but growing demand for sustainable alternatives.",
-                    questions: [
-                        { 
-                            q: 'Metne göre "fast fashion" modelinin en büyük eleştiri noktası nedir?', 
-                            type: 'mcq', 
-                            options: ['Sürdürülebilir olması', 'Trendleri yakalaması', 'Çevresel etkisi', 'Düşük maliyeti'], 
-                            correctAnswer: 'Çevresel etkisi' 
-                        }
-                    ] 
-                }
-            ],
-            c1: [
-                { 
-                    id: 'c1_text_1', 
-                    text: "Quantum entanglement, a phenomenon Einstein famously described as 'spooky action at a distance,' remains one of the most enigmatic aspects of quantum mechanics. It describes a state where two particles are linked in such a way that their fates are intertwined, regardless of the distance separating them. Measuring a property of one particle instantaneously influences the properties of the other.",
-                    questions: [
-                        { 
-                            q: 'Einstein, "quantum entanglement" olgusunu nasıl tanımlamıştır?', 
-                            type: 'mcq', 
-                            options: ['Kuantum mekaniği', 'Anlık etki', 'Mesafedeki ürkütücü eylem', 'Birleşik kader'], 
-                            correctAnswer: 'Mesafedeki ürkütücü eylem' 
-                        }
-                    ] 
-                },
-                { 
-                    id: 'c1_text_2', 
-                    text: "The concept of 'Cognitive Dissonance' suggests that individuals experience discomfort when holding two conflicting beliefs or when their actions contradict their beliefs. To alleviate this tension, people may change their actions, adjust their beliefs, or rationalize their behavior. This psychological mechanism plays a significant role in decision-making and self-perception.",
-                    questions: [
-                        { 
-                            q: 'Metne göre, insanlar "Bilişsel Çelişki" yaşadıklarında bu gerilimi azaltmak için ne yapmazlar?', 
-                            type: 'mcq', 
-                            options: ['Davranışlarını rasyonelleştirmek', 'Çelişkiyi görmezden gelmek', 'İnançlarını değiştirmek', 'Eylemlerini değiştirmek'], 
-                            correctAnswer: 'Çelişkiyi görmezden gelmek' 
-                        }
-                    ] 
-                }
-            ]
-        };
+        // --- KISA METİN VERİTABANI (KALDIRILDI) ---
 
         // --- UYGULAMA DURUMU (STATE) ---
         let state = {
             currentLevel: 'a1',
+            currentLang: 'tr', // Dil state'i eklendi
             currentWords: [],
             pinnedWords: JSON.parse(localStorage.getItem('pinnedWords') || '[]'),
             notes: JSON.parse(localStorage.getItem('notes') || '{}'),
-            examHistory: JSON.parse(localStorage.getItem('examHistory') || '[]'),
-            bookmarkedWordId: null, // Artık index değil, kelimenin 'en' hali
+            examHistory: [], // Sınav geçmişi artık kullanılmıyor
+            bookmarkedWordId: null,
             isFrozen: false,
-            quizState: 'inactive', // 'active', 'results'
-            quizQuestions: [],
-            currentQuestionIndex: 0,
-            score: 0
+            quizState: 'inactive', // Artık sadece 'inactive' kalacak
+            // Her seviye için kelime sayfasını takip et
+            wordPages: { a1: 0, a2: 0, b1: 0, b2: 0, c1: 0 }
         };
 
         // --- DOM ELEMENTLERİ ---
         const levelButtons = document.querySelectorAll('.level-btn');
         const refreshBtn = document.getElementById('refresh-btn');
         const toggleFreezeBtn = document.getElementById('toggle-freeze-btn');
-        const startQuizBtn = document.getElementById('start-quiz-btn');
+        const subscriptionBtn = document.getElementById('subscription-btn'); // Değişti
         const wordListContainer = document.getElementById('word-list-container');
         const loadingSpinner = document.getElementById('loading-spinner');
         
-        // Quiz DOM
-        const quizContainer = document.getElementById('quiz-container');
-        const mainContent = document.getElementById('main-content');
-        const quizProgress = document.getElementById('quiz-progress');
-        const quizScore = document.getElementById('quiz-score');
-        const questionArea = document.getElementById('question-area');
-        const questionText = document.getElementById('question-text');
-        const optionsContainer = document.getElementById('options-container');
-        const quizFeedback = document.getElementById('quiz-feedback');
-        const quizResults = document.getElementById('quiz-results');
-        const finalScore = document.getElementById('final-score');
-        const restartQuizBtn = document.getElementById('restart-quiz-btn');
-        const exitQuizBtn = document.getElementById('exit-quiz-btn');
-        const requestExitQuizBtn = document.getElementById('request-exit-quiz-btn');
+        // Dil
+        const langOptions = document.getElementById('lang-options');
+        const langOptionsMobile = document.getElementById('lang-options-mobile');
+        const currentLangFlag = document.getElementById('current-lang-flag');
+        const currentLangFlagMobile = document.getElementById('current-lang-flag-mobile');
+        const langSelectorBtnText = document.getElementById('lang-text-desktop');
+        const langSelectorBtnTextMobile = document.getElementById('lang-text-mobile');
 
         // Modal DOM
         const pinnedModal = document.getElementById('pinned-modal');
@@ -520,32 +935,61 @@
         const closePinnedModalBtn = document.getElementById('close-pinned-modal-btn');
         const pinnedListContent = document.getElementById('pinned-list-content');
 
-        // Sınav Geçmişi Modalı DOM
-        const examHistoryModal = document.getElementById('exam-history-modal');
-        const examHistoryBtn = document.getElementById('exam-history-btn');
-        const closeExamHistoryModalBtn = document.getElementById('close-exam-history-modal-btn');
-        const examHistoryContent = document.getElementById('exam-history-content');
-        const clearExamHistoryBtn = document.getElementById('clear-exam-history-btn');
+        // Yeni Abonelik Modalı DOM
+        const subscriptionModal = document.getElementById('subscription-modal');
+        const closeSubscriptionModalBtn = document.getElementById('close-subscription-modal-btn');
+        const contactWhatsAppBtn = document.getElementById('contact-whatsapp-btn');
 
-        // Arama Modalı DOM
-        const searchResultsModal = document.getElementById('search-results-modal');
-        const searchBar = document.getElementById('search-bar');
-        const searchBtn = document.getElementById('search-btn');
-        const mobileSearchBar = document.getElementById('mobile-search-bar');
-        const mobileSearchBtn = document.getElementById('mobile-search-btn');
-        const closeSearchResultsModalBtn = document.getElementById('close-search-results-modal-btn');
-        const searchResultsContent = document.getElementById('search-results-content');
+        // SINAV GEÇMİŞİ DOM (KALDIRILDI)
 
-        // Sınav Çıkış Modalı DOM
-        const exitQuizModal = document.getElementById('exit-quiz-modal');
-        const confirmExitQuizBtn = document.getElementById('confirm-exit-quiz-btn');
-        const cancelExitQuizBtn = document.getElementById('cancel-exit-quiz-btn');
+        // ARAMA MODALI DOM (KALDIRILDI)
 
         // Message Box DOM
         const appMessage = document.getElementById('app-message');
         const appMessageText = document.getElementById('app-message-text');
 
         // --- FONKSİYONLAR ---
+
+        /**
+         * Dili ayarlar ve UI'ı günceller
+         */
+        function setLanguage(lang) {
+            state.currentLang = lang;
+            document.documentElement.lang = lang;
+            const translations = i18n[lang];
+
+            // Tüm data-i18n-key elementlerini güncelle
+            document.querySelectorAll('[data-i18n-key]').forEach(el => {
+                const key = el.dataset.i18nKey;
+                if (translations[key]) {
+                    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                        el.placeholder = translations[key];
+                    } else {
+                        el.textContent = translations[key];
+                    }
+                }
+            });
+
+            // Dil seçici buton metnini güncelle
+            const langData = {
+                tr: { flag: '🇹🇷', text: 'TR' },
+                en: { flag: '🇺🇸', text: 'EN' },
+                az: { flag: '🇦🇿', text: 'AZ' },
+                ru: { flag: '🇷🇺', text: 'RU' }
+            };
+            
+            if (currentLangFlag) currentLangFlag.textContent = langData[lang].flag;
+            if (langSelectorBtnText) langSelectorBtnText.textContent = ` ${langData[lang].text}`;
+            if (currentLangFlagMobile) currentLangFlagMobile.textContent = langData[lang].flag;
+            if (langSelectorBtnTextMobile) langSelectorBtnTextMobile.textContent = ` ${langData[lang].text}`;
+
+            // Not ve title'ları güncelle
+            if (pinnedListBtn) pinnedListBtn.title = translations.pinnedWordsTitle;
+            
+            // Kelime kartlarındaki çevirileri ve placeholder'ları güncelle
+            renderWords();
+        }
+
 
         /**
          * Kelimeleri karıştırmak için (Fisher-Yates Shuffle)
@@ -561,7 +1005,9 @@
         /**
          * Özel uygulama mesajı gösterir
          */
-        function showAppMessage(message, type = 'error') {
+        function showAppMessage(messageKey, type = 'error', dynamicText = "") {
+            const message = (i18n[state.currentLang][messageKey] || messageKey) + (dynamicText ? ` "${dynamicText}"` : '');
+            
             appMessageText.textContent = message;
             appMessage.classList.remove('bg-red-600', 'bg-green-600', 'bg-blue-600', 'bg-purple-600');
             
@@ -584,41 +1030,41 @@
         }
 
         /**
-         * Seçilen seviyeye göre 50 kelime getirir
+         * Seçilen seviyeye göre 20 kelime getirir (sayfalamalı)
          */
         function fetchWords() {
             if (state.isFrozen) {
-                showAppMessage('Liste sabitlenmiş. Yenilemek için sabitlemeyi kaldırın.', 'info');
+                showAppMessage('listFrozen', 'info');
                 return;
             }
 
             wordListContainer.innerHTML = '';
             loadingSpinner.classList.remove('hidden');
-            startQuizBtn.disabled = true;
 
             // Simüle edilmiş yükleme süresi
             setTimeout(() => {
                 const words = wordBank[state.currentLevel];
                 if (!words || words.length === 0) {
-                    wordListContainer.innerHTML = '<p class="text-gray-400 col-span-full text-center">Bu seviye için kelime bulunamadı.</p>';
+                    wordListContainer.innerHTML = <p class="text-gray-400 col-span-full text-center">${i18n[state.currentLang].noWordsFound}</p>;
                     loadingSpinner.classList.add('hidden');
                     return;
                 }
+                
+                const page = state.wordPages[state.currentLevel];
+                const wordsToShow = words.slice(page * 20, (page + 1) * 20);
 
-                const shuffledWords = shuffleArray([...words]);
-                state.currentWords = shuffledWords.slice(0, 50);
+                       state.currentWords = wordsToShow;
                 
                 renderWords();
                 loadingSpinner.classList.add('hidden');
                 
-                // Sınav butonunu, 15 soru oluşturulabiliyorsa aktifleştir
-                if (state.currentWords.length >= 15) {
-                    startQuizBtn.disabled = false;
-                } else {
-                    startQuizBtn.disabled = true;
-                    showAppMessage('Sınav için bu seviyede yeterli kelime (en az 15) bulunmuyor.', 'error');
-                }
-            }, 500); // 0.5 saniye gecikme
+                // Buton metnini güncelle
+                const start = page * 20 + 1;
+                const end = Math.min((page + 1) * 20, words.length);
+                const total = words.length;
+                refreshBtn.querySelector('span').textContent = ${i18n[state.currentLang].getNewWords} (${start}-${end} / ${total});
+                
+            }, 300); // 0.3 saniye gecikme
         }
 
         /**
@@ -628,7 +1074,10 @@
             wordListContainer.innerHTML = '';
             
             if (state.currentWords.length === 0) {
-                wordListContainer.innerHTML = '<p class="text-gray-400 col-span-full text-center">Gösterilecek kelime yok. Lütfen seviye seçin ve "Yeni Kelimeler" butonuna basın.</p>';
+                // Yükleniyor spinner'ı gizliyse ve kelime yoksa mesajı göster
+                if (loadingSpinner.classList.contains('hidden')) {
+                     wordListContainer.innerHTML = <p class="text-gray-400 col-span-full text-center">${i18n[state.currentLang].noWordsToShow}</p>;
+                }
                 return;
             }
 
@@ -636,9 +1085,12 @@
                 const isPinned = state.pinnedWords.some(p => p.en === word.en);
                 const note = state.notes[word.en] || '';
                 const isBookmarked = state.bookmarkedWordId === word.en;
+                
+                // Dil desteği eklendi: Seçili dili (state.currentLang) dener, bulamazsa 'tr'ye döner.
+                const translation = word.translations[state.currentLang] || word.translations['tr'] || 'Çeviri Yok';
 
                 const card = document.createElement('div');
-                card.className = `word-card bg-gray-800 p-4 rounded-lg shadow-md transition-all duration-300 ${isBookmarked ? 'bookmark-highlight' : ''}`;
+                card.className = word-card bg-gray-800 p-4 rounded-lg shadow-md transition-all duration-300 ${isBookmarked ? 'bookmark-highlight' : ''};
                 card.dataset.enWord = word.en;
 
                 card.innerHTML = `
@@ -657,8 +1109,8 @@
                             </button>
                         </div>
                     </div>
-                    <p class="text-lg text-gray-300 mb-3">${word.tr}</p>
-                    <textarea class="note-input w-full p-2 border bg-gray-700 border-gray-600 rounded-md text-sm text-gray-200 focus:ring-2 focus:ring-purple-500 focus:border-transparent" rows="2" placeholder="Kişisel notunuzu buraya yazın... (Örn: 'naber' gibi kullanılır)">${note}</textarea>
+                    <p class="text-lg text-gray-300 mb-3">${translation}</p>
+                    <textarea class="note-input w-full p-2 border bg-gray-700 border-gray-600 rounded-md text-sm text-gray-200 focus:ring-2 focus:ring-purple-500 focus:border-transparent" rows="2" placeholder="${i18n[state.currentLang].notePlaceholder}" data-i18n-key="notePlaceholder">${note}</textarea>
                 `;
 
                 // Event Listeners
@@ -677,13 +1129,38 @@
                 wordListContainer.appendChild(card);
             });
         }
+        
+        /**
+         * Yeni "Yeni Kelime Getir" butonu işlevi (Sayfalama)
+         */
+        function getNextWords() {
+            if (state.isFrozen) {
+                showAppMessage('listFrozen', 'info');
+                return;
+            }
+            
+            const level = state.currentLevel;
+            const totalWords = wordBank[level].length;
+            
+            let currentPage = state.wordPages[level];
+            currentPage++;
+            
+            // Eğer son sayfayı geçtiyse, başa dön
+            if ((currentPage * 20) >= totalWords) {
+                currentPage = 0;
+            }
+            
+            state.wordPages[level] = currentPage;
+            fetchWords();
+        }
+
 
         /**
          * Bir kelimeyi sabitler veya sabitlemesini kaldırır
          */
         function togglePin(word) {
             const index = state.pinnedWords.findIndex(p => p.en === word.en);
-            const card = wordListContainer.querySelector(`.word-card[data-en-word="${word.en}"]`);
+            const card = wordListContainer.querySelector(.word-card[data-en-word="${word.en}"]);
             const pinIcon = card ? card.querySelector('.pin-btn svg') : null;
 
             if (index > -1) {
@@ -691,13 +1168,13 @@
                 state.pinnedWords.splice(index, 1);
                 if(pinIcon) pinIcon.classList.remove('text-purple-400');
                 if(pinIcon) pinIcon.classList.add('text-gray-500');
-                showAppMessage(`"${word.en}" sabitlemesi kaldırıldı.`, 'info');
+                showAppMessage('wordUnpinned', 'info', word.en);
             } else {
                 // Pinle
                 state.pinnedWords.push(word);
                 if(pinIcon) pinIcon.classList.add('text-purple-400');
                 if(pinIcon) pinIcon.classList.remove('text-gray-500');
-                showAppMessage(`"${word.en}" sabitlendi.`, 'success');
+                showAppMessage('wordPinned', 'success', word.en);
             }
             localStorage.setItem('pinnedWords', JSON.stringify(state.pinnedWords));
         }
@@ -719,7 +1196,7 @@
             } else {
                 // Yeni işaret koy
                 state.bookmarkedWordId = enWord;
-                const newBookmarkedCard = wordListContainer.querySelector(`.word-card[data-en-word="${enWord}"]`);
+                const newBookmarkedCard = wordListContainer.querySelector(.word-card[data-en-word="${enWord}"]);
                 if (newBookmarkedCard) {
                     newBookmarkedCard.classList.add('bookmark-highlight');
                     const icon = newBookmarkedCard.querySelector('.bookmark-btn svg');
@@ -742,25 +1219,24 @@
                 state.notes[enWord] = noteText.trim();
             }
             localStorage.setItem('notes', JSON.stringify(state.notes));
-            showAppMessage(`"${enWord}" için not kaydedildi.`, 'success');
+            showAppMessage('noteSaved', 'success', enWord);
         }
 
         /**
          * Seviye değiştirme
          */
         function handleLevelChange(e) {
-            if (state.quizState === 'active') {
-                handleExitQuizRequest();
-                return;
-            }
-            
             const newLevel = e.target.dataset.level;
             if (!newLevel || newLevel === state.currentLevel) return;
 
             state.currentLevel = newLevel;
             state.isFrozen = false; // Seviye değişince sabitleme kalkar
             state.bookmarkedWordId = null;
-            toggleFreezeBtn.textContent = 'Listeyi Sabitle';
+            
+            // Sayfalamayı o seviye için sıfırla
+            state.wordPages[state.currentLevel] = 0;
+            
+            toggleFreezeBtn.innerHTML = <span data-i18n-key="freezeList">${i18n[state.currentLang].freezeList}</span>;
             toggleFreezeBtn.classList.remove('bg-red-600', 'hover:bg-red-700');
             toggleFreezeBtn.classList.add('bg-green-600', 'hover:bg-green-700');
 
@@ -784,15 +1260,15 @@
         function toggleFreeze() {
             state.isFrozen = !state.isFrozen;
             if (state.isFrozen) {
-                toggleFreezeBtn.textContent = 'Sabitlemeyi Kaldır';
+                toggleFreezeBtn.innerHTML = <span data-i18n-key="unfreezeList">${i18n[state.currentLang].unfreezeList}</span>;
                 toggleFreezeBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
                 toggleFreezeBtn.classList.add('bg-red-600', 'hover:bg-red-700');
-                showAppMessage('Liste sabitlendi. Kelimeler değişmeyecek.', 'info');
+                showAppMessage('listFrozenInfo', 'info');
             } else {
-                toggleFreezeBtn.textContent = 'Listeyi Sabitle';
+                toggleFreezeBtn.innerHTML = <span data-i18n-key="freezeList">${i18n[state.currentLang].freezeList}</span>;
                 toggleFreezeBtn.classList.remove('bg-red-600', 'hover:bg-red-700');
                 toggleFreezeBtn.classList.add('bg-green-600', 'hover:bg-green-700');
-                showAppMessage('Sabitleme kaldırıldı.', 'info');
+                showAppMessage('listUnfrozen', 'info');
             }
         }
 
@@ -802,567 +1278,70 @@
         function showPinnedWordsModal() {
             pinnedListContent.innerHTML = '';
             if (state.pinnedWords.length === 0) {
-                pinnedListContent.innerHTML = '<p class="text-gray-400 text-center">Henüz sabitlenmiş kelimeniz yok.</p>';
+                pinnedListContent.innerHTML = <p class="text-gray-400 text-center">${i18n[state.currentLang].noPinnedWords}</p>;
             } else {
                 state.pinnedWords.sort((a, b) => a.en.localeCompare(b.en)).forEach(word => {
-                    const note = state.notes[word.en] || '<i>Not eklenmemiş</i>';
+                    const note = state.notes[word.en] || <i>${i18n[state.currentLang].notePlaceholder}</i>;
+                    // Çeviriyi de dinamik yap
+                    const translation = word.translations[state.currentLang] || word.translations['tr'] || 'Çeviri Yok';
+
                     const item = document.createElement('div');
                     item.className = 'py-4 border-b border-gray-700 last:border-b-0';
                     
-                    if (word.isTranslation) {
-                        item.innerHTML = `
-                            <div class="flex justify-between items-center">
-                                <h4 class="text-xl font-semibold text-purple-400">Çeviri</h4>
-                                <span class="text-lg text-gray-200">(Sabitlendi)</span>
-                            </div>
-                            <p class="text-gray-300 mt-2"><strong>Orijinal:</strong> ${word.en}</p>
-                            <p class="text-gray-300 mt-1"><strong>Çeviri:</strong> ${word.tr}</p>
-                        `;
-                    } else {
-                        item.innerHTML = `
-                            <div class="flex justify-between items-center">
-                                <h4 class="text-xl font-semibold text-purple-400">${word.en}</h4>
-                                <span class="text-lg text-gray-200">${word.tr}</span>
-                            </div>
-                            <p class="text-gray-300 mt-2"><strong>Not:</strong> ${note}</p>
-                        `;
-                    }
+                    item.innerHTML = `
+                        <div class="flex justify-between items-center">
+                            <h4 class="text-xl font-semibold text-purple-400">${word.en}</h4>
+                            <span class="text-lg text-gray-200">${translation}</span>
+                        </div>
+                        <p class="text-gray-300 mt-2"><strong>Not:</strong> ${note}</p>
+                    `;
+                    
                     pinnedListContent.appendChild(item);
                 });
             }
             pinnedModal.classList.remove('hidden');
         }
 
-        /**
-         * Sınav geçmişi modalını göster
-         */
-        function showExamHistoryModal() {
-            examHistoryContent.innerHTML = '';
-            if (state.examHistory.length === 0) {
-                examHistoryContent.innerHTML = '<p class="text-gray-400 text-center">Henüz tamamlanmış bir sınavınız yok.</p>';
-            } else {
-                // En yeniden eskiye sırala
-                state.examHistory.slice().reverse().forEach(result => {
-                    const date = new Date(result.date).toLocaleString('tr-TR');
-                    const item = document.createElement('div');
-                    item.className = 'py-4 border-b border-gray-700 last:border-b-0';
-                    item.innerHTML = `
-                        <div class="flex justify-between items-center">
-                            <h4 class="text-xl font-semibold text-purple-400">${result.level.toUpperCase()} Seviyesi</h4>
-                            <span class="text-lg font-bold ${result.score > (result.total / 2) ? 'text-green-400' : 'text-red-400'}">
-                                ${result.score} / ${result.total}
-                            </span>
-                        </div>
-                        <p class="text-gray-400 mt-1 text-sm">${date}</p>
-                    `;
-                    examHistoryContent.appendChild(item);
-                });
-            }
-            examHistoryModal.classList.remove('hidden');
-        }
-
-        /**
-         * Sınav geçmişini temizler
-         */
-        function clearExamHistory() {
-            state.examHistory = [];
-            localStorage.removeItem('examHistory');
-            showExamHistoryModal();
-            showAppMessage('Sınav geçmişi temizlendi.', 'info');
-        }
-
-        /**
-         * Sınav sonucunu kaydeder
-         */
-        function saveExamResult() {
-            const result = {
-                level: state.currentLevel,
-                score: state.score,
-                total: 15,
-                date: new Date().toISOString()
-            };
-            state.examHistory.push(result);
-            localStorage.setItem('examHistory', JSON.stringify(state.examHistory));
-        }
-
-
-        // --- ARAMA FONKSİYONLARI ---
-
-        /**
-         * Arama çubuğunu yönetir: Kelime arar veya cümle çevirir
-         */
-        function handleSearchOrTranslate(e) {
-            const isMobile = e.currentTarget.id === 'mobile-search-btn' || e.currentTarget.id === 'mobile-search-bar';
-            const searchTerm = (isMobile ? mobileSearchBar.value : searchBar.value).trim();
-
-            if (searchTerm.length < 2) {
-                showAppMessage('Arama veya çeviri için en az 2 karakter girmelisiniz.', 'error');
-                return;
-            }
-
-            // Arama mı, çeviri mi? (Basit bir boşluk sayımı)
-            const isSentence = searchTerm.split(' ').length >= 2;
-
-            if (isSentence) {
-                translateText(searchTerm);
-            } else {
-                searchLocalWords(searchTerm.toLowerCase());
-            }
-        }
-
-        /**
-         * Veritabanında kelime arar ve sonuçları gösterir
-         */
-        function searchLocalWords(searchTerm) {
-            const allWords = Object.values(wordBank).flat();
-            const results = allWords.filter(word => 
-                word.en.toLowerCase().includes(searchTerm) || 
-                word.tr.toLowerCase().includes(searchTerm)
-            );
-
-            searchResultsContent.innerHTML = '';
-            if (results.length === 0) {
-                searchResultsContent.innerHTML = '<p class="text-gray-400 text-center">Aramanızla eşleşen kelime bulunamadı.</p>';
-            } else {
-                results.forEach(word => {
-                    const note = state.notes[word.en] || '<i>Not eklenmemiş</i>';
-                    const isPinned = state.pinnedWords.some(p => p.en === word.en);
-                    const item = document.createElement('div');
-                    item.className = 'py-4 border-b border-gray-700 last:border-b-0';
-                    item.innerHTML = `
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <h4 class="text-xl font-semibold text-purple-400">${word.en}</h4>
-                                <span class="text-lg text-gray-200">${word.tr}</span>
-                            </div>
-                            <button class="search-pin-btn p-2 rounded-full hover:bg-purple-100" data-en-word='${JSON.stringify(word)}' title="Sabitle">
-                                <svg class="w-6 h-6 ${isPinned ? 'text-purple-400' : 'text-gray-500'}" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
-                                </svg>
-                            </button>
-                        </div>
-                        <p class="text-gray-400 mt-2 text-sm"><strong>Cümle:</strong> ${word.en_sentence}</p>
-                        <p class="text-gray-400 mt-1 text-sm"><strong>Çeviri:</strong> ${word.tr_sentence}</p>
-                    `;
-                    searchResultsContent.appendChild(item);
-                });
-
-                // Arama sonucu sabitleme butonlarına event listener ekle
-                searchResultsContent.querySelectorAll('.search-pin-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        const wordData = JSON.parse(btn.dataset.enWord);
-                        togglePin(wordData);
-                        // İkonu anında güncelle
-                        const icon = btn.querySelector('svg');
-                        const isPinnedNow = state.pinnedWords.some(p => p.en === wordData.en);
-                        if (isPinnedNow) {
-                            icon.classList.add('text-purple-400');
-                            icon.classList.remove('text-gray-500');
-                        } else {
-                            icon.classList.remove('text-purple-400');
-                            icon.classList.add('text-gray-500');
-                        }
-                    });
-                });
-            }
-            searchResultsModal.classList.remove('hidden');
-        }
-
-        /**
-         * Gemini API kullanarak metni çevirir
-         */
-        async function translateText(text) {
-            searchResultsContent.innerHTML = `
-                <div class="text-center py-10">
-                    <svg class="animate-spin h-8 w-8 text-purple-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    <p class="mt-2 text-gray-400 font-medium">Yapay zeka ile çevriliyor...</p>
-                </div>`;
-            searchResultsModal.classList.remove('hidden');
-
-            const apiKey = ""; // API Anahtarınız buraya gelecek
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-            
-            const systemPrompt = "You are a translator. Detect the language of the provided text (it will be either Turkish or English) and translate it into the other language. Respond ONLY with the translated text, nothing else.";
-
-            const payload = {
-                contents: [{ parts: [{ text: text }] }],
-                systemInstruction: {
-                    parts: [{ text: systemPrompt }]
-                },
-            };
-
-            try {
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) {
-                    throw new Error(`API hatası: ${response.statusText}`);
-                }
-
-                const result = await response.json();
-                const translatedText = result.candidates[0].content.parts[0].text.trim();
-
-                const translationObject = {
-                    en: text, // Orijinal metin
-                    tr: translatedText, // Çevrilen metin
-                    isTranslation: true
-                };
-
-                const isPinned = state.pinnedWords.some(p => p.en === translationObject.en);
-
-                searchResultsContent.innerHTML = `
-                    <div class="py-4">
-                        <div class="flex justify-between items-center mb-4">
-                            <h4 class="text-xl font-semibold text-purple-400">Çeviri Sonucu</h4>
-                             <button id="pin-translation-btn" class="p-2 rounded-full hover:bg-purple-100" title="Bu çeviriyi sabitle">
-                                <svg class="w-6 h-6 ${isPinned ? 'text-purple-400' : 'text-gray-500'}" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
-                                </svg>
-                            </button>
-                        </div>
-                        <div class="bg-gray-700 p-4 rounded-lg">
-                            <p class="text-gray-400 mb-2 font-medium">Orijinal Metin:</p>
-                            <p class="text-gray-200 text-lg mb-4">${text}</p>
-                            <p class="text-gray-400 mb-2 font-medium">Çeviri:</p>
-                            <p class="text-purple-300 text-lg font-semibold">${translatedText}</p>
-                        </div>
-                    </div>
-                `;
-
-                // Çeviriyi pinleme butonu
-                document.getElementById('pin-translation-btn').addEventListener('click', (e) => {
-                    togglePin(translationObject);
-                    const icon = e.currentTarget.querySelector('svg');
-                    const isPinnedNow = state.pinnedWords.some(p => p.en === translationObject.en);
-                    if (isPinnedNow) {
-                        icon.classList.add('text-purple-400');
-                        icon.classList.remove('text-gray-500');
-                    } else {
-                        icon.classList.remove('text-purple-400');
-                        icon.classList.add('text-gray-500');
-                    }
-                });
-
-            } catch (error) {
-                console.error('Çeviri hatası:', error);
-                searchResultsContent.innerHTML = `<p class="text-red-400 text-center">Çeviri sırasında bir hata oluştu. Lütfen tekrar deneyin. (Hata: ${error.message})</p>`;
-            }
-        }
-
-
-        // --- SINAV FONKSİYONLARI ---
-
-        /**
-         * Sınavı başlatır
-         */
-        function startQuiz() {
-            if (state.currentWords.length < 15) {
-                showAppMessage('Sınavı başlatmak için yeterli kelime (en az 15) yok.', 'error');
-                return;
-            }
-            state.score = 0;
-            state.currentQuestionIndex = 0;
-            state.quizState = 'active';
-
-            mainContent.classList.add('hidden');
-            quizContainer.classList.remove('hidden');
-            quizResults.classList.add('hidden');
-            questionArea.classList.remove('hidden');
-
-            quizScore.textContent = `Puan: 0`;
-            quizProgress.textContent = `Soru 1 / 15`;
-            
-            generateQuizQuestions();
-            displayQuestion();
-        }
-
-        /**
-         * Sınav için 15 soru oluşturur
-         */
-        function generateQuizQuestions() {
-            state.quizQuestions = [];
-            const words = shuffleArray([...state.currentWords]);
-            let usedWords = new Set();
-            
-            // 6 Soru: EN -> TR (MCQ)
-            for (let i = 0; i < 6; i++) {
-                const questionWord = words[i];
-                usedWords.add(questionWord.en);
-                
-                let options = [questionWord.tr];
-                while (options.length < 4) {
-                    const randomWord = words[Math.floor(Math.random() * words.length)];
-                    if (!options.includes(randomWord.tr)) {
-                        options.push(randomWord.tr);
-                    }
-                }
-                
-                state.quizQuestions.push({
-                    type: 'mcq',
-                    question: `"${questionWord.en}" kelimesinin Türkçe anlamı nedir?`,
-                    options: shuffleArray(options),
-                    correctAnswer: questionWord.tr
-                });
-            }
-            
-            // 6 Soru: TR -> EN (MCQ)
-            for (let i = 6; i < 12; i++) {
-                const questionWord = words[i];
-                usedWords.add(questionWord.en);
-                
-                let options = [questionWord.en];
-                while (options.length < 4) {
-                    const randomWord = words[Math.floor(Math.random() * words.length)];
-                    if (!options.includes(randomWord.en)) {
-                        options.push(randomWord.en);
-                    }
-                }
-                
-                state.quizQuestions.push({
-                    type: 'mcq',
-                    question: `"${questionWord.tr}" kelimesinin İngilizce anlamı nedir?`,
-                    options: shuffleArray(options),
-                    correctAnswer: questionWord.en
-                });
-            }
-
-            // 3 Soru: TR -> EN (Input)
-            for (let i = 12; i < 15; i++) {
-                 const questionWord = words[i];
-                 usedWords.add(questionWord.en);
-
-                 state.quizQuestions.push({
-                    type: 'input',
-                    question: `"${questionWord.tr}" kelimesinin İngilizce karşılığını yazınız.`,
-                    correctAnswer: questionWord.en
-                });
-            }
-
-            // B2 ve C1 seviyelerinde 2 soruyu metin okuma ile değiştir
-            if (state.currentLevel === 'b2' || state.currentLevel === 'c1') {
-                const texts = shuffleArray([...shortTexts[state.currentLevel]]);
-                
-                // İlk soruyu değiştir
-                const text1 = texts[0];
-                const q1 = text1.questions[0];
-                state.quizQuestions[0] = {
-                    type: 'reading_mcq',
-                    text: text1.text,
-                    question: q1.q,
-                    options: shuffleArray(q1.options),
-                    correctAnswer: q1.correctAnswer
-                };
-                
-                // İkinci soruyu değiştir
-                const text2 = texts[1];
-                const q2 = text2.questions[0];
-                state.quizQuestions[1] = {
-                    type: 'reading_mcq',
-                    text: text2.text,
-                    question: q2.q,
-                    options: shuffleArray(q2.options),
-                    correctAnswer: q2.correctAnswer
-                };
-            }
-            
-            state.quizQuestions = shuffleArray(state.quizQuestions);
-        }
-
-        /**
-         * Mevcut soruyu ekranda gösterir
-         */
-        function displayQuestion() {
-            const q = state.quizQuestions[state.currentQuestionIndex];
-            quizFeedback.classList.add('hidden');
-            optionsContainer.innerHTML = '';
-            
-            if (q.type === 'reading_mcq') {
-                questionText.innerHTML = `
-                    <p class="text-sm text-gray-400 mb-4 bg-gray-700 p-3 rounded-md italic">${q.text}</p>
-                    <p class="text-xl text-gray-200 font-medium">${q.question}</p>
-                `;
-            } else {
-                questionText.textContent = q.question;
-            }
-
-            if (q.type === 'mcq' || q.type === 'reading_mcq') {
-                q.options.forEach(option => {
-                    const button = document.createElement('button');
-                    button.textContent = option;
-                    button.className = 'quiz-option';
-                    button.addEventListener('click', () => checkAnswer(option));
-                    optionsContainer.appendChild(button);
-                });
-            } else if (q.type === 'input') {
-                optionsContainer.innerHTML = `
-                    <input type="text" id="quiz-input" class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:outline-none" placeholder="Cevabınızı buraya yazın...">
-                    <button id="quiz-submit-btn" class="w-full mt-3 bg-purple-600 text-white px-5 py-3 rounded-lg font-semibold hover:bg-purple-700 transition">
-                        Kontrol Et
-                    </button>
-                `;
-                document.getElementById('quiz-submit-btn').addEventListener('click', () => {
-                    const input = document.getElementById('quiz-input').value;
-                    checkAnswer(input);
-                });
-                 document.getElementById('quiz-input').addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') {
-                        checkAnswer(e.target.value);
-                    }
-                });
-            }
-            
-            quizProgress.textContent = `Soru ${state.currentQuestionIndex + 1} / 15`;
-        }
-
-        /**
-         * Verilen cevabı kontrol eder
-         */
-        function checkAnswer(selectedAnswer) {
-            const q = state.quizQuestions[state.currentQuestionIndex];
-            const isCorrect = selectedAnswer.trim().toLowerCase() === q.correctAnswer.toLowerCase();
-
-            quizFeedback.classList.remove('hidden', 'text-green-400', 'text-red-400');
-            
-            // Tüm seçenekleri ve inputları devre dışı bırak
-            optionsContainer.querySelectorAll('button, input').forEach(el => el.disabled = true);
-
-            if (q.type === 'mcq' || q.type === 'reading_mcq') {
-                 optionsContainer.querySelectorAll('button').forEach(btn => {
-                     if (btn.textContent === q.correctAnswer) {
-                         btn.classList.add('correct');
-                     } else if (btn.textContent === selectedAnswer && !isCorrect) {
-                         btn.classList.add('incorrect');
-                     }
-                 });
-            }
-
-            if (isCorrect) {
-                state.score++;
-                quizScore.textContent = `Puan: ${state.score}`;
-                quizFeedback.textContent = "Doğru!";
-                quizFeedback.classList.add('text-green-400');
-            } else {
-                quizFeedback.textContent = `Yanlış. Doğru cevap: ${q.correctAnswer}`;
-                quizFeedback.classList.add('text-red-400');
-                 if (q.type === 'input') {
-                    document.getElementById('quiz-input').classList.add('border-red-500');
-                }
-            }
-
-            setTimeout(nextQuestion, 1500);
-        }
-
-        /**
-         * Sonraki soruya geçer veya sınavı bitirir
-         */
-        function nextQuestion() {
-            state.currentQuestionIndex++;
-            if (state.currentQuestionIndex < 15) {
-                displayQuestion();
-            } else {
-                showQuizResults();
-            }
-        }
-
-        /**
-         * Sınav sonuç ekranını gösterir
-         */
-        function showQuizResults() {
-            state.quizState = 'results';
-            questionArea.classList.add('hidden');
-            quizResults.classList.remove('hidden');
-            finalScore.textContent = state.score;
-            saveExamResult();
-        }
-
-        /**
-         * Sınavı bitirir ve ana ekrana döner
-         */
-        function exitQuiz() {
-            state.quizState = 'inactive';
-            quizContainer.classList.add('hidden');
-            mainContent.classList.remove('hidden');
-            state.score = 0;
-            state.currentQuestionIndex = 0;
-        }
-
-        /**
-         * Sınavı yeniden başlatır
-         */
-        function restartQuiz() {
-            startQuiz();
-        }
-
-        /**
-         * Sınavdan çıkış modalını gösterir
-         */
-        function handleExitQuizRequest() {
-            exitQuizModal.classList.remove('hidden');
-        }
-
-        /**
-         * Sınavdan çıkışı onaylar
-         */
-        function confirmExitQuiz() {
-            exitQuizModal.classList.add('hidden');
-            exitQuiz();
-        }
-
-        /**
-         * Sınavdan çıkışı iptal eder
-         */
-        function cancelExitQuiz() {
-            exitQuizModal.classList.add('hidden');
-        }
-
+        // --- SINAV FONKSİYONLARI (KALDIRILDI) ---
 
         // --- EVENT LISTENERS ---
         document.addEventListener('DOMContentLoaded', () => {
+            // Dil
+            const langButtons = [
+                ...document.querySelectorAll('#lang-options button'),
+                ...document.querySelectorAll('#lang-options-mobile button')
+            ];
+            langButtons.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const lang = e.currentTarget.dataset.lang;
+                    setLanguage(lang);
+                });
+            });
+
             // Ana Butonlar
             levelButtons.forEach(btn => btn.addEventListener('click', handleLevelChange));
-            refreshBtn.addEventListener('click', () => {
-                if (state.quizState === 'active') {
-                    handleExitQuizRequest();
-                } else {
-                    fetchWords();
-                }
-            });
+            refreshBtn.addEventListener('click', getNextWords); // Değişti
             toggleFreezeBtn.addEventListener('click', toggleFreeze);
-            startQuizBtn.addEventListener('click', startQuiz);
+            
+            // Abonelik Butonu (eski startQuizBtn)
+            subscriptionBtn.addEventListener('click', () => {
+                subscriptionModal.classList.remove('hidden');
+            });
 
             // Modal Butonları
             pinnedListBtn.addEventListener('click', showPinnedWordsModal);
             closePinnedModalBtn.addEventListener('click', () => pinnedModal.classList.add('hidden'));
 
-            examHistoryBtn.addEventListener('click', showExamHistoryModal);
-            closeExamHistoryModalBtn.addEventListener('click', () => examHistoryModal.classList.add('hidden'));
-            clearExamHistoryBtn.addEventListener('click', clearExamHistory);
+            // Yeni Abonelik Modalı Butonları
+            closeSubscriptionModalBtn.addEventListener('click', () => subscriptionModal.classList.add('hidden'));
+            contactWhatsAppBtn.addEventListener('click', () => {
+                const whatsAppNumber = "994707841414";
+                window.open(https://wa.me/${whatsAppNumber}, '_blank');
+            });
 
-            closeSearchResultsModalBtn.addEventListener('click', () => searchResultsModal.classList.add('hidden'));
-
-            // Arama Butonları
-            searchBtn.addEventListener('click', handleSearchOrTranslate);
-            searchBar.addEventListener('keypress', (e) => e.key === 'Enter' && handleSearchOrTranslate(e));
-            mobileSearchBtn.addEventListener('click', handleSearchOrTranslate);
-            mobileSearchBar.addEventListener('keypress', (e) => e.key === 'Enter' && handleSearchOrTranslate(e));
-            
-            // Sınav Kontrol Butonları
-            restartQuizBtn.addEventListener('click', restartQuiz);
-            exitQuizBtn.addEventListener('click', exitQuiz);
-            requestExitQuizBtn.addEventListener('click', handleExitQuizRequest);
-
-            // Sınav Çıkış Modalı Butonları
-            confirmExitQuizBtn.addEventListener('click', confirmExitQuiz);
-            cancelExitQuizBtn.addEventListener('click', cancelExitQuiz);
-
-            // İlk kelimeleri yükle
-            fetchWords();
+            // İlk yükleme
+            setLanguage(state.currentLang); // UI'ı ayarla
+            fetchWords(); // İlk kelimeleri yükle
         });
 
     </script>
