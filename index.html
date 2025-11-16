@@ -1,433 +1,1880 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Çanta Cenneti - Admin (Mubag_Style)</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
-<style>
-  body { font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
-  #drop-zone.dragover { border-color: #1A4731; background:#f7f3e8b3 }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Dream</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a1a2e;
+            color: #e0e0e0;
+        }
+        .card {
+            background-color: #2a2a3e;
+            border: 1px solid #4a4a5e;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        .btn {
+            padding: 0.75rem 1.25rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #7f00ff, #e100ff);
+            color: white;
+        }
+        .btn-primary:hover {
+            opacity: 0.9;
+            box-shadow: 0 4px 10px rgba(127, 0, 255, 0.3);
+        }
+        .btn-secondary {
+            background-color: #4a4a5e;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #5a5a6e;
+        }
+        .btn-danger {
+            background-color: #e53e3e;
+            color: white;
+        }
+        .btn-danger:hover {
+            background-color: #c53030;
+        }
+        .btn-ghost {
+            background-color: transparent;
+            color: #c0c0e0;
+            border: 1px solid #4a4a5e;
+        }
+        .btn-ghost:hover {
+            background-color: #4a4a5e;
+            color: white;
+        }
+        .modal {
+            background-color: rgba(26, 26, 46, 0.85);
+            backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background-color: #2a2a3e;
+            border: 1px solid #4a4a5e;
+        }
+        .quiz-option {
+            border: 2px solid #4a4a5e;
+            transition: all 0.2s ease;
+        }
+        .quiz-option:hover {
+            background-color: #3a3a4e;
+            border-color: #7f00ff;
+        }
+        .quiz-option.selected {
+            background-color: #3a3a4e;
+            border-color: #e100ff;
+        }
+        .quiz-option.correct {
+            background-color: #2f855a;
+            border-color: #38a169;
+        }
+        .quiz-option.wrong {
+            background-color: #c53030;
+            border-color: #e53e3e;
+        }
+        .input-field {
+            background-color: #1a1a2e;
+            border: 2px solid #4a4a5e;
+            color: #e0e0e0;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            width: 100%;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #7f00ff;
+            box-shadow: 0 0 0 3px rgba(127, 0, 255, 0.3);
+        }
+        /* Özel Kaydırma Çubuğu */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1a1a2e;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4a4a5e;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #5a5a6e;
+        }
+    </style>
 </head>
-<body class="bg-gray-50 text-gray-800 p-6">
+<body class="p-4 md:p-8">
 
-<div class="max-w-5xl mx-auto">
+    <!-- Ana Konteyner -->
+    <div class="max-w-7xl mx-auto">
 
-  <!-- Top -->
-  <header class="flex items-center justify-between mb-6">
-    <h1 class="text-2xl font-bold">Çanta Cenneti — Yönetim</h1>
-    <div id="auth-area" class="flex items-center gap-4"></div>
-  </header>
+        <!-- Başlık (Header) -->
+        <header class="flex flex-col md:flex-row justify-between items-center mb-6 p-4 card">
+            <h1 id="main-title" class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500 mb-4 md:mb-0">
+                English Dream
+            </h1>
+            <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+                <!-- Kelime Arama / Cümle Çeviri -->
+                <div class="relative w-full md:w-auto">
+                    <input type="text" id="search-input" class="input-field w-full sm:w-64" placeholder="...">
+                    <button id="search-button" class="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-purple-400">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <div id="search-results" class="hidden absolute z-30 w-full bg-[#3a3a4e] mt-1 rounded-lg shadow-lg max-h-60 overflow-y-auto"></div>
+                </div>
+                
+                <!-- Sınav Geçmişi -->
+                <button id="show-history-btn" class="btn btn-ghost w-full sm:w-auto" title="Sınav Geçmişi">
+                    <i class="fas fa-trophy"></i>
+                </button>
 
-  <!-- MAIN VIEWS -->
-  <div id="main-view">
+                <!-- Dil Seçimi -->
+                <div class="relative w-full sm:w-auto">
+                    <select id="language-select" class="input-field w-full appearance-none pr-8 cursor-pointer">
+                        <option value="tr">Türkçe (TR)</option>
+                        <option value="az">Azərbaycanca (AZ)</option>
+                        <option value="ru">Русский (RU)</option>
+                    </select>
+                    <i class="fas fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                </div>
+            </div>
+        </header>
 
-    <!-- Admin login -->
-    <div id="login-card" class="bg-white p-6 rounded shadow mb-6 max-w-md">
-      <h2 class="font-semibold mb-4">Admin Girişi (Supabase Auth)</h2>
-      <form id="login-form" class="space-y-3">
-        <input id="login-email" type="email" placeholder="Email" class="w-full p-2 border rounded" required />
-        <input id="login-pass" type="password" placeholder="Şifre" class="w-full p-2 border rounded" required />
-        <div class="flex gap-2">
-          <button class="bg-green-700 text-white px-4 py-2 rounded" type="submit">Giriş Yap</button>
-          <button id="register-btn" type="button" class="bg-gray-200 px-4 py-2 rounded">Kayıt Ol (test)</button>
+        <!-- Seviye Seçimi -->
+        <div id="level-selection" class="flex flex-wrap justify-center gap-4 mb-8">
+            <button class="btn btn-primary flex-grow sm:flex-grow-0" data-level="a1">A1 (Başlanğıc)</button>
+            <button class="btn btn-primary flex-grow sm:flex-grow-0" data-level="a2">A2 (Orta Altı)</button>
+            <button class="btn btn-primary flex-grow sm:flex-grow-0" data-level="b1">B1 (Orta)</button>
+            <button class="btn btn-primary flex-grow sm:flex-grow-0" data-level="b2">B2 (Orta-İleri)</button>
+            <button class="btn btn-primary flex-grow sm:flex-grow-0" data-level="c1">C1 (İleri)</button>
         </div>
-        <p id="login-msg" class="text-sm text-red-600"></p>
-      </form>
+
+        <!-- Kelime Öğrenme Alanı -->
+        <div id="word-area" class="hidden">
+            <!-- Kontrol Butonları -->
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-6 p-4 card">
+                <h2 id="current-level-title" class="text-2xl font-semibold text-purple-300 mb-3 sm:mb-0"></h2>
+                <div class="flex flex-wrap gap-3">
+                    <button id="refresh-words" class="btn btn-secondary flex-grow sm:flex-grow-0">
+                        <i class="fas fa-sync-alt mr-2"></i> <span class="btn-text">Yenile</span>
+                    </button>
+                    <button id="pin-words" class="btn btn-ghost flex-grow sm:flex-grow-0">
+                        <i class="fas fa-thumbtack mr-2"></i> <span class="btn-text">Sabitle</span>
+                    </button>
+                    <button id="start-quiz-btn" class="btn btn-primary flex-grow sm:flex-grow-0">
+                        <i class="fas fa-graduation-cap mr-2"></i> <span class="btn-text">Sınav Başlat</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Uyarı Mesajı -->
+            <div id="quiz-alert" class="hidden bg-yellow-900 border border-yellow-700 text-yellow-100 px-4 py-3 rounded-lg mb-6 card" role="alert">
+                <strong id="quiz-alert-strong" class="font-bold">Uyarı!</strong>
+                <span id="quiz-alert-text" class="block sm:inline"></span>
+            </div>
+
+            <!-- Kelime Listesi -->
+            <div id="word-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                <!-- Kelime kartları buraya gelecek -->
+            </div>
+        </div>
+
+        <!-- Sınav Alanı -->
+        <div id="quiz-area" class="hidden">
+            <div class="p-6 card max-w-3xl mx-auto">
+                <!-- Sınav Başlığı ve İlerleme -->
+                <div class="flex justify-between items-center mb-6">
+                    <h2 id="quiz-title" class="text-2xl font-bold text-purple-300"></h2>
+                    <div id="quiz-progress" class="text-lg font-semibold text-gray-300">Soru 1 / 15</div>
+                </div>
+
+                <!-- Soru Alanı -->
+                <div id="question-area" class="mb-6">
+                    <div id="short-text-area" class="hidden p-4 bg-gray-800 rounded-lg mb-4 border border-gray-700">
+                        <h4 id="short-text-title" class="font-semibold text-lg mb-2 text-purple-300"></h4>
+                        <p id="short-text-content" class="text-gray-300 leading-relaxed"></p>
+                    </div>
+                    <p id="question-text" class="text-xl text-gray-100 mb-6 leading-relaxed"></p>
+                    <div id="question-options" class="space-y-3">
+                        <!-- Seçenekler buraya gelecek -->
+                    </div>
+                    <input type="text" id="input-answer" class="hidden input-field" placeholder="...">
+                </div>
+
+                <!-- Sınav Sonuçları -->
+                <div id="quiz-results" class="hidden text-center">
+                    <h3 id="quiz-results-title" class="text-3xl font-bold text-purple-300 mb-4"></h3>
+                    <p id="quiz-results-score" class="text-5xl font-bold text-white mb-8"></p>
+                    <div class="flex justify-center gap-4">
+                        <button id="quiz-restart" class="btn btn-secondary"></button>
+                        <button id="quiz-back-to-words" class="btn btn-primary"></button>
+                    </div>
+                </div>
+
+                <!-- Kontrol Butonları -->
+                <div class="flex justify-between items-center mt-8">
+                    <button id="exit-quiz-btn" class="btn btn-danger"></button>
+                    <button id="next-question-btn" class="btn btn-primary"></button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Altbilgi (Footer) -->
+        <footer class="text-center text-gray-500 mt-12 text-sm">
+            <p id="footer-text"></p>
+        </footer>
+
+    </div> <!-- Ana Konteyner Bitişi -->
+
+    <!-- Modal: Not Ekle/Düzenle -->
+    <div id="note-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal hidden">
+        <div class="modal-content w-full max-w-md p-6 rounded-lg">
+            <h3 id="note-modal-title" class="text-2xl font-semibold mb-4 text-purple-300"></h3>
+            <textarea id="note-textarea" class="input-field w-full h-32" placeholder="..."></textarea>
+            <div class="flex justify-end gap-3 mt-6">
+                <button id="cancel-note" class="btn btn-ghost"></button>
+                <button id="save-note" class="btn btn-primary"></button>
+            </div>
+        </div>
     </div>
 
-    <!-- Admin panel (gizli, gösterilcek giriş sonrası) -->
-    <div id="admin-panel" class="hidden">
-
-      <!-- New product form (multi images + category) -->
-      <div class="bg-white p-6 rounded shadow mb-6">
-        <h2 class="font-semibold mb-4">Yeni Ürün Ekle / Düzenle</h2>
-
-        <form id="product-form" class="space-y-3">
-          <input id="product-id" type="hidden" />
-          <div><input id="product-name" placeholder="Ürün adı" class="w-full p-2 border rounded" required /></div>
-          <div><textarea id="product-desc" rows="2" placeholder="Açıklama" class="w-full p-2 border rounded"></textarea></div>
-          <div><input id="product-price" type="number" step="0.01" placeholder="Fiyat" class="w-full p-2 border rounded" required /></div>
-
-          <div>
-            <label class="block mb-1">Kategori</label>
-            <div class="flex gap-2">
-              <select id="category-select" class="p-2 border rounded flex-1"></select>
-              <input id="new-category" placeholder="Yeni kategori ekle" class="p-2 border rounded w-48" />
-              <button id="add-category-btn" type="button" class="px-3 bg-blue-600 text-white rounded">Ekle</button>
+    <!-- Modal: Sınavdan Çıkış Uyarısı -->
+    <div id="exit-quiz-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal hidden">
+        <div class="modal-content w-full max-w-md p-6 rounded-lg text-center">
+            <i class="fas fa-exclamation-triangle text-5xl text-yellow-400 mb-4"></i>
+            <h3 id="exit-modal-title" class="text-2xl font-semibold mb-4 text-yellow-300"></h3>
+            <p id="exit-modal-text" class="text-gray-300 mb-6"></p>
+            <div class="flex justify-center gap-3">
+                <button id="cancel-exit" class="btn btn-secondary"></button>
+                <button id="confirm-exit" class="btn btn-danger"></button>
             </div>
-          </div>
-
-          <div>
-            <label class="block mb-1">Fotoğraflar (Çoklu)</label>
-            <div id="drop-zone" class="p-6 border-2 border-dashed rounded cursor-pointer text-center">
-              <p>Dosyaları sürükle veya seç (JPG/PNG/WebP) — max 2MB / dosya</p>
-              <input id="file-input" type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple class="hidden" />
-            </div>
-            <div id="thumbs" class="flex gap-2 mt-3 flex-wrap"></div>
-          </div>
-
-          <div class="flex gap-2">
-            <button id="save-btn" class="bg-green-700 text-white px-4 py-2 rounded" type="submit">Kaydet</button>
-            <button id="cancel-edit" type="button" class="bg-gray-200 px-4 py-2 rounded">İptal</button>
-          </div>
-          <p id="form-status" class="text-sm"></p>
-        </form>
-      </div>
-
-      <!-- Product list (admin) -->
-      <div class="bg-white p-6 rounded shadow">
-        <h2 class="font-semibold mb-4">Mevcut Ürünler</h2>
-        <div id="admin-product-list" class="space-y-3"></div>
-      </div>
-
-      <!-- Public product grid (gözlem) -->
-      <div class="mt-6 bg-white p-6 rounded shadow">
-        <h2 class="font-semibold mb-4">Site Önizleme</h2>
-        <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-      </div>
-
+        </div>
     </div>
-  </div>
-</div>
+    
+    <!-- Modal: Sınav Geçmişi -->
+    <div id="history-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal hidden">
+        <div class="modal-content w-full max-w-lg p-6 rounded-lg">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="history-modal-title" class="text-2xl font-semibold text-purple-300"></h3>
+                <button id="close-history-modal" class="text-gray-400 hover:text-white text-2xl">&times;</button>
+            </div>
+            <div id="history-list" class="max-h-96 overflow-y-auto space-y-3 mb-6 pr-2">
+                <!-- Geçmiş kayıtları buraya gelecek -->
+            </div>
+            <p id="no-history-text" class="hidden text-center text-gray-400"></p>
+            <button id="clear-history-btn" class="btn btn-danger w-full"></button>
+        </div>
+    </div>
+
+    <!-- Yükleniyor (Spinner) -->
+    <div id="loading-spinner" class="hidden fixed inset-0 z-50 flex items-center justify-center modal">
+        <div class="w-16 h-16 border-4 border-dashed border-purple-400 rounded-full animate-spin"></div>
+    </div>
+
+    <!-- Mesaj Bildirimi (Toast) -->
+    <div id="toast-notification" class="hidden fixed bottom-5 right-5 z-50 bg-green-600 text-white px-5 py-3 rounded-lg shadow-lg">
+        <span id="toast-message"></span>
+    </div>
+
 
 <script type="module">
-import { createClient } from "https://esm.sh/@supabase/supabase-js";
+    // Firebase SDK'larını import etmeye GEREK YOK, localStorage kullanacağız.
 
-const SUPABASE_URL = "https://wlnffeirtmjikbgggckn.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsbmZmZWlydG1qaWtiZ2dnY2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI3MTc4NzMsImV4cCI6MjA3ODI5Mzg3M30.bcKzldG9TuH8T_xMwtsoZ7aYKI_J4Cb5UapFDI00mVo";
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-// ---------- CONFIG ----------
-const BUCKET = "Mubag_Style";
-const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
-const ALLOWED = ["image/jpeg","image/png","image/webp","image/gif"];
-
-// Admin olarak tanımlanacak e-posta (değiştir!)
-const ADMIN_EMAIL = "admin@yourdomain.com";
-
-// ---------- STATE ----------
-let selectedFiles = []; // File objects
-let categories = [];
-
-// ---------- HELPERS ----------
-function el(id){ return document.getElementById(id); }
-function showAdminPanel(user) {
-  el("login-card").classList.add("hidden");
-  el("admin-panel").classList.remove("hidden");
-  // auth-area güncelle
-  el("auth-area").innerHTML = `
-    <div class="text-sm">Hoşgeldin: ${user.email}</div>
-    <button id="signout-btn" class="bg-red-600 text-white px-3 py-1 rounded">Çıkış</button>
-  `;
-  el("signout-btn").onclick = async () => {
-    await supabase.auth.signOut();
-    location.reload();
-  };
-}
-
-// Upload single file -> public url
-async function uploadSingleFile(file, folder="") {
-  const ext = file.name.split(".").pop();
-  const key = (folder ? folder + "/" : "") + `img_${Date.now()}_${Math.floor(Math.random()*10000)}.${ext}`;
-  // upload
-  const { error } = await supabase.storage.from(BUCKET).upload(key, file);
-  if (error) {
-    console.error("Upload error:", error);
-    return null;
-  }
-  const { data } = supabase.storage.from(BUCKET).getPublicUrl(key);
-  return data?.publicUrl ?? null;
-}
-
-// Upload multiple files -> returns array of urls (parallel)
-async function uploadFiles(files) {
-  const urls = [];
-  for (const f of files) {
-    const u = await uploadSingleFile(f);
-    if (!u) return null;
-    urls.push(u);
-  }
-  return urls;
-}
-
-// get products
-async function getProducts() {
-  const { data, error } = await supabase.from("products").select("*").order("id",{ascending:false});
-  if (error) { console.error(error); return []; }
-  return data || [];
-}
-
-// save new product
-async function saveProduct(product) {
-  const { data, error } = await supabase.from("products").insert(product).select();
-  if (error) { console.error(error); return null; }
-  return data ? data[0] : null;
-}
-
-// update product
-async function updateProduct(id, payload) {
-  const { data, error } = await supabase.from("products").update(payload).eq("id", id).select();
-  if (error) { console.error(error); return null; }
-  return data ? data[0] : null;
-}
-
-// delete product
-async function deleteProduct(id) {
-  await supabase.from("products").delete().eq("id", id);
-  await refreshAll();
-}
-
-// categories
-async function loadCategories() {
-  const { data, error } = await supabase.from("categories").select("*").order("id",{ascending:true});
-  categories = (error || !data) ? [] : data.map(c=>c.name);
-  renderCategoryOptions();
-}
-function renderCategoryOptions() {
-  const sel = el("category-select");
-  sel.innerHTML = "<option value=''>--Kategori seç--</option>";
-  categories.forEach(c => sel.insertAdjacentHTML("beforeend", `<option value="${c}">${c}</option>`));
-}
-
-// add category
-async function addCategory(name) {
-  if (!name) return;
-  await supabase.from("categories").insert({ name }).select();
-  await loadCategories();
-}
-
-// ---------- UI RENDER ----------
-function renderAdminList(products) {
-  const wrap = el("admin-product-list");
-  wrap.innerHTML = "";
-  if (!products.length) { wrap.innerHTML = "<p>Henüz ürün yok.</p>"; return; }
-  products.forEach(p => {
-    const firstImg = (p.image_urls && p.image_urls.length) ? p.image_urls[0] : "";
-    wrap.insertAdjacentHTML("beforeend", `
-      <div class="flex items-center justify-between p-3 border rounded">
-        <div class="flex items-center gap-3">
-          <img src="${firstImg}" class="w-16 h-16 object-cover rounded" />
-          <div>
-            <div class="font-semibold">${p.name}</div>
-            <div class="text-sm text-gray-600">${p.category || ""}</div>
-          </div>
-        </div>
-        <div class="flex gap-2">
-          <button class="edit-btn bg-yellow-400 px-3 py-1 rounded" data-id="${p.id}">Düzenle</button>
-          <button class="del-btn bg-red-600 text-white px-3 py-1 rounded" data-id="${p.id}">Sil</button>
-        </div>
-      </div>
-    `);
-  });
-  // events
-  wrap.querySelectorAll(".edit-btn").forEach(b => b.onclick = () => startEdit(b.dataset.id, products));
-  wrap.querySelectorAll(".del-btn").forEach(b => {
-    b.onclick = async () => {
-      if (!confirm("Ürün silinsin mi?")) return;
-      await deleteProduct(b.dataset.id);
+    // --- STATE MANAGEMENT ---
+    const state = {
+        currentLevel: null,
+        currentWords: [],
+        pinnedWords: [],
+        notes: {},
+        quizState: 'idle', // idle, active, results
+        currentQuestionIndex: 0,
+        score: 0,
+        quizQuestions: [],
+        isPinned: false,
+        examHistory: [],
+        currentLang: 'tr', // Varsayılan dil
     };
-  });
-}
 
-function renderGrid(products) {
-  const grid = el("product-grid");
-  grid.innerHTML = "";
-  if (!products.length) { grid.innerHTML = "<p>Henüz ürün yok.</p>"; return; }
-  products.forEach(p => {
-    const first = (p.image_urls && p.image_urls.length) ? p.image_urls[0] : "";
-    grid.insertAdjacentHTML("beforeend", `
-      <div class="border rounded overflow-hidden">
-        <img src="${first}" class="w-full h-48 object-cover" />
-        <div class="p-3">
-          <h3 class="font-semibold">${p.name}</h3>
-          <div class="text-sm text-gray-600">${p.category || ""}</div>
-          <div class="mt-2 font-semibold">${p.price} ₺</div>
-        </div>
-      </div>
-    `);
-  });
-}
+    // --- API & KELİME VERİTABANI ---
 
-// ---------- EDIT FLOW ----------
-function startEdit(id, products) {
-  const p = products.find(x => String(x.id) === String(id));
-  if (!p) return;
-  // fill form
-  el("product-id").value = p.id;
-  el("product-name").value = p.name;
-  el("product-desc").value = p.description || "";
-  el("product-price").value = p.price || "";
-  el("category-select").value = p.category || "";
-  // show thumbs for existing images (not files)
-  const thumbs = el("thumbs");
-  thumbs.innerHTML = "";
-  (p.image_urls || []).forEach(url => {
-    const div = document.createElement("div");
-    div.className = "w-24 h-24 border rounded overflow-hidden relative";
-    div.innerHTML = `<img src="${url}" class="w-full h-full object-cover" />`;
-    thumbs.appendChild(div);
-  });
-  // clear selectedFiles to avoid accidental overwrite
-  selectedFiles = [];
-  // scroll to form
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
+    // Gemini API Anahtarı
+    // ÖNEMLİ: Normalde bu anahtar sunucuda saklanmalıdır, ancak bu tek-dosya
+    // uygulama için API anahtarını buraya eklemeniz gerekmektedir.
+    const GEMINI_API_KEY = ""; // BURAYA KENDİ GEMINI API ANAHTARINIZI EKLEYİN
 
-// ---------- REFRESH ----------
-async function refreshAll() {
-  const prods = await getProducts();
-  renderAdminList(prods);
-  renderGrid(prods);
-}
-
-// ---------- EVENTS ----------
-window.onload = async () => {
-  // auth check
-  const { data: { session } } = await supabase.auth.getSession();
-  if (session && session.user && session.user.email === ADMIN_EMAIL) {
-    showAdminPanel(session.user);
-    await loadCategories();
-    await refreshAll();
-  } else {
-    el("login-card").classList.remove("hidden");
-  }
-
-  // login form
-  el("login-form").onsubmit = async (e) => {
-    e.preventDefault();
-    el("login-msg").textContent = "";
-    const email = el("login-email").value;
-    const pass = el("login-pass").value;
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
-      if (error) { el("login-msg").textContent = error.message; return; }
-      if (data && data.user && data.user.email === ADMIN_EMAIL) {
-        showAdminPanel(data.user);
-        await loadCategories();
-        await refreshAll();
-      } else {
-        // allow sign in but check admin email
-        if (data && data.user) {
-          el("login-msg").textContent = "Bu e-posta admin değil.";
-          await supabase.auth.signOut();
+    // Çok Dilli Arayüz Metinleri
+    const uiStrings = {
+        tr: {
+            title: "English Dream",
+            searchPlaceholder: "Kelime ara veya cümle çevir...",
+            historyBtn: "Sınav Geçmişi",
+            levelA1: "A1 (Başlangıç)",
+            levelA2: "A2 (Orta Altı)",
+            levelB1: "B1 (Orta)",
+            levelB2: "B2 (Orta-İleri)",
+            levelC1: "C1 (İleri)",
+            refresh: "Yenile",
+            pin: "Sabitle",
+            unpin: "Sabitlendi",
+            startQuiz: "Sınav Başlat",
+            quizAlertTitle: "Uyarı!",
+            quizAlertText: (count) => `Sınava girmek için en az ${count} kelime/deyim öğrenmelisiniz.`,
+            quizTitle: (level) => `${level.toUpperCase()} Seviye Sınavı`,
+            question: "Soru",
+            fillBlank: "Boşluğa uygun kelimeyi seçin:",
+            fillBlankInput: "Boşluğu doğru İngilizce kelime ile doldurun (Yazın):",
+            translateTo: (lang) => `Bu kelimenin ${lang} çevirisini seçin:`,
+            translateToInput: (lang) => `Bu ifadenin ${lang} çevirisini yazın:`,
+            shortTextTitle: "Metni Okuyun ve Soruyu Cevaplayın",
+            exitQuiz: "Sınavdan Çık",
+            nextQuestion: "Sonraki Soru",
+            quizResultsTitle: "Sınav Tamamlandı!",
+            quizResultsScore: (score) => `Puanınız: ${score} / 15`,
+            restartQuiz: "Yeniden Başla",
+            backToWords: "Kelimelere Dön",
+            noteModalTitle: (word) => `"${word}" için Not Ekle`,
+            noteTextareaPlaceholder: "Notlarınızı buraya yazın...",
+            cancel: "İptal",
+            save: "Kaydet",
+            exitModalTitle: "Emin misiniz?",
+            exitModalText: "Sınavdan çıkarsanız mevcut ilerlemeniz ve puanınız kaydedilmeyecektir.",
+            confirmExit: "Çıkışı Onayla",
+            historyModalTitle: "Sınav Geçmişi",
+            noHistoryText: "Henüz tamamlanmış bir sınavınız yok.",
+            clearHistory: "Geçmişi Temizle",
+            footerText: "Hata ve önerileriniz için: elaymemmedli27@gmail.com",
+            toastNoteSaved: (word) => `"${word}" için not kaydedildi!`,
+            toastPinned: "Kelimeler sabitlendi.",
+            toastUnpinned: "Sabitleme kaldırıldı.",
+            toastCopied: "Örnek cümle kopyalandı!",
+            toastHistoryCleared: "Sınav geçmişi temizlendi.",
+            toastTranslationError: "Çeviri sırasında bir hata oluştu.",
+            toastTranslationPinError: "Çeviriyi sabitlemek için önce bir arama yapın.",
+            toastTranslating: "Çevriliyor, lütfen bekleyin...",
+            toastLevel: (level) => `${level.toUpperCase()} Seviyesi`,
+            searchResult: "Arama Sonucu",
+            searchNotFound: "Kelime bulunamadı.",
+            pinThis: "Sabitle",
+            unpinThis: "Kaldır",
+        },
+        az: {
+            title: "English Dream",
+            searchPlaceholder: "Söz axtar və ya cümlə tərcümə et...",
+            historyBtn: "İmtahan Tarixçəsi",
+            levelA1: "A1 (Başlanğıc)",
+            levelA2: "A2 (Orta Altı)",
+            levelB1: "B1 (Orta)",
+            levelB2: "B2 (Orta-Yuxarı)",
+            levelC1: "C1 (Yuxarı)",
+            refresh: "Yenilə",
+            pin: "Bərkit",
+            unpin: "Bərkidildi",
+            startQuiz: "İmtahana Başla",
+            quizAlertTitle: "Xəbərdarlıq!",
+            quizAlertText: (count) => `İmtahana girmək üçün ən az ${count} söz/ifadə öyrənməlisiniz.`,
+            quizTitle: (level) => `${level.toUpperCase()} Səviyyə İmtahanı`,
+            question: "Sual",
+            fillBlank: "Boşluğa uyğun sözü seçin:",
+            fillBlankInput: "Boşluğu düzgün İngilis sözü ilə doldurun (Yazın):",
+            translateTo: (lang) => `Bu sözün ${lang} tərcüməsini seçin:`,
+            translateToInput: (lang) => `Bu ifadənin ${lang} tərcüməsini yazın:`,
+            shortTextTitle: "Mətni Oxuyun və Sualı Cavablayın",
+            exitQuiz: "İmtahandan Çıx",
+            nextQuestion: "Növbəti Sual",
+            quizResultsTitle: "İmtahan Bitdi!",
+            quizResultsScore: (score) => `Nəticəniz: ${score} / 15`,
+            restartQuiz: "Yenidən Başla",
+            backToWords: "Sözlərə Qayıt",
+            noteModalTitle: (word) => `"${word}" üçün Qeyd Əlavə Et`,
+            noteTextareaPlaceholder: "Qeydlərinizi buraya yazın...",
+            cancel: "Ləğv et",
+            save: "Yadda saxla",
+            exitModalTitle: "Əminsiniz?",
+            exitModalText: "İmtahandan çıxsanız, mövcud irəliləyişiniz və nəticəniz yadda saxlanılmayacaq.",
+            confirmExit: "Çıxışı Təsdiqlə",
+            historyModalTitle: "İmtahan Tarixçəsi",
+            noHistoryText: "Hələ tamamlanmış bir imtahanınız yoxdur.",
+            clearHistory: "Tarixçəni Təmizlə",
+            footerText: "Xəta və təklifləriniz üçün: elaymemmedli27@gmail.com",
+            toastNoteSaved: (word) => `"${word}" üçün qeyd yadda saxlandı!`,
+            toastPinned: "Sözlər bərkidildi.",
+            toastUnpinned: "Bərkitmə ləğv edildi.",
+            toastCopied: "Nümunə cümlə kopyalandı!",
+            toastHistoryCleared: "İmtahan tarixçəsi təmizləndi.",
+            toastTranslationError: "Tərcümə zamanı xəta baş verdi.",
+            toastTranslationPinError: "Tərcüməni bərkitmək üçün əvvəlcə axtarış edin.",
+            toastTranslating: "Tərcümə edilir, zəhmət olmasa gözləyin...",
+            toastLevel: (level) => `${level.toUpperCase()} Səviyyəsi`,
+            searchResult: "Axtarış Nəticəsi",
+            searchNotFound: "Söz tapılmadı.",
+            pinThis: "Bərkit",
+            unpinThis: "Çıxar",
+        },
+        ru: {
+            title: "English Dream",
+            searchPlaceholder: "Искать слово или перевести предложение...",
+            historyBtn: "История Экзаменов",
+            levelA1: "A1 (Начальный)",
+            levelA2: "A2 (Ниже среднего)",
+            levelB1: "B1 (Средний)",
+            levelB2: "B2 (Выше среднего)",
+            levelC1: "C1 (Продвинутый)",
+            refresh: "Обновить",
+            pin: "Закрепить",
+            unpin: "Закреплено",
+            startQuiz: "Начать Экзамен",
+            quizAlertTitle: "Внимание!",
+            quizAlertText: (count) => `Вы должны выучить не менее ${count} слов/фраз, чтобы начать экзамен.`,
+            quizTitle: (level) => `Экзамен Уровня ${level.toUpperCase()}`,
+            question: "Вопрос",
+            fillBlank: "Выберите подходящее слово для пробела:",
+            fillBlankInput: "Заполните пробел правильным английским словом (Напишите):",
+            translateTo: (lang) => `Выберите ${lang} перевод этого слова:`,
+            translateToInput: (lang) => `Напишите ${lang} перевод этой фразы:`,
+            shortTextTitle: "Прочтите Текст и Ответьте на Вопрос",
+            exitQuiz: "Выйти из Экзамена",
+            nextQuestion: "Следующий Вопрос",
+            quizResultsTitle: "Экзамен Завершен!",
+            quizResultsScore: (score) => `Ваш результат: ${score} / 15`,
+            restartQuiz: "Начать Сначала",
+            backToWords: "Вернуться к Словам",
+            noteModalTitle: (word) => `Добавить Заметку для "${word}"`,
+            noteTextareaPlaceholder: "Напишите ваши заметки здесь...",
+            cancel: "Отмена",
+            save: "Сохранить",
+            exitModalTitle: "Вы уверены?",
+            exitModalText: "Если вы выйдете из экзамена, ваш текущий прогресс и результат не будут сохранены.",
+            confirmExit: "Подтвердить Выход",
+            historyModalTitle: "История Экзаменов",
+            noHistoryText: "У вас пока нет завершенных экзаменов.",
+            clearHistory: "Очистить Историю",
+            footerText: "Для ошибок и предложений: elaymemmedli27@gmail.com",
+            toastNoteSaved: (word) => `Заметка для "${word}" сохранена!`,
+            toastPinned: "Слова закреплены.",
+            toastUnpinned: "Закрепление снято.",
+            toastCopied: "Пример скопирован!",
+            toastHistoryCleared: "История экзаменов очищена.",
+            toastTranslationError: "Произошла ошибка при переводе.",
+            toastTranslationPinError: "Сначала выполните поиск, чтобы закрепить перевод.",
+            toastTranslating: "Переводится, пожалуйста, подождите...",
+            toastLevel: (level) => `Уровень ${level.toUpperCase()}`,
+            searchResult: "Результат Поиска",
+            searchNotFound: "Слово не найдено.",
+            pinThis: "Закрепить",
+            unpinThis: "Убрать",
         }
-      }
-    } catch(err){ el("login-msg").textContent = err.message; }
-  };
+    };
+    
+    // Kelime Veritabanı (Çok Dilli)
+    const wordBank = {
+        a1: [
+            // Mevcut 10 kelime
+            { en: "Hello", translations: { tr: "Merhaba", az: "Salam", ru: "Здравствуйте" }, sentences: { en: "Hello, how are you?", tr: "Merhaba, nasılsın?", az: "Salam, necəsən?", ru: "Здравствуйте, как у вас дела?" } },
+            { en: "Apple", translations: { tr: "Elma", az: "Alma", ru: "Яблоко" }, sentences: { en: "I eat an apple every day.", tr: "Her gün bir elma yerim.", az: "Mən hər gün bir alma yeyirəm.", ru: "Я ем яблоко каждый день." } },
+            { en: "Book", translations: { tr: "Kitap", az: "Kitab", ru: "Книга" }, sentences: { en: "I am reading a book.", tr: "Bir kitap okuyorum.", az: "Mən kitab oxuyuram.", ru: "Я читаю книгу." } },
+            { en: "Car", translations: { tr: "Araba", az: "Avtomobil", ru: "Машина" }, sentences: { en: "She has a new car.", tr: "Yeni bir arabası var.", az: "Onun yeni bir avtomobili var.", ru: "У нее новая машина." } },
+            { en: "Dog", translations: { tr: "Köpek", az: "İt", ru: "Собака" }, sentences: { en: "The dog is barking.", tr: "Köpek havlıyor.", az: "İt hürür.", ru: "Собака лает." } },
+            { en: "Eat", translations: { tr: "Yemek yemek", az: "Yemək", ru: "Есть" }, sentences: { en: "I want to eat pizza.", tr: "Pizza yemek istiyorum.", az: "Mən pizza yemək istəyirəm.", ru: "Я хочу съесть пиццу." } },
+            { en: "Water", translations: { tr: "Su", az: "Su", ru: "Вода" }, sentences: { en: "I need a glass of water.", tr: "Bir bardak suya ihtiyacım var.", az: "Mənə bir stəkan su lazımdır.", ru: "Мне нужен стакан воды." } },
+            { en: "School", translations: { tr: "Okul", az: "Məktəb", ru: "Школа" }, sentences: { en: "My brother goes to school.", tr: "Erkek kardeşim okula gidiyor.", az: "Qardaşım məktəbə gedir.", ru: "Мой брат ходит в школу." } },
+            { en: "Friend", translations: { tr: "Arkadaş", az: "Dost", ru: "Друг" }, sentences: { en: "He is my best friend.", tr: "O benim en iyi arkadaşım.", az: "O mənim ən yaxşı dostumdur.", ru: "Он мой лучший друг." } },
+            { en: "Money", translations: { tr: "Para", az: "Pul", ru: "Деньги" }, sentences: { en: "I don't have much money.", tr: "Çok param yok.", az: "Mənim çox pulum yoxdur.", ru: "У меня мало денег." } },
+            // Yeni eklenen 40 kelime
+            { en: "Man", translations: { tr: "Adam", az: "Kişi", ru: "Мужчина" }, sentences: { en: "A man is walking down the street.", tr: "Bir adam sokakta yürüyor.", az: "Bir kişi küçədə gedir.", ru: "Мужчина идет по улице." } },
+            { en: "Woman", translations: { tr: "Kadın", az: "Qadın", ru: "Женщина" }, sentences: { en: "The woman is reading a newspaper.", tr: "Kadın gazete okuyor.", az: "Qadın qəzet oxuyur.", ru: "Женщина читает газету." } },
+            { en: "House", translations: { tr: "Ev", az: "Ev", ru: "Дом" }, sentences: { en: "My house is big.", tr: "Evim büyük.", az: "Mənim evim böyükdür.", ru: "Мой дом большой." } },
+            { en: "Cat", translations: { tr: "Kedi", az: "Pişik", ru: "Кошка" }, sentences: { en: "The cat is sleeping.", tr: "Kedi uyuyor.", az: "Pişik yatır.", ru: "Кошка спит." } },
+            { en: "Tree", translations: { tr: "Ağaç", az: "Ağac", ru: "Дерево" }, sentences: { en: "There is a tall tree in the garden.", tr: "Bahçede uzun bir ağaç var.", az: "Həyətdə hündür bir ağac var.", ru: "В саду стоит высокое дерево." } },
+            { en: "Sun", translations: { tr: "Güneş", az: "Günəş", ru: "Солнце" }, sentences: { en: "The sun is shining.", tr: "Güneş parlıyor.", az: "Günəş parlayır.", ru: "Солнце светит." } },
+            { en: "Moon", translations: { tr: "Ay", az: "Ay", ru: "Луна" }, sentences: { en: "The moon is bright tonight.", tr: "Bu gece ay parlak.", az: "Bu gecə ay parlaqdır.", ru: "Луна сегодня яркая." } },
+            { en: "Child", translations: { tr: "Çocuk", az: "Uşaq", ru: "Ребенок" }, sentences: { en: "The child is playing.", tr: "Çocuk oynuyor.", az: "Uşaq oynayır.", ru: "Ребенок играет." } },
+            { en: "City", translations: { tr: "Şehir", az: "Şəhər", ru: "Город" }, sentences: { en: "Paris is a beautiful city.", tr: "Paris güzel bir şehirdir.", az: "Paris gözəl bir şəhərdir.", ru: "Париж - красивый город." } },
+            { en: "Food", translations: { tr: "Yiyecek", az: "Yemək", ru: "Еда" }, sentences: { en: "I like Italian food.", tr: "İtalyan yemeklerini severim.", az: "Mən İtalyan yeməklərini sevirəm.", ru: "Я люблю итальянскую еду." } },
+            { en: "Time", translations: { tr: "Zaman", az: "Vaxt", ru: "Время" }, sentences: { en: "What time is it?", tr: "Saat kaç?", az: "Saat neçədir?", ru: "Который час?" } },
+            { en: "Work", translations: { tr: "İş", az: "İş", ru: "Работа" }, sentences: { en: "I have to go to work.", tr: "İşe gitmem lazım.", az: "Mənim işə getməyim lazımdır.", ru: "Мне нужно идти на работу." } },
+            { en: "Day", translations: { tr: "Gün", az: "Gün", ru: "День" }, sentences: { en: "Today is a sunny day.", tr: "Bugün güneşli bir gün.", az: "Bu gün günəşli bir gündür.", ru: "Сегодня солнечный день." } },
+            { en: "Night", translations: { tr: "Gece", az: "Gecə", ru: "Ночь" }, sentences: { en: "I sleep at night.", tr: "Gece uyurum.", az: "Mən gecə yatıram.", ru: "Я сплю ночью." } },
+            { en: "Red", translations: { tr: "Kırmızı", az: "Qırmızı", ru: "Красный" }, sentences: { en: "She wears a red dress.", tr: "Kırmızı bir elbise giyiyor.", az: "O, qırmızı paltar geyinir.", ru: "Она носит красное платье." } },
+            { en: "Blue", translations: { tr: "Mavi", az: "Mavi", ru: "Синий" }, sentences: { en: "The sky is blue.", tr: "Gökyüzü mavi.", az: "Səma mavidir.", ru: "Небо синее." } },
+            { en: "Green", translations: { tr: "Yeşil", az: "Yaşıl", ru: "Зеленый" }, sentences: { en: "The grass is green.", tr: "Çimenler yeşil.", az: "Ot yaşıldır.", ru: "Трава зеленая." } },
+            { en: "Big", translations: { tr: "Büyük", az: "Böyük", ru: "Большой" }, sentences: { en: "It is a big house.", tr: "O büyük bir ev.", az: "O, böyük bir evdir.", ru: "Это большой дом." } },
+            { en: "Small", translations: { tr: "Küçük", az: "Kiçik", ru: "Маленький" }, sentences: { en: "I have a small cat.", tr: "Küçük bir kedim var.", az: "Mənim kiçik bir pişiyim var.", ru: "У меня есть маленькая кошка." } },
+            { en: "Happy", translations: { tr: "Mutlu", az: "Xoşbəxt", ru: "Счастливый" }, sentences: { en: "You look happy.", tr: "Mutlu görünüyorsun.", az: "Xoşbəxt görünürsən.", ru: "Ты выглядишь счастливым." } },
+            { en: "Sad", translations: { tr: "Üzgün", az: "Qəmgin", ru: "Грустный" }, sentences: { en: "Why are you sad?", tr: "Neden üzgünsün?", az: "Niyə qəmginsən?", ru: "Почему ты грустный?" } },
+            { en: "Good", translations: { tr: "İyi", az: "Yaxşı", ru: "Хороший" }, sentences: { en: "This is a good book.", tr: "Bu iyi bir kitap.", az: "Bu yaxşı kitabdır.", ru: "Это хорошая книга." } },
+            { en: "Bad", translations: { tr: "Kötü", az: "Pis", ru: "Плохой" }, sentences: { en: "He had a bad day.", tr: "Kötü bir gün geçirdi.", az: "O, pis bir gün keçirdi.", ru: "У него был плохой день." } },
+            { en: "Walk", translations: { tr: "Yürümek", az: "Gəzmək", ru: "Гулять" }, sentences: { en: "I walk to school.", tr: "Okula yürürüm.", az: "Mən məktəbə gəzərək gedirəm.", ru: "Я хожу в школу пешком." } },
+            { en: "Run", translations: { tr: "Koşmak", az: "Qaçmaq", ru: "Бежать" }, sentences: { en: "The dog can run fast.", tr: "Köpek hızlı koşabilir.", az: "İt sürətli qaça bilir.", ru: "Собака умеет быстро бегать." } },
+            { en: "See", translations: { tr: "Görmek", az: "Görmək", ru: "Видеть" }, sentences: { en: "I see a bird.", tr: "Bir kuş görüyorum.", az: "Mən bir quş görürəm.", ru: "Я вижу птицу." } },
+            { en: "Hear", translations: { tr: "Duymak", az: "Eşitmək", ru: "Слышать" }, sentences: { en: "Can you hear the music?", tr: "Müziği duyabiliyor musun?", az: "Musiqini eşidə bilirsən?", ru: "Ты слышишь музыку?" } },
+            { en: "Speak", translations: { tr: "Konuşmak", az: "Danışmaq", ru: "Говорить" }, sentences: { en: "I speak English.", tr: "İngilizce konuşurum.", az: "Mən İngiliscə danışıram.", ru: "Я говорю по-английски." } },
+            { en: "Read", translations: { tr: "Okumak", az: "Oxumaq", ru: "Читать" }, sentences: { en: "He likes to read books.", tr: "Kitap okumayı sever.", az: "O, kitab oxumağı sevir.", ru: "Он любит читать книги." } },
+            { en: "Write", translations: { tr: "Yazmak", az: "Yazmaq", ru: "Писать" }, sentences: { en: "Write your name here.", tr: "Adını buraya yaz.", az: "Adınızı bura yazın.", ru: "Напишите свое имя здесь." } },
+            { en: "Love", translations: { tr: "Sevmek", az: "Sevmək", ru: "Любить" }, sentences: { en: "I love my family.", tr: "Ailemi seviyorum.", az: "Mən ailəmi sevirəm.", ru: "Я люблю свою семью." } },
+            { en: "Hate", translations: { tr: "Nefret etmek", az: "Nifrət etmək", ru: "Ненавидеть" }, sentences: { en: "I hate spiders.", tr: "Örümceklerden nefret ederim.", az: "Mən hörümçəklərə nifrət edirəm.", ru: "Я ненавижу пауков." } },
+            { en: "Know", translations: { tr: "Bilmek", az: "Bilmək", ru: "Знать" }, sentences: { en: "I know the answer.", tr: "Cevabı biliyorum.", az: "Mən cavabı bilirəm.", ru: "Я знаю ответ." } },
+            { en: "Think", translations: { tr: "Düşünmek", az: "Düşünmək", ru: "Думать" }, sentences: { en: "What do you think?", tr: "Ne düşünüyorsun?", az: "Nə düşünürsən?", ru: "Что ты думаешь?" } },
+            { en: "Want", translations: { tr: "İstemek", az: "İstəmək", ru: "Хоtеть" }, sentences: { en: "I want a new phone.", tr: "Yeni bir telefon istiyorum.", az: "Mən yeni telefon istəyirəm.", ru: "Я хочу новый телефон." } },
+            { en: "Need", translations: { tr: "İhtiyaç duymak", az: "Ehtiyacı olmaq", ru: "Нуждаться" }, sentences: { en: "I need help.", tr: "Yardıma ihtiyacım var.", az: "Mənim köməyə ehtiyacım var.", ru: "Мне нужна помощь." } },
+            { en: "Give", translations: { tr: "Vermek", az: "Vermək", ru: "Давать" }, sentences: { en: "Give me the book.", tr: "Bana kitabı ver.", az: "Mənə kitabı ver.", ru: "Дай мне книгу." } },
+            { en: "Take", translations: { tr: "Almak", az: "Götürmək", ru: "Брать" }, sentences: { en: "Take an umbrella.", tr: "Bir şemsiye al.", az: "Bir çətir götür.", ru: "Возьми зонт." } },
+            { en: "Use", translations: { tr: "Kullanmak", az: "İstifadə etmək", ru: "Использовать" }, sentences: { en: "Can I use your pen?", tr: "Kalemini kullanabilir miyim?", az: "Qələminizi istifadə edə bilərəm?", ru: "Могу я воспользоваться твоей ручкой?" } },
+        ],
+        a2: [
+            { en: "Weather", translations: { tr: "Hava durumu", az: "Hava", ru: "Погода" }, sentences: { en: "The weather is nice today.", tr: "Bugün hava güzel.", az: "Bu gün hava yaxşıdır.", ru: "Сегодня хорошая погода." } },
+            { en: "Family", translations: { tr: "Aile", az: "Ailə", ru: "Семья" }, sentences: { en: "I live with my family.", tr: "Ailemle yaşıyorum.", az: "Mən ailəmlə yaşayıram.", ru: "Я живу со своей семьей." } },
+            { en: "Job", translations: { tr: "Meslek", az: "İş", ru: "Работа" }, sentences: { en: "He is looking for a new job.", tr: "Yeni bir iş arıyor.", az: "O, yeni bir iş axtarır.", ru: "Он ищет новую работу." } },
+            { en: "Country", translations: { tr: "Ülke", az: "Ölkə", ru: "Страна" }, sentences: { en: "Japan is a beautiful country.", tr: "Japonya güzel bir ülkedir.", az: "Yaponiya gözəl bir ölkədir.", ru: "Япония - красивая страна." } },
+            { en: "Music", translations: { tr: "Müzik", az: "Musiqi", ru: "Музыка" }, sentences: { en: "I love listening to music.", tr: "Müzik dinlemeyi severim.", az: "Mən musiqi dinləməyi sevirəm.", ru: "Я люблю слушать музыку." } },
+            { en: "Movie", translations: { tr: "Film", az: "Film", ru: "Фильм" }, sentences: { en: "We watched a movie last night.", tr: "Dün gece bir film izledik.", az: "Biz dün gecə bir film izlədik.", ru: "Вчера вечером мы смотрели фильм." } },
+            { en: "Sport", translations: { tr: "Spor", az: "İdman", ru: "Спорт" }, sentences: { en: "What is your favorite sport?", tr: "En sevdiğin spor ne?", az: "Sənin sevimli idman növün nədir?", ru: "Какой твой любимый вид спорта?" } },
+            { en: "Language", translations: { tr: "Dil", az: "Dil", ru: "Язык" }, sentences: { en: "English is an international language.", tr: "İngilizce uluslararası bir dildir.", az: "İngilis dili beynəlxalq bir dildir.", ru: "Английский - международный язык." } },
+            { en: "Question", translations: { tr: "Soru", az: "Sual", ru: "Вопрос" }, sentences: { en: "I have a question.", tr: "Bir sorum var.", az: "Mənim bir sualım var.", ru: "У меня есть вопрос." } },
+            { en: "Answer", translations: { tr: "Cevap", az: "Cavab", ru: "Ответ" }, sentences: { en: "He knows the answer.", tr: "Cevabı biliyor.", az: "O, cavabı bilir.", ru: "Он знает ответ." } },
+            { en: "Morning", translations: { tr: "Sabah", az: "Səhər", ru: "Утро" }, sentences: { en: "Good morning!", tr: "Günaydın!", az: "Sabahınız xeyir!", ru: "Доброе утро!" } },
+            { en: "Evening", translations: { tr: "Akşam", az: "Axşam", ru: "Вечер" }, sentences: { en: "See you this evening.", tr: "Bu akşam görüşürüz.", az: "Bu axşam görüşərik.", ru: "Увидимся сегодня вечером." } },
+            { en: "Holiday", translations: { tr: "Tatil", az: "Bayram", ru: "Праздник" }, sentences: { en: "We are going on holiday.", tr: "Tatile gidiyoruz.", az: "Biz bayrama gedirik.", ru: "Мы едем в отпуск." } },
+            { en: "Restaurant", translations: { tr: "Restoran", az: "Restoran", ru: "Ресторан" }, sentences: { en: "Let's eat at a restaurant.", tr: "Restoranda yiyelim.", az: "Gəl restoranda yeyək.", ru: "Давай поедим в ресторане." } },
+            { en: "Hospital", translations: { tr: "Hastane", az: "Xəstəxana", ru: "Больница" }, sentences: { en: "He is in the hospital.", tr: "O hastanede.", az: "O, xəstəxanadadır.", ru: "Он в больнице." } },
+            { en: "Train", translations: { tr: "Tren", az: "Qatar", ru: "Поезд" }, sentences: { en: "The train arrives at 10.", tr: "Tren saat 10'da varıyor.", az: "Qatar saat 10-da gəlir.", ru: "Поезд прибывает в 10." } },
+            { en: "Bus", translations: { tr: "Otobüs", az: "Avtobus", ru: "Автобус" }, sentences: { en: "I take the bus to work.", tr: "İşe otobüsle giderim.", az: "Mən işə avtobusla gedirəm.", ru: "Я езжу на работу на автобусе." } },
+            { en: "Plane", translations: { tr: "Uçak", az: "Təyyarə", ru: "Самолет" }, sentences: { en: "The plane is flying high.", tr: "Uçak yüksekten uçuyor.", az: "Təyyarə yüksəkdən uçur.", ru: "Самолет летит высоко." } },
+            { en: "Market", translations: { tr: "Pazar", az: "Bazar", ru: "Рынок" }, sentences: { en: "She buys fruit at the market.", tr: "Pazardan meyve alır.", az: "O, bazardan meyvə alır.", ru: "Она покупает фрукты на рынке." } },
+            { en: "Shop", translations: { tr: "Mağaza", az: "Mağaza", ru: "Магазин" }, sentences: { en: "The shop is open.", tr: "Mağaza açık.", az: "Mağaza açıqdır.", ru: "Магазин открыт." } },
+            { en: "Computer", translations: { tr: "Bilgisayar", az: "Kompüter", ru: "Компьютер" }, sentences: { en: "I use my computer every day.", tr: "Bilgisayarımı her gün kullanırım.", az: "Mən hər gün kompüterimi istifadə edirəm.", ru: "Я пользуюсь компьютером каждый день." } },
+            { en: "Phone", translations: { tr: "Telefon", az: "Telefon", ru: "Телефон" }, sentences: { en: "My phone is ringing.", tr: "Telefonum çalıyor.", az: "Mənim telefonum zəng çalır.", ru: "Мой телефон звонит." } },
+            { en: "Week", translations: { tr: "Hafta", az: "Həftə", ru: "Неделя" }, sentences: { en: "There are seven days in a week.", tr: "Bir haftada yedi gün vardır.", az: "Bir həftədə yeddi gün var.", ru: "В неделе семь дней." } },
+            { en: "Month", translations: { tr: "Ay", az: "Ay", ru: "Месяц" }, sentences: { en: "January is the first month.", tr: "Ocak ilk aydır.", az: "Yanvar ilk aydır.", ru: "Январь - первый месяц." } },
+            { en: "Year", translations: { tr: "Yıl", az: "İl", ru: "Год" }, sentences: { en: "Happy New Year!", tr: "Mutlu Yıllar!", az: "Yeni iliniz mübarək!", ru: "С Новым Годом!" } },
+            { en: "Often", translations: { tr: "Sık sık", az: "Tez-tez", ru: "Часто" }, sentences: { en: "I often go to the park.", tr: "Sık sık parka giderim.", az: "Mən tez-tez parka gedirəm.", ru: "Я часто хожу в парк." } },
+            { en: "Always", translations: { tr: "Her zaman", az: "Həmişə", ru: "Всегда" }, sentences: { en: "He is always late.", tr: "O her zaman geç kalır.", az: "O, həmişə gecikir.", ru: "Он всегда опаздывает." } },
+            { en: "Never", translations: { tr: "Asla", az: "Heç vaxt", ru: "Никогда" }, sentences: { en: "I never eat meat.", tr: "Asla et yemem.", az: "Mən heç vaxt ət yemərəm.", ru: "Я никогда не ем мясо." } },
+            { en: "Sometimes", translations: { tr: "Bazen", az: "Bəzən", ru: "Иногда" }, sentences: { en: "Sometimes I walk to work.", tr: "Bazen işe yürürüm.", az: "Bəzən işə gəzərək gedirəm.", ru: "Иногда я хожу на работу пешком." } },
+            { en: "Beautiful", translations: { tr: "Güzel", az: "Gözəl", ru: "Красивый" }, sentences: { en: "She is a beautiful woman.", tr: "O güzel bir kadın.", az: "O, gözəl bir qadındır.", ru: "Она красивая женщина." } },
+            { en: "Ugly", translations: { tr: "Çirkin", az: "Çirkin", ru: "Уродливый" }, sentences: { en: "The monster was ugly.", tr: "Canavar çirkindi.", az: "Canavar çirkin idi.", ru: "Монстр был уродливым." } },
+            { en: "Difficult", translations: { tr: "Zor", az: "Çətin", ru: "Трудный" }, sentences: { en: "The exam was difficult.", tr: "Sınav zordu.", az: "İmtahan çətin idi.", ru: "Экзамен был трудным." } },
+            { en: "Easy", translations: { tr: "Kolay", az: "Asan", ru: "Легкий" }, sentences: { en: "This is an easy question.", tr: "Bu kolay bir soru.", az: "Bu asan bir sualdır.", ru: "Это легкий вопрос." } },
+            { en: "Cheap", translations: { tr: "Ucuz", az: "Ucuz", ru: "Дешевый" }, sentences: { en: "The ticket is cheap.", tr: "Bilet ucuz.", az: "Bilet ucuzdur.", ru: "Билет дешевый." } },
+            { en: "Expensive", translations: { tr: "Pahalı", az: "Baha", ru: "Дорогой" }, sentences: { en: "The car is very expensive.", tr: "Araba çok pahalı.", az: "Avtomobil çox bahadır.", ru: "Машина очень дорогая." } },
+            { en: "Hot", translations: { tr: "Sıcak", az: "İsti", ru: "Горячий" }, sentences: { en: "The coffee is hot.", tr: "Kahve sıcak.", az: "Kofe istidir.", ru: "Кофе горячий." } },
+            { en: "Cold", translations: { tr: "Soğuk", az: "Soyuq", ru: "Холодный" }, sentences: { en: "It is cold outside.", tr: "Dışarısı soğuk.", az: "Hava soyuqdur.", ru: "На улице холодно." } },
+            { en: "Young", translations: { tr: "Genç", az: "Gənc", ru: "Молодой" }, sentences: { en: "He is a young man.", tr: "O genç bir adam.", az: "O, gənc bir kişidir.", ru: "Он молодой человек." } },
+            { en: "Old", translations: { tr: "Yaşlı", az: "Qoca", ru: "Старый" }, sentences: { en: "My grandfather is old.", tr: "Büyükbabam yaşlı.", az: "Mənim babam qocadır.", ru: "Мой дедушка старый." } },
+            { en: "Drink", translations: { tr: "İçmek", az: "İçmək", ru: "Пить" }, sentences: { en: "I want to drink water.", tr: "Su içmek istiyorum.", az: "Mən su içmək istəyirəm.", ru: "Я хочу пить воду." } },
+            { en: "Sleep", translations: { tr: "Uyumak", az: "Yatmaq", ru: "Спать" }, sentences: { en: "The baby is sleeping.", tr: "Bebek uyuyor.", az: "Körpə yatır.", ru: "Ребенок спит." } },
+            { en: "Play", translations: { tr: "Oynamak", az: "Oynamaq", ru: "Играть" }, sentences: { en: "Children like to play.", tr: "Çocuklar oynamayı sever.", az: "Uşaqlar oynamağı sevir.", ru: "Дети любят играть." } },
+            { en: "Study", translations: { tr: "Ders çalışmak", az: "Dərs oxumaq", ru: "Учиться" }, sentences: { en: "I need to study for the test.", tr: "Test için ders çalışmam lazım.", az: "Test üçün dərs oxumalıyam.", ru: "Мне нужно готовиться к тесту." } },
+            { en: "Travel", translations: { tr: "Seyahat etmek", az: "Səyahət etmək", ru: "Путешествовать" }, sentences: { en: "I like to travel.", tr: "Seyahat etmeyi severim.", az: "Mən səyahət etməyi sevirəm.", ru: "Я люблю путешествовать." } },
+            { en: "Listen", translations: { tr: "Dinlemek", az: "Qulaq asmaq", ru: "Слушать" }, sentences: { en: "Listen to the teacher.", tr: "Öğretmeni dinle.", az: "Müəllimə qulaq as.", ru: "Слушай учителя." } },
+            { en: "Watch", translations: { tr: "İzlemek", az: "İzləmək", ru: "Смотреть" }, sentences: { en: "Let's watch TV.", tr: "Hadi TV izleyelim.", az: "Gəl TV izləyək.", ru: "Давай посмотрим телевизор." } },
+            { en: "Buy", translations: { tr: "Satın almak", az: "Almaq", ru: "Покупать" }, sentences: { en: "I will buy a new shirt.", tr: "Yeni bir gömlek alacağım.", az: "Mən yeni bir köynək alacağam.", ru: "Я куплю новую рубашку." } },
+            { en: "Sell", translations: { tr: "Satmak", az: "Satmaq", ru: "Продавать" }, sentences: { en: "He wants to sell his car.", tr: "Arabasını satmak istiyor.", az: "O, avtomobilini satmaq istəyir.", ru: "Он хочет продать свою машину." } },
+            { en: "Fast", translations: { tr: "Hızlı", az: "Sürətli", ru: "Быстрый" }, sentences: { en: "A cheetah runs fast.", tr: "Bir çita hızlı koşar.", az: "Bir çita sürətli qaçır.", ru: "Гепард бегает быстро." } },
+            { en: "Slow", translations: { tr: "Yavaş", az: "Yavaş", ru: "Медленный" }, sentences: { en: "The turtle is slow.", tr: "Kaplumbağa yavaştır.", az: "Tısbağa yavaşdır.", ru: "Черепаха медленная." } },
+        ],
+        b1: [
+            // Mevcut 10 kelime
+            { en: "Environment", translations: { tr: "Çevre", az: "Ətraf mühit", ru: "Окружающая среда" }, sentences: { en: "We must protect the environment.", tr: "Çevreyi korumalıyız.", az: "Biz ətraf mühiti qorumalıyıq.", ru: "Мы должны защищать окружающую среду." } },
+            { en: "Government", translations: { tr: "Hükümet", az: "Hökumət", ru: "Правительство" }, sentences: { en: "The government announced new rules.", tr: "Hükümet yeni kurallar açıkladı.", az: "Hökumət yeni qaydalar elan etdi.", ru: "Правительство объявило новые правила." } },
+            { en: "Knowledge", translations: { tr: "Bilgi", az: "Bilik", ru: "Знание" }, sentences: { en: "Knowledge is power.", tr: "Bilgi güçtür.", az: "Bilik gücdür.", ru: "Знание - сила." } },
+            { en: "Relationship", translations: { tr: "İlişki", az: "Münasibət", ru: "Отношения" }, sentences: { en: "They have a strong relationship.", tr: "Güçlü bir ilişkileri var.", az: "Onların güclü münasibəti var.", ru: "У них крепкие отношения." } },
+            { en: "Opportunity", translations: { tr: "Fırsat", az: "Fürsət", ru: "Возможность" }, sentences: { en: "This is a great opportunity.", tr: "Bu harika bir fırsat.", az: "Bu əla fürsətdir.", ru: "Это отличная возможность." } },
+            { en: "Culture", translations: { tr: "Kültür", az: "Mədəniyyət", ru: "Культура" }, sentences: { en: "I am interested in Japanese culture.", tr: "Japon kültürüyle ilgileniyorum.", az: "Mən Yapon mədəniyyəti ilə maraqlanıram.", ru: "Я интересуюсь японской культурой." } },
+            { en: "Increase", translations: { tr: "Artmak", az: "Artmaq", ru: "Увеличивать" }, sentences: { en: "Prices continue to increase.", tr: "Fiyatlar artmaya devam ediyor.", az: "Qiymətlər artmağa davam edir.", ru: "Цены продолжают расти." } },
+            { en: "Experience", translations: { tr: "Deneyim", az: "Təcrübə", ru: "Опыт" }, sentences: { en: "I have 5 years of experience.", tr: "5 yıllık deneyimim var.", az: "Mənim 5 illik təcrübəm var.", ru: "У меня 5 лет опыта." } },
+            { en: "Society", translations: { tr: "Toplum", az: "Cəmiyyət", ru: "Общество" }, sentences: { en: "We live in a complex society.", tr: "Karmaşık bir toplumda yaşıyoruz.", az: "Biz mürəkkəb bir cəmiyyətdə yaşayırıq.", ru: "Мы живем в сложном обществе." } },
+            { en: "Development", translations: { tr: "Gelişim", az: "İnkişaf", ru: "Развитие" }, sentences: { en: "The city has seen rapid development.", tr: "Şehir hızlı bir gelişim gördü.", az: "Şəhər sürətli inkişaf görüb.", ru: "Город пережил бурное развитие." } },
+            // Yeni eklenen 40 kelime
+            { en: "Education", translations: { tr: "Eğitim", az: "Təhsil", ru: "Образование" }, sentences: { en: "Education is very important.", tr: "Eğitim çok önemlidir.", az: "Təhsil çox vacibdir.", ru: "Образование очень важно." } },
+            { en: "Industry", translations: { tr: "Endüstri", az: "Sənaye", ru: "Промышленность" }, sentences: { en: "The tourism industry is growing.", tr: "Turizm endüstrisi büyüyor.", az: "Turizm sənayəsi böyüyür.", ru: "Туристическая индустрия растет." } },
+            { en: "Future", translations: { tr: "Gelecek", az: "Gələcək", ru: "Будущее" }, sentences: { en: "What will you do in the future?", tr: "Gelecekte ne yapacaksın?", az: "Gələcəkdə nə edəcəksən?", ru: "Что ты будешь делать в будущем?" } },
+            { en: "Health", translations: { tr: "Sağlık", az: "Sağlamlıq", ru: "Здоровье" }, sentences: { en: "Health is more important than money.", tr: "Sağlık paradan daha önemlidir.", az: "Sağlamlıq puldan daha vacibdir.", ru: "Здоровье важнее денег." } },
+            { en: "Art", translations: { tr: "Sanat", az: "İncəsənət", ru: "Искусство" }, sentences: { en: "I like modern art.", tr: "Modern sanatı severim.", az: "Mən müasir incəsənəti sevirəm.", ru: "Мне нравится современное искусство." } },
+            { en: "War", translations: { tr: "Savaş", az: "Müharibə", ru: "Война" }, sentences: { en: "War is a terrible thing.", tr: "Savaş korkunç bir şeydir.", az: "Müharibə dəhşətli bir şeydir.", ru: "Война - это ужасно." } },
+            { en: "Peace", translations: { tr: "Barış", az: "Sülh", ru: "Мир" }, sentences: { en: "We all want to live in peace.", tr: "Hepimiz barış içinde yaşamak istiyoruz.", az: "Biz hamımız sülh içində yaşamaq istəyirik.", ru: "Мы все хотим жить в мире." } },
+            { en: "History", translations: { tr: "Tarih", az: "Tarix", ru: "История" }, sentences: { en: "I am studying history.", tr: "Tarih okuyorum.", az: "Mən tarix oxuyuram.", ru: "Я изучаю историю." } },
+            { en: "Science", translations: { tr: "Bilim", az: "Elm", ru: "Наука" }, sentences: { en: "Science helps us understand the world.", tr: "Bilim dünyayı anlamamıza yardımcı olur.", az: "Elm dünyanı başa düşməyimizə kömək edir.", ru: "Наука помогает нам понять мир." } },
+            { en: "Nature", translations: { tr: "Doğa", az: "Təbiət", ru: "Природа" }, sentences: { en: "I love being in nature.", tr: "Doğada olmayı seviyorum.", az: "Mən təbiətdə olmağı sevirəm.", ru: "Я люблю бывать на природе." } },
+            { en: "Problem", translations: { tr: "Sorun", az: "Problem", ru: "Проблема" }, sentences: { en: "What is the problem?", tr: "Sorun nedir?", az: "Problem nədir?", ru: "В чем проблема?" } },
+            { en: "Solution", translations: { tr: "Çözüm", az: "Həll", ru: "Решение" }, sentences: { en: "We need to find a solution.", tr: "Bir çözüm bulmalıyız.", az: "Biz bir həll tapmalıyıq.", ru: "Нам нужно найти решение." } },
+            { en: "Information", translations: { tr: "Bilgi", az: "Məlumat", ru: "Информация" }, sentences: { en: "I need more information.", tr: "Daha fazla bilgiye ihtiyacım var.", az: "Mənə daha çox məlumat lazımdır.", ru: "Мне нужно больше информации." } },
+            { en: "Company", translations: { tr: "Şirket", az: "Şirkət", ru: "Компания" }, sentences: { en: "He works for a big company.", tr: "Büyük bir şirkette çalışıyor.", az: "O, böyük bir şirkətdə işləyir.", ru: "Он работает в большой компании." } },
+            { en: "Example", translations: { tr: "Örnek", az: "Nümunə", ru: "Пример" }, sentences: { en: "Can you give me an example?", tr: "Bana bir örnek verebilir misin?", az: "Mənə bir nümunə verə bilərsinizmi?", ru: "Можете привести пример?" } },
+            { en: "Success", translations: { tr: "Başarı", az: "Uğur", ru: "Успех" }, sentences: { en: "Success requires hard work.", tr: "Başarı çok çalışmayı gerektirir.", az: "Uğur çox çalışmaq tələb edir.", ru: "Успех требует усердной работы." } },
+            { en: "Failure", translations: { tr: "Başarısızlık", az: "Uğursuzluq", ru: "Неудача" }, sentences: { en: "Failure is a part of learning.", tr: "Başarısızlık öğrenmenin bir parçasıdır.", az: "Uğursuzluq öyrənməyin bir hissəsidir.", ru: "Неудача - это часть обучения." } },
+            { en: "Change", translations: { tr: "Değişim", az: "Dəyişiklik", ru: "Изменение" }, sentences: { en: "People are afraid of change.", tr: "İnsanlar değişimden korkar.", az: "İnsanlar dəyişiklikdən qorxurlar.", ru: "Люди боятся перемен." } },
+            { en: "Reason", translations: { tr: "Neden", az: "Səbəb", ru: "Причина" }, sentences: { en: "What is the reason for this?", tr: "Bunun nedeni nedir?", az: "Bunun səbəbi nədir?", ru: "Какова причина этого?" } },
+            { en: "Result", translations: { tr: "Sonuç", az: "Nəticə", ru: "Результат" }, sentences: { en: "The result of the exam was good.", tr: "Sınavın sonucu iyiydi.", az: "İmtahanın nəticəsi yaxşı idi.", ru: "Результат экзамена был хорошим." } },
+            { en: "Ability", translations: { tr: "Yetenek", az: "Bacarıq", ru: "Способность" }, sentences: { en: "She has the ability to sing well.", tr: "İyi şarkı söyleme yeteneği var.", az: "Onun yaxşı oxumaq bacarığı var.", ru: "У нее есть способность хорошо петь." } },
+            { en: "Effort", translations: { tr: "Çaba", az: "Səy", ru: "Усилие" }, sentences: { en: "You need to make more effort.", tr: "Daha fazla çaba göstermen gerekiyor.", az: "Daha çox səy göstərməlisiniz.", ru: "Тебе нужно приложить больше усилий." } },
+            { en: "Advice", translations: { tr: "Tavsiye", az: "Məsləhət", ru: "Совет" }, sentences: { en: "Can I give you some advice?", tr: "Sana bir tavsiye verebilir miyim?", az: "Sənə bir məsləhət verə bilərəm?", ru: "Могу я дать тебе совет?" } },
+            { en: "Opinion", translations: { tr: "Fikir", az: "Fikir", ru: "Мнение" }, sentences: { en: "What is your opinion?", tr: "Senin fikrin nedir?", az: "Sənin fikrin nədir?", ru: "Каково твое мнение?" } },
+            { en: "Goal", translations: { tr: "Hedef", az: "Məqsəd", ru: "Цель" }, sentences: { en: "My goal is to learn English.", tr: "Hedefim İngilizce öğrenmek.", az: "Məqsədim İngilis dilini öyrənməkdir.", ru: "Моя цель - выучить английский." } },
+            { en: "Plan", translations: { tr: "Plan", az: "Plan", ru: "План" }, sentences: { en: "Do you have a plan for the weekend?", tr: "Hafta sonu için bir planın var mı?", az: "Həftə sonu üçün bir planın var?", ru: "У тебя есть план на выходные?" } },
+            { en: "Dream", translations: { tr: "Rüya", az: "Yuxu", ru: "Сон" }, sentences: { en: "I had a strange dream last night.", tr: "Dün gece garip bir rüya gördüm.", az: "Dünən gecə qəribə bir yuxu gördüm.", ru: "Мне приснился странный сон прошлой ночью." } },
+            { en: "Hope", translations: { tr: "Umut", az: "Ümid", ru: "Надежда" }, sentences: { en: "There is always hope.", tr: "Her zaman umut vardır.", az: "Həmişə ümid var.", ru: "Всегда есть надежда." } },
+            { en: "Fear", translations: { tr: "Korku", az: "Qorxu", ru: "Страх" }, sentences: { en: "He has a fear of spiders.", tr: "Örümcek korkusu var.", az: "Onun hörümçək qorxusu var.", ru: "У него боязнь пауков." } },
+            { en: "Surprise", translations: { tr: "Sürpriz", az: "Sürpriz", ru: "Сюрприз" }, sentences: { en: "It was a big surprise.", tr: "Büyük bir sürprizdi.", az: "Bu böyük bir sürpriz idi.", ru: "Это был большой сюрприз." } },
+            { en: "Decide", translations: { tr: "Karar vermek", az: "Qərar vermək", ru: "Решать" }, sentences: { en: "I can't decide.", tr: "Karar veremiyorum.", az: "Mən qərar verə bilmirəm.", ru: "Я не могу решить." } },
+            { en: "Explain", translations: { tr: "Açıklamak", az: "İzah etmək", ru: "Объяснять" }, sentences: { en: "Can you explain this?", tr: "Bunu açıklayabilir misin?", az: "Bunu izah edə bilərsinizmi?", ru: "Можешь это объяснить?" } },
+            { en: "Understand", translations: { tr: "Anlamak", az: "Başa düşmək", ru: "Понимать" }, sentences: { en: "I don't understand.", tr: "Anlamıyorum.", az: "Mən başa düşmürəm.", ru: "Я не понимаю." } },
+            { en: "Remember", translations: { tr: "Hatırlamak", az: "Xatırlamaq", ru: "Помнить" }, sentences: { en: "I don't remember his name.", tr: "Onun adını hatırlamıyorum.", az: "Onun adını xatırlamıram.", ru: "Я не помню его имени." } },
+            { en: "Forget", translations: { tr: "Unutmak", az: "Unutmaq", ru: "Забывать" }, sentences: { en: "Don't forget your keys.", tr: "Anahtarlarını unutma.", az: "Açarlarını unutma.", ru: "Не забудь свои ключи." } },
+            { en: "Choose", translations: { tr: "Seçmek", az: "Seçmək", ru: "Выбирать" }, sentences: { en: "You have to choose one.", tr: "Birini seçmek zorundasın.", az: "Birini seçməlisən.", ru: "Ты должен выбрать один." } },
+            { en: "Believe", translations: { tr: "İnanmak", az: "İnanmaq", ru: "Верить" }, sentences: { en: "I believe you.", tr: "Sana inanıyorum.", az: "Mən sənə inanıram.", ru: "Я тебе верю." } },
+            { en: "Important", translations: { tr: "Önemli", az: "Vacib", ru: "Важный" }, sentences: { en: "This is very important.", tr: "Bu çok önemli.", az: "Bu çox vacibdir.", ru: "Это очень важно." } },
+            { en: "Necessary", translations: { tr: "Gerekli", az: "Zəruri", ru: "Необходимый" }, sentences: { en: "Is it necessary to go?", tr: "Gitmek gerekli mi?", az: "Getmək zəruridirmi?", ru: "Нужно ли идти?" } },
+        ],
+        b2: [
+            // Mevcut 10 kelime
+            { en: "Conscious", translations: { tr: "Bilinçli", az: "Şüurlu", ru: "Сознательный" }, sentences: { en: "He was conscious of the danger.", tr: "Tehlikenin bilincindeydi.", az: "O, təhlükədən xəbərdar idi.", ru: "Он осознавал опасность." } },
+            { en: "Consequence", translations: { tr: "Sonuç", az: "Nəticə", ru: "Последствие" }, sentences: { en: "Every action has a consequence.", tr: "Her eylemin bir sonucu vardır.", az: "Hər bir hərəkətin bir nəticəsi var.", ru: "Каждое действие имеет последствие." } },
+            { en: "Sophisticated", translations: { tr: "Gelişmiş, Sofistike", az: "Mürəkkəb, Zərif", ru: "Изысканный, Сложный" }, sentences: { en: "The new phone has a sophisticated design.", tr: "Yeni telefon sofistike bir tasarıma sahip.", az: "Yeni telefon mürəkkəb bir dizayna malikdir.", ru: "У нового телефона изысканный дизайн." } },
+            { en: "Negotiate", translations: { tr: "Müzakere etmek", az: "Danışıqlar aparmaq", ru: "Вести переговоры" }, sentences: { en: "They agreed to negotiate with the enemy.", tr: "Düşmanla müzakere etmeyi kabul ettiler.", az: "Onlar düşmənlə danışıqlar aparmağa razı oldular.", ru: "Они согласились вести переговоры с врагом." } },
+            { en: "Significant", translations: { tr: "Önemli, Anlamlı", az: "Mühüm, Əhəmiyyətli", ru: "Значительный, Существенный" }, sentences: { en: "There was a significant change in the budget.", tr: "Bütçede önemli bir değişiklik oldu.", az: "Büdcədə əhəmiyyətli bir dəyişiklik oldu.", ru: "В бюджете произошли значительные изменения." } },
+            { en: "Accurate", translations: { tr: "Doğru, Kesin", az: "Dəqiq", ru: "Точный" }, sentences: { en: "The report must be accurate.", tr: "Rapor doğru olmalı.", az: "Hesabat dəqiq olmalıdır.", ru: "Отчет должен быть точным." } },
+            { en: "Evidence", translations: { tr: "Kanıt", az: "Sübut", ru: "Доказательство" }, sentences: { en: "There is no evidence against him.", tr: "Ona karşı bir kanıt yok.", az: "Ona qarşı heç bir sübut yoxdur.", ru: "Против него нет никаких доказательств." } },
+            { en: "Influence", translations: { tr: "Etki", az: "Təsir", ru: "Влияние" }, sentences: { en: "His speech had a strong influence on people.", tr: "Konuşması insanlar üzerinde güçlü bir etki bıraktı.", az: "Onun çıxışı insanlara güclü təsir etdi.", ru: "Его речь оказала сильное влияние на людей." } },
+            { en: "To keep an eye on", translations: { tr: "Göz kulak olmak", az: "Göz qoymaq", ru: "Присматривать за" }, sentences: { en: "Can you keep an eye on my bag?", tr: "Çantama göz kulak olabilir misin?", az: "Çantama göz qoya bilərsən?", ru: "Можешь присмотреть за моей сумкой?" } },
+            { en: "To bite the bullet", translations: { tr: "Dişini sıkmak, Zorluğa katlanmak", az: "Dözmək, Çətinliyə sinə gərmək", ru: "Стиснуть зубы, Принять трудное решение" }, sentences: { en: "He had to bite the bullet and apologize.", tr: "Dişini sıkıp özür dilemek zorunda kaldı.", az: "O, dözməli və üzr istəməli oldu.", ru: "Ему пришлось стиснуть зубы и извиниться." } },
+            // Yeni eklenen 40 kelime
+            { en: "Achieve", translations: { tr: "Başarmak", az: "Nail olmaq", ru: "Достигать" }, sentences: { en: "She worked hard to achieve her goals.", tr: "Hedeflerine ulaşmak için çok çalıştı.", az: "O, məqsədlərinə nail olmaq üçün çox çalışdı.", ru: "Она усердно работала, чтобы достичь своих целей." } },
+            { en: "Benefit", translations: { tr: "Fayda", az: "Fayda", ru: "Польза" }, sentences: { en: "What is the benefit of this?", tr: "Bunun faydası nedir?", az: "Bunun faydası nədir?", ru: "Какая от этого польза?" } },
+            { en: "Challenge", translations: { tr: "Zorluk", az: "Çətinlik", ru: "Вызов" }, sentences: { en: "This job is a big challenge.", tr: "Bu iş büyük bir zorluk.", az: "Bu iş böyük bir çətinlikdir.", ru: "Эта работа - большой вызов." } },
+            { en: "Defend", translations: { tr: "Savunmak", az: "Müdafiə etmək", ru: "Защищать" }, sentences: { en: "You must defend your rights.", tr: "Haklarını savunmalısın.", az: "Siz öz hüquqlarınızı müdafiə etməlisiniz.", ru: "Ты должен защищать свои права." } },
+            { en: "Effective", translations: { tr: "Etkili", az: "Effektiv", ru: "Эффективный" }, sentences: { en: "This is an effective solution.", tr: "Bu etkili bir çözüm.", az: "Bu effektiv bir həlldir.", ru: "Это эффективное решение." } },
+            { en: "Feature", translations: { tr: "Özellik", az: "Xüsusiyyət", ru: "Особенность" }, sentences: { en: "The phone has many new features.", tr: "Telefonun birçok yeni özelliği var.", az: "Telefonun bir çox yeni xüsusiyyəti var.", ru: "У телефона много новых функций." } },
+            { en: "Global", translations: { tr: "Küresel", az: "Qlobal", ru: "Глобальный" }, sentences: { en: "Climate change is a global problem.", tr: "İklim değişikliği küresel bir sorundur.", az: "İqlim dəyişikliyi qlobal bir problemdir.", ru: "Изменение климата - это глобальная проблема." } },
+            { en: "However", translations: { tr: "Ancak", az: "Ancaq", ru: "Однако" }, sentences: { en: "He is rich. However, he is not happy.", tr: "O zengin. Ancak, mutlu değil.", az: "O, zəngindir. Ancaq, o, xoşbəxt deyil.", ru: "Он богат. Однако он не счастлив." } },
+            { en: "Impact", translations: { tr: "Etki", az: "Təsir", ru: "Влияние" }, sentences: { en: "The impact of technology is huge.", tr: "Teknolojinin etkisi çok büyük.", az: "Texnologiyanın təsiri çox böyükdür.", ru: "Влияние технологий огромно." } },
+            { en: "Issue", translations: { tr: "Mesele", az: "Məsələ", ru: "Проблема" }, sentences: { en: "This is a serious issue.", tr: "Bu ciddi bir mesele.", az: "Bu ciddi bir məsələdir.", ru: "Это серьезная проблема." } },
+            { en: "Local", translations: { tr: "Yerel", az: "Yerli", ru: "Местный" }, sentences: { en: "I prefer local food.", tr: "Yerel yemekleri tercih ederim.", az: "Mən yerli yeməklərə üstünlük verirəm.", ru: "Я предпочитаю местную еду." } },
+            { en: "Method", translations: { tr: "Yöntem", az: "Metod", ru: "Метод" }, sentences: { en: "We need a new method.", tr: "Yeni bir yönteme ihtiyacımız var.", az: "Bizə yeni bir metod lazımdır.", ru: "Нам нужен новый метод." } },
+            { en: "Policy", translations: { tr: "Politika", az: "Siyasət", ru: "Политика" }, sentences: { en: "What is the company's policy?", tr: "Şirketin politikası nedir?", az: "Şirkətin siyasəti nədir?", ru: "Какова политика компании?" } },
+            { en: "Produce", translations: { tr: "Üretmek", az: "İstehsal etmək", ru: "Производить" }, sentences: { en: "They produce cars.", tr: "Araba üretiyorlar.", az: "Onlar avtomobil istehsal edirlər.", ru: "Они производят автомобили." } },
+            { en: "Quality", translations: { tr: "Kalite", az: "Keyfiyyət", ru: "Качество" }, sentences: { en: "This is a high-quality product.", tr: "Bu yüksek kaliteli bir ürün.", az: "Bu yüksək keyfiyyətli bir məhsuldur.", ru: "Это продукт высокого качества." } },
+            { en: "Reduce", translations: { tr: "Azaltmak", az: "Azaltmaq", ru: "Уменьшать" }, sentences: { en: "We need to reduce pollution.", tr: "Kirliliği azaltmalıyız.", az: "Biz çirklənməni azaltmalıyıq.", ru: "Нам нужно уменьшить загрязнение." } },
+            { en: "Research", translations: { tr: "Araştırma", az: "Tədqiqat", ru: "Исследование" }, sentences: { en: "He is doing research on cancer.", tr: "Kanser üzerine araştırma yapıyor.", az: "O, xərçəng üzrə tədqiqat aparır.", ru: "Он проводит исследование рака." } },
+            { en: "Skill", translations: { tr: "Beceri", az: "Bacarıq", ru: "Навык" }, sentences: { en: "Learning English is a useful skill.", tr: "İngilizce öğrenmek faydalı bir beceridir.", az: "İngilis dilini öyrənmək faydalı bir bacarıqdır.", ru: "Изучение английского - полезный навык." } },
+            { en: "Source", translations: { tr: "Kaynak", az: "Mənbə", ru: "Источник" }, sentences: { en: "The internet is a source of information.", tr: "İnternet bir bilgi kaynağıdır.", az: "İnternet bir məlumat mənbəyidir.", ru: "Интернет - это источник информации." } },
+            { en: "Strategy", translations: { tr: "Strateji", az: "Strategiya", ru: "Стратегия" }, sentences: { en: "We need a new marketing strategy.", tr: "Yeni bir pazarlama stratejisine ihtiyacımız var.", az: "Bizə yeni bir marketinq strategiyası lazımdır.", ru: "Нам нужна новая маркетинговая стратегия." } },
+            { en: "Technology", translations: { tr: "Teknoloji", az: "Texnologiya", ru: "Технология" }, sentences: { en: "Technology is changing our lives.", tr: "Teknoloji hayatımızı değiştiriyor.", az: "Texnologiya həyatımızı dəyişir.", ru: "Технологии меняют нашу жизнь." } },
+            { en: "Threat", translations: { tr: "Tehdit", az: "Təhlükə", ru: "Угроза" }, sentences: { en: "Pollution is a threat to our planet.", tr: "Kirlilik gezegenimiz için bir tehdittir.", az: "Çirklənmə planetimiz üçün bir təhlükədir.", ru: "Загрязнение - это угроза для нашей планеты." } },
+            { en: "Value", translations: { tr: "Değer", az: "Dəyər", ru: "Ценность" }, sentences: { en: "What is the value of this painting?", tr: "Bu tablonun değeri nedir?", az: "Bu rəsmin dəyəri nədir?", ru: "Какова ценность этой картины?" } },
+            { en: "Variety", translations: { tr: "Çeşitlilik", az: "Müxtəliflik", ru: "Разнообразие" }, sentences: { en: "There is a wide variety of food.", tr: "Çok çeşitli yiyecekler var.", az: "Çox müxtəlif yeməklər var.", ru: "Здесь большое разнообразие еды." } },
+            { en: "Worry", translations: { tr: "Endişelenmek", az: "Narahat olmaq", ru: "Беспокоиться" }, sentences: { en: "Don't worry, be happy.", tr: "Endişelenme, mutlu ol.", az: "Narahat olma, xoşbəxt ol.", ru: "Не беспокойся, будь счастлив." } },
+            { en: "Analyze", translations: { tr: "Analiz etmek", az: "Analiz etmək", ru: "Анализировать" }, sentences: { en: "We need to analyze the data.", tr: "Verileri analiz etmemiz gerekiyor.", az: "Biz məlumatları analiz etməliyik.", ru: "Нам нужно проанализировать данные." } },
+            { en: "Create", translations: { tr: "Yaratmak", az: "Yaratmaq", ru: "Создавать" }, sentences: { en: "She likes to create art.", tr: "Sanat yaratmayı sever.", az: "O, incəsənət yaratmağı sevir.", ru: "Она любит создавать искусство." } },
+            { en: "Distribute", translations: { tr: "Dağıtmak", az: "Paylamaq", ru: "Распределять" }, sentences: { en: "They distribute food to the poor.", tr: "Yoksullara yiyecek dağıtıyorlar.", az: "Onlar kasıblara yemək paylayırlar.", ru: "Они раздают еду бедным." } },
+            { en: "Establish", translations: { tr: "Kurmak", az: "Qurmaq", ru: "Устанавливать" }, sentences: { en: "The company was established in 1990.", tr: "Şirket 1990 yılında kuruldu.", az: "Şirkət 1990-cı ildə quruldu.", ru: "Компания была основана в 1990 году." } },
+            { en: "Identify", translations: { tr: "Tanımlamak", az: "Müəyyən etmək", ru: "Идентифицировать" }, sentences: { en: "Can you identify the problem?", tr: "Sorunu tanımlayabilir misin?", az: "Problemi müəyyən edə bilərsinizmi?", ru: "Можешь определить проблему?" } },
+            { en: "Indicate", translations: { tr: "Göstermek", az: "Göstərmək", ru: "Указывать" }, sentences: { en: "The data indicates a trend.", tr: "Veriler bir eğilimi gösteriyor.", az: "Məlumatlar bir tendensiyanı göstərir.", ru: "Данные указывают на тенденцию." } },
+            { en: "Invest", translations: { tr: "Yatırım yapmak", az: "İnvestisiya etmək", ru: "Инвестировать" }, sentences: { en: "He invests his money in stocks.", tr: "Parasını hisse senetlerine yatırıyor.", az: "O, pulunu səhmlərə investisiya edir.", ru: "Он вкладывает свои деньги в акции." } },
+            { en: "Maintain", translations: { tr: "Sürdürmek", az: "Qoruyub saxlamaq", ru: "Поддерживать" }, sentences: { en: "It is hard to maintain a balance.", tr: "Dengeyi sürdürmek zordur.", az: "Tarazlığı qoruyub saxlamaq çətindir.", ru: "Трудно поддерживать баланс." } },
+            { en: "Occur", translations: { tr: "Meydana gelmek", az: "Baş vermək", ru: "Происходить" }, sentences: { en: "The accident occurred at 5 PM.", tr: "Kaza saat 5'te meydana geldi.", az: "Qəza saat 5-də baş verdi.", ru: "Авария произошла в 5 часов вечера." } },
+            { en: "React", translations: { tr: "Tepki vermek", az: "Reaksiya vermək", ru: "Реагировать" }, sentences: { en: "How did he react to the news?", tr: "Haberlere nasıl tepki verdi?", az: "Xəbərlərə necə reaksiya verdi?", ru: "Как он отреагировал на новости?" } },
+            { en: "Require", translations: { tr: "Gerektirmek", az: "Tələb etmək", ru: "Требовать" }, sentences: { en: "This job requires experience.", tr: "Bu iş deneyim gerektiriyor.", az: "Bu iş təcrübə tələb edir.", ru: "Эта работа требует опыта." } },
+            { en: "Respond", translations: { tr: "Yanıtlamak", az: "Cavab vermək", ru: "Отвечать" }, sentences: { en: "Please respond to the email.", tr: "Lütfen e-postayı yanıtlayın.", az: "Zəhmət olmasa e-poçta cavab verin.", ru: "Пожалуйста, ответьте на электронное письмо." } },
+            { en: "Structure", translations: { tr: "Yapı", az: "Struktur", ru: "Структура" }, sentences: { en: "The structure of the building is strong.", tr: "Binanın yapısı güçlü.", az: "Binanın strukturu güclüdür.", ru: "Структура здания прочная." } },
+            { en: "Visible", translations: { tr: "Görünür", az: "Görünən", ru: "Видимый" }, sentences: { en: "The mountains are visible from here.", tr: "Dağlar buradan görünür.", az: "Dağlar buradan görünür.", ru: "Отсюда видны горы." } },
+        ],
+        c1: [
+            // Mevcut 10 kelime
+            { en: "Ubiquitous", translations: { tr: "Her yerde bulunan", az: "Hər yerdə olan", ru: "Вездесущий" }, sentences: { en: "Smartphones are ubiquitous nowadays.", tr: "Akıllı telefonlar günümüzde her yerde bulunuyor.", az: "Smartfonlar indiki vaxtda hər yerdə mövcuddur.", ru: "Смартфоны в наши дни вездесущи." } },
+            { en: "Ephemeral", translations: { tr: "Kısa ömürlü, Geçici", az: "Qısaömürlü, Keçici", ru: "Эфемерный, Мимолетный" }, sentences: { en: "Fame is often ephemeral.", tr: "Şöhret genellikle geçicidir.", az: "Şöhrət çox vaxt keçicidir.", ru: "Слава часто эфемерна." } },
+            { en: "Alleviate", translations: { tr: "Hafifletmek, Dindirmek", az: "Yüngülləşdirmək, Azaltmaq", ru: "Облегчать, Смягчать" }, sentences: { en: "This medicine will alleviate the pain.", tr: "Bu ilaç ağrıyı hafifletecek.", az: "Bu dərman ağrını yüngülləşdirəcək.", ru: "Это лекарство облегчит боль." } },
+            { en: "Procrastinate", translations: { tr: "Ertelemek", az: "Təxirə salmaq", ru: "Прокрастинировать, Откладывать" }, sentences: { en: "Stop procrastinating and do your work!", tr: "Ertelemeyi bırak ve işini yap!", az: "Təxirə salmağı dayandır və işini gör!", ru: "Перестань откладывать и делай свою работу!" } },
+            { en: "Exacerbate", translations: { tr: "Kötüleştirmek, Şiddetlendirmek", az: "Kəskinləşdirmək, Pisləşdirmək", ru: "Усугублять, Обострять" }, sentences: { en: "His angry words only exacerbated the situation.", tr: "Öfkeli sözleri durumu sadece kötüleştirdi.", az: "Onun qəzəbli sözləri vəziyyəti yalnız pisləşdirdi.", ru: "Его гневные слова лишь усугубили ситуацию." } },
+            { en: "On the ball", translations: { tr: "İşi bilmek, Uyanık olmak", az: "Hazırcavab olmaq, İşini bilmək", ru: "Быть начеку, Быть расторопным" }, sentences: { en: "Our new manager is really on the ball.", tr: "Yeni müdürümüz gerçekten işi biliyor.", az: "Yeni müdirimiz həqiqətən işini bilir.", ru: "Наш новый менеджер действительно на высоте." } },
+            { en: "To pull strings", translations: { tr: "Torpil yaptırmak, Kayırmak", az: "Tapş yaptırmaq, Qohumluq etmək", ru: "Использовать связи, Задействовать знакомства" }, sentences: { en: "He pulled some strings to get his son the job.", tr: "Oğluna işi bulmak için torpil yaptırdı.", az: "Oğluna iş tapmaq üçün tapş elədi.", ru: "Он задействовал связи, чтобы устроить сына на работу." } },
+            { en: "To spill the beans", translations: { tr: "Ağzındaki baklayı çıkarmak", az: "Sirri açmaq", ru: "Проболтаться, Выдать секрет" }, sentences: { en: "Someone spilled the beans about the surprise party.", tr: "Birisi sürpriz parti hakkında ağzındaki baklayı çıkardı.", az: "Kimsə sürpriz qonaqlıq haqqında sirri açdı.", ru: "Кто-то проболтался о вечеринке-сюрпризе." } },
+            { en: "A dime a dozen", translations: { tr: "Pabucu dama atılmış, Çok yaygın", az: "Çox yayğın, Dəyərsiz", ru: "Пруд пруди, Дешевый" }, sentences: { en: "Experts in this field are a dime a dozen.", tr: "Bu alandaki uzmanlar çok yaygın (değeri az).", az: "Bu sahədə mütəxəssislər çox yayğındır.", ru: "Экспертов в этой области пруд пруди." } },
+            { en: "Ineffable", translations: { tr: "Tarifsiz, Söylemez", az: "Təsvirəgəlməz", ru: "Невыразимый, Неописуемый" }, sentences: { en: "The beauty of the sunset was ineffable.", tr: "Gün batımının güzelliği tarifsizdi.", az: "Gün batımının gözəlliyi təsvirəgəlməz idi.", ru: "Красота заката была неописуемой." } },
+            // Yeni eklenen 40 kelime
+            { en: "Acquiesce", translations: { tr: "Razı olmak", az: "Razılaşmaq", ru: "Уступать" }, sentences: { en: "He will acquiesce to her demands.", tr: "Onun taleplerine razı olacak.", az: "O, onun tələblərinə razı olacaq.", ru: "Он уступит ее требованиям." } },
+            { en: "Ambiguous", translations: { tr: "Belirsiz", az: "İkimənalı", ru: "Двусмысленный" }, sentences: { en: "The instructions were ambiguous.", tr: "Talimatlar belirsizdi.", az: "Təlimatlar ikimənalı idi.", ru: "Инструкции были двусмысленными." } },
+            { en: "Benevolent", translations: { tr: "Hayırsever", az: "Xeyirxah", ru: "Доброжелательный" }, sentences: { en: "He was a benevolent leader.", tr: "O, hayırsever bir liderdi.", az: "O, xeyirxah bir lider idi.", ru: "Он был доброжелательным лидером." } },
+            { en: "Capricious", translations: { tr: "Kaprisli", az: "Şıltaq", ru: "Капризный" }, sentences: { en: "The weather is capricious.", tr: "Hava kaprisli.", az: "Hava şıltaqdır.", ru: "Погода капризная." } },
+            { en: "Debilitate", translations: { tr: "Zayıflatmak", az: "Zəiflətmək", ru: "Ослаблять" }, sentences: { en: "The illness debilitated him.", tr: "Hastalık onu zayıflattı.", az: "Xəstəlik onu zəiflətdi.", ru: "Болезнь ослабила его." } },
+            { en: "Ebullient", translations: { tr: "Coşkulu", az: "Coşqun", ru: "Полный энтузиазма" }, sentences: { en: "She was ebullient about her new job.", tr: "Yeni işi konusunda coşkuluydu.", az: "O, yeni işi ilə bağlı coşqun idi.", ru: "Она была полна энтузиазма по поводу своей новой работы." } },
+            { en: "Fastidious", translations: { tr: "Titiz", az: "Tələbkar", ru: "Привередливый" }, sentences: { en: "He is fastidious about his clothes.", tr: "Kıyafetleri konusunda titizdir.", az: "O, paltarları mövzusunda tələbkardır.", ru: "Он привередлив в одежде." } },
+            { en: "Gregarious", translations: { tr: "Sosyalleşken", az: "Ünsiyyətcil", ru: "Общительный" }, sentences: { en: "Dolphins are gregarious animals.", tr: "Yunuslar sosyalleşken hayvanlardır.", az: "Delfinlər ünsiyyətcil heyvanlardır.", ru: "Дельфины - общительные животные." } },
+            { en: "Hypocrisy", translations: { tr: "İkiyüzlülük", az: "İkiyüzlülük", ru: "Лицемерие" }, sentences: { en: "His hypocrisy was obvious.", tr: "Onun ikiyüzlülüğü apaçıktı.", az: "Onun ikiyüzlülüyü açıq-aydın idi.", ru: "Его лицемерие было очевидным." } },
+            { en: "Iconoclast", translations: { tr: "Ezber bozan", az: "Qəlibləri sındıran", ru: "Иконоборец" }, sentences: { en: "She is an iconoclast in the art world.", tr: "Sanat dünyasında ezber bozan biridir.", az: "O, incəsənət dünyasında qəlibləri sındıran biridir.", ru: "Она - иконоборец в мире искусства." } },
+            { en: "Juxtapose", translations: { tr: "Yan yana koymak", az: "Qarşı-qarşıya qoymaq", ru: "Сопоставлять" }, sentences: { en: "The artist juxtaposed bright and dark colors.", tr: "Sanatçı parlak ve koyu renkleri yan yana koydu.", az: "Rəssam parlaq və tünd rəngləri qarşı-qarşıya qoydu.", ru: "Художник сопоставил яркие и темные цвета." } },
+            { en: "Laconic", translations: { tr: "Az ve öz", az: "Yığcam", ru: "Лаконичный" }, sentences: { en: "He gave a laconic reply.", tr: "Az ve öz bir cevap verdi.", az: "O, yığcam bir cavab verdi.", ru: "Он дал лаконичный ответ." } },
+            { en: "Maverick", translations: { tr: "Aykırı", az: "Fərqli düşünən", ru: "Индивидуалист" }, sentences: { en: "He is a maverick politician.", tr: "O, aykırı bir politikacı.", az: "O, fərqli düşünən bir siyasətçidir.", ru: "Он - политик-индивидуалист." } },
+            { en: "Nefarious", translations: { tr: "Kötü şöhretli", az: "Çirkin", ru: "Гнусный" }, sentences: { en: "He was involved in nefarious activities.", tr: "Kötü şöhretli faaliyetlerde yer aldı.", az: "O, çirkin fəaliyyətlərdə iştirak edirdi.", ru: "Он был замешан в гнусных делах." } },
+            { en: "Obfuscate", translations: { tr: "Kafa karıştırmak", az: "Çaşdırmaq", ru: "Запутывать" }, sentences: { en: "The politician tried to obfuscate the issue.", tr: "Politikacı meseleyi kafa karıştırmaya çalıştı.", az: "Siyasətçi məsələni çaşdırmağa çalışdı.", ru: "Политик пытался запутать вопрос." } },
+            { en: "Pellucid", translations: { tr: "Şeffaf", az: "Şəffaf", ru: "Прозрачный" }, sentences: { en: "The water in the lake was pellucid.", tr: "Göldeki su şeffaftı.", az: "Göldəki su şəffaf idi.", ru: "Вода в озере была прозрачной." } },
+            { en: "Querulous", translations: { tr: "Yakınan", az: "Gileylənən", ru: "Вечно недовольный" }, sentences: { en: "He has a querulous voice.", tr: "Yakınan bir sesi var.", az: "Onun gileylənən bir səsi var.", ru: "У него вечно недовольный голос." } },
+            { en: "Reticent", translations: { tr: "Suskun", az: "Az danışan", ru: "Сдержанный" }, sentences: { en: "She is reticent about her past.", tr: "Geçmişi hakkında suskundur.", az: "O, keçmişi haqqında az danışandır.", ru: "Она сдержанна в отношении своего прошлого." } },
+            { en: "Serendipity", translations: { tr: "Hoş tesadüf", az: "Xoş təsadüf", ru: "Серендипность" }, sentences: { en: "We found the place by serendipity.", tr: "Yeri hoş bir tesadüf eseri bulduk.", az: "Biz yeri xoş bir təsadüf nəticəsində tapdıq.", ru: "Мы нашли это место по счастливой случайности." } },
+            { en: "Taciturn", translations: { tr: "Sessiz", az: "Sakit", ru: "Молчаливый" }, sentences: { en: "He is a taciturn man.", tr: "O, sessiz bir adamdır.", az: "O, sakit bir adamdır.", ru: "Он - молчаливый человек." } },
+            { en: "Vacillate", translations: { tr: "Tereddüt etmek", az: "Tərəddüd etmək", ru: "Колебаться" }, sentences: { en: "He vacillated between two options.", tr: "İki seçenek arasında tereddüt etti.", az: "O, iki seçim arasında tərəddüd edirdi.", ru: "Он колебался между двумя вариантами." } },
+            { en: "Wanderlust", translations: { tr: "Seyahat tutkusu", az: "Səyahət həvəsi", ru: "Страсть к путешествиям" }, sentences: { en: "She was filled with wanderlust.", tr: "Seyahat tutkusuyla doluydu.", az: "O, səyahət həvəsi ilə dolu idi.", ru: "Ею овладела страсть к путешествиям." } },
+            { en: "Zealot", translations: { tr: "Fanatik", az: "Fanatik", ru: "Фанатик" }, sentences: { en: "He is a religious zealot.", tr: "O bir din fanatiğidir.", az: "O, dini bir fanatikdir.", ru: "Он - религиозный фанатик." } },
+            { en: "Abnegation", translations: { tr: "Feragat", az: "İmtina", ru: "Отречение" }, sentences: { en: "She lived a life of abnegation.", tr: "Feragat içinde bir hayat yaşadı.", az: "O, imtina içində bir həyat yaşadı.", ru: "Она жила жизнью отречения." } },
+            { en: "Banal", translations: { tr: "Banal", az: "Banal", ru: "Банальный" }, sentences: { en: "The movie plot was banal.", tr: "Filmin konusu banaldi.", az: "Filmin süjeti banal idi.", ru: "Сюжет фильма был банальным." } },
+            { en: "Cacophony", translations: { tr: "Kargaşa", az: "Kakofoniya", ru: "Какофония" }, sentences: { en: "A cacophony of sounds.", tr: "Bir ses kargaşası.", az: "Bir səs kakofoniyası.", ru: "Какофония звуков." } },
+            { en: "Diatribe", translations: { tr: "Sert eleştiri", az: "Sərt tənqid", ru: "Диатриба" }, sentences: { en: "He launched a diatribe against the government.", tr: "Hükümete karşı sert bir eleştiri başlattı.", az: "O, hökumətə qarşı sərt bir tənqid başlatdı.", ru: "Он разразился диатрибой против правительства." } },
+            { en: "Eclectic", translations: { tr: "Seçmeci", az: "Ekletik", ru: "Эклектичный" }, sentences: { en: "He has an eclectic taste in music.", tr: "Müzikte seçmeci bir zevki var.", az: "Onun musiqidə ekletik bir zövqü var.", ru: "У него эклектичный вкус в музыке." } },
+            { en: "Facetious", translations: { tr: "Yersiz şakacı", az: "Yersiz zarafatcıl", ru: "Шутливый" }, sentences: { en: "Don't be facetious.", tr: "Yersiz şakacı olma.", az: "Yersiz zarafatcıl olma.", ru: "Не будь шутливым." } },
+            { en: "Garrulous", translations: { tr: "Geveze", az: "Çox danışan", ru: "Болтливый" }, sentences: { en: "He is a garrulous old man.", tr: "O geveze yaşlı bir adam.", az: "O, çox danışan yaşlı bir adamdır.", ru: "Он - болтливый старик." } },
+            { en: "Harangue", translations: { tr: "Söylev çekmek", az: "Nitq söyləmək", ru: "Произносить речь" }, sentences: { en: "He delivered a long harangue.", tr: "Uzun bir söylev çekti.", az: "O, uzun bir nitq söylədi.", ru: "Он произнес длинную речь." } },
+            { en: "Inchoate", translations: { tr: "Gelişmemiş", az: "İnkişaf etməmiş", ru: "Зачаточный" }, sentences: { en: "She had inchoate ideas.", tr: "Gelişmemiş fikirleri vardı.", az: "Onun inkişaf etməmiş fikirləri var idi.", ru: "У нее были зачаточные идеи." } },
+            { en: "Juggernaut", translations: { tr: "Ezici güç", az: "Əzici güc", ru: "Джаггернаут" }, sentences: { en: "The company is a marketing juggernaut.", tr: "Şirket bir pazarlama devi.", az: "Şirkət bir marketinq əzici gücüdür.", ru: "Компания - маркетинговый джаггернаут." } },
+            { en: "Kowtow", translations: { tr: "Yalakalık yapmak", az: "Yaltaqlıq etmək", ru: "Преклоняться" }, sentences: { en: "He refuses to kowtow to the boss.", tr: "Patrona yalakalık yapmayı reddediyor.", az: "O, patrona yaltaqlıq etməkdən imtina edir.", ru: "Он отказывается преклоняться перед боссом." } },
+            { en: "Malaise", translations: { tr: "Halsizlik", az: "Halsızlıq", ru: "Недомогание" }, sentences: { en: "A general feeling of malaise.", tr: "Genel bir halsizlik hissi.", az: "Ümumi bir halsızlıq hissi.", ru: "Общее чувство недомогания." } },
+            { en: "Nadir", translations: { tr: "En alt nokta", az: "Ən alt nöqtə", ru: "Надир" }, sentences: { en: "His career reached its nadir.", tr: "Kariyeri en alt noktaya ulaştı.", az: "Onun karyerası ən alt nöqtəyə çatdı.", ru: "Его карьера достигла своего надира." } },
+            { en: "Ossify", translations: { tr: "Katılaşmak", az: "Bərkimək", ru: "Окостеневать" }, sentences: { en: "The old traditions began to ossify.", tr: "Eski gelenekler katılaşmaya başladı.", az: "Köhnə ənənələr bərkiməyə başladı.", ru: "Старые традиции начали окостеневать." } },
+            { en: "Parsimonious", translations: { tr: "Cimri", az: "Xəsis", ru: "Скупой" }, sentences: { en: "He is parsimonious with his money.", tr: "Parası konusunda cimridir.", az: "O, pul mövzusunda xəsisdir.", ru: "Он скуп на свои деньги." } },
+            { en: "Quixotic", translations: { tr: "Hayalperest", az: "Xəyalpərəst", ru: "Донкихотский" }, sentences: { en: "A quixotic quest for glory.", tr: "Hayalperest bir şan arayışı.", az: "Xəyalpərəst bir şöhrət axtarışı.", ru: "Донкихотский поиск славы." } },
+        ]
+    };
+    
+    // Kısa Metin Veritabanı (Çok Dilli)
+    const shortTexts = {
+        b2: [
+            {
+                id: 'b2_1',
+                texts: {
+                    tr: "Teknoloji, iletişimi kökten değiştirdi. Sosyal medya platformları, insanların dünyanın dört bir yanındaki arkadaşları ve aileleriyle anında bağlantı kurmasını sağlıyor. Ancak, bu sürekli bağlantı halinin bazı olumsuz yanları da var. Yüz yüze etkileşimin azalması ve dijital yanlış bilgilendirmenin artması, toplum için önemli zorluklar yaratıyor.",
+                    az: "Texnologiya ünsiyyəti kökündən dəyişdirdi. Sosial media platformaları insanların dünyanın dörd bir yanındakı dostları və ailələri ilə dərhal əlaqə saxlamasına imkan verir. Lakin bu davamlı bağlantının bəzi mənfi tərəfləri də var. Üz-üzə ünsiyyətin azalması və rəqəmsal dezinformasiyanın artması cəmiyyət üçün mühüm çətinliklər yaradır.",
+                    ru: "Технологии коренным образом изменили общение. Платформы социальных сетей позволяют людям мгновенно связываться с друзьями и семьей по всему миру. Однако у этой постоянной связи есть и обратная сторона. Снижение личного общения и рост цифровой дезинформации создают серьезные проблемы для общества."
+                },
+                question: {
+                    en: "According to the text, what is a major *challenge* created by technology?",
+                    options: [
+                        { en: "Instant connection with family", isCorrect: false },
+                        { en: "A decrease in face-to-face interaction", isCorrect: true },
+                        { en: "The popularity of social media", isCorrect: false },
+                        { en: "Radical changes in communication", isCorrect: false }
+                    ]
+                }
+            },
+        ],
+        c1: [
+            {
+                id: 'c1_1',
+                texts: {
+                    tr: "Küresel tedarik zincirlerinin karmaşıklığı, COVID-19 salgını sırasında bariz bir şekilde ortaya çıktı. Bir ülkede tek bir fabrikanın kapanması, dünya çapında bir domino etkisine yol açarak ürün kıtlığına ve fiyat artışlarına neden oldu. Bu durum, şirketleri 'tam zamanında üretim' modelinden daha dayanıklı, yerelleştirilmiş tedarik stratejilerine geçiş yapmayı düşünmeye itti.",
+                    az: "Qlobal təchizat zəncirlərinin mürəkkəbliyi COVID-19 pandemiyası zamanı açıq şəkildə üzə çıxdı. Bir ölkədə tək bir fabrikin bağlanması dünya miqyasında domino effekti yaradaraq məhsul qıtlığına və qiymət artımına səbəb oldu. Bu vəziyyət şirkətləri 'tam zamanında istehsal' modelindən daha davamlı, yerliləşdirilmiş təchizat strategiyalarına keçməyi düşünməyə vadar etdi.",
+                    ru: "Сложность глобальных цепочек поставок стала очевидной во время пандемии COVID-19. Закрытие одного завода в одной стране вызвало эффект домино по всему миру, что привело к нехватке продуктов и росту цен. Эта ситуация заставила компании задуматься о переходе от модели 'точно в срок' к более устойчивым, локализованным стратегиям поставок."
+                },
+                question: {
+                    en: "What concept are companies reconsidering as a result of the pandemic?",
+                    options: [
+                        { en: "The domino effect", isCorrect: false },
+                        { en: "Global travel restrictions", isCorrect: false },
+                        { en: "The 'just-in-time' manufacturing model", isCorrect: true },
+                        { en: "Product shortages and price increases", isCorrect: false }
+                    ]
+                }
+            },
+        ]
+    };
 
-  // quick register (test) - create a user in Supabase (dev convenience)
-  el("register-btn").onclick = async () => {
-    const email = el("login-email").value;
-    const pass = el("login-pass").value;
-    if(!email||!pass){ el("login-msg").textContent="Email ve şifre girin"; return; }
-    const { data, error } = await supabase.auth.signUp({ email, password: pass });
-    if (error) el("login-msg").textContent = error.message;
-    else el("login-msg").textContent = "Kayıt isteği gönderildi. Supabase auth kullanıcılar bölümünden e-postayı onayla ve admin email yap.";
-  };
+    // --- DOM ELEMENTLERİ ---
+    const levelSelection = document.getElementById('level-selection');
+    const wordArea = document.getElementById('word-area');
+    const wordList = document.getElementById('word-list');
+    const refreshWords = document.getElementById('refresh-words');
+    const pinWords = document.getElementById('pin-words');
+    const startQuizBtn = document.getElementById('start-quiz-btn');
+    const quizAlert = document.getElementById('quiz-alert');
+    const quizAlertText = document.getElementById('quiz-alert-text');
+    const currentLevelTitle = document.getElementById('current-level-title');
 
-  // drop zone + file input
-  const dz = el("drop-zone"), fi = el("file-input");
-  dz.onclick = () => fi.click();
-  fi.onchange = e => handleFileList(e.target.files);
-  ['dragenter','dragover'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add("dragover"); }));
-  ['dragleave','drop'].forEach(ev => dz.addEventListener(ev, e => {
-    e.preventDefault(); dz.classList.remove("dragover");
-    if (ev==="drop" && e.dataTransfer.files[0]) handleFileList(e.dataTransfer.files);
-  }));
+    const quizArea = document.getElementById('quiz-area');
+    const quizTitle = document.getElementById('quiz-title');
+    const quizProgress = document.getElementById('quiz-progress');
+    const questionArea = document.getElementById('question-area');
+    const shortTextArea = document.getElementById('short-text-area');
+    const shortTextTitle = document.getElementById('short-text-title');
+    const shortTextContent = document.getElementById('short-text-content');
+    const questionText = document.getElementById('question-text');
+    const questionOptions = document.getElementById('question-options');
+    const inputAnswer = document.getElementById('input-answer');
+    const nextQuestionBtn = document.getElementById('next-question-btn');
+    const exitQuizBtn = document.getElementById('exit-quiz-btn');
 
-  // add category
-  el("add-category-btn").onclick = async () => {
-    const v = el("new-category").value.trim();
-    if (!v) return;
-    await addCategory(v);
-    el("new-category").value = "";
-  };
+    const quizResults = document.getElementById('quiz-results');
+    const finalScore = document.getElementById('quiz-results-score');
+    const quizRestart = document.getElementById('quiz-restart');
+    const quizBackToWords = document.getElementById('quiz-back-to-words');
 
-  // cancel edit
-  el("cancel-edit").onclick = () => {
-    el("product-form").reset();
-    selectedFiles = [];
-    el("thumbs").innerHTML = "";
-    el("product-id").value = "";
-  };
+    const noteModal = document.getElementById('note-modal');
+    const noteModalTitle = document.getElementById('note-modal-title');
+    const noteTextarea = document.getElementById('note-textarea');
+    const saveNote = document.getElementById('save-note');
+    const cancelNote = document.getElementById('cancel-note');
 
-  // save product (insert or update)
-  el("product-form").onsubmit = async (e) => {
-    e.preventDefault();
-    const status = el("form-status"); status.textContent = "";
-    const id = el("product-id").value;
-    const name = el("product-name").value.trim();
-    const desc = el("product-desc").value.trim();
-    const price = parseFloat(el("product-price").value) || 0;
-    const category = el("category-select").value || "";
+    const exitQuizModal = document.getElementById('exit-quiz-modal');
+    const cancelExit = document.getElementById('cancel-exit');
+    const confirmExit = document.getElementById('confirm-exit');
+    
+    const historyModal = document.getElementById('history-modal');
+    const showHistoryBtn = document.getElementById('show-history-btn');
+    const closeHistoryModal = document.getElementById('close-history-modal');
+    const clearHistoryBtn = document.getElementById('clear-history-btn');
+    const historyList = document.getElementById('history-list');
+    const noHistoryText = document.getElementById('no-history-text');
 
-    if (!name) { status.textContent = "Ürün adı gerekli."; return; }
+    const languageSelect = document.getElementById('language-select');
+    
+    const searchInput = document.getElementById('search-input');
+    const searchButton = document.getElementById('search-button');
+    const searchResults = document.getElementById('search-results');
+    
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const toast = document.getElementById('toast-notification');
+    const toastMessage = document.getElementById('toast-message');
 
-    // if new files selected -> upload them and set image_urls
-    let uploadedUrls = null;
-    if (selectedFiles.length) {
-      status.textContent = "Resimler yükleniyor...";
-      uploadedUrls = await uploadFiles(selectedFiles);
-      if (!uploadedUrls) { status.textContent = "Resim yükleme hatası."; return; }
+    // --- YARDIMCI FONKSİYONLAR ---
+    
+    /**
+     * Rastgele bir tamsayı döndürür (min dahil, max hariç)
+     */
+    function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min)) + min;
     }
 
-    // payload
-    const payload = {
-      name, description: desc, price, category
-    };
-    if (uploadedUrls) payload.image_urls = uploadedUrls;
-
-    if (!id) {
-      // create
-      const created = await saveProduct(payload);
-      if (!created) { status.textContent = "Ürün kaydedilemedi."; return; }
-      status.textContent = "Ürün eklendi.";
-    } else {
-      // update existing: if uploadedUrls set -> replace image_urls; else keep existing
-      const updated = await updateProduct(id, payload);
-      if (!updated) { status.textContent = "Güncelleme başarısız."; return; }
-      status.textContent = "Ürün güncellendi.";
+    /**
+     * Bir diziyi yerinde karıştırır (Fisher-Yates)
+     */
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
     }
 
-    // reset form
-    el("product-form").reset();
-    selectedFiles = [];
-    el("thumbs").innerHTML = "";
-    el("product-id").value = "";
-    await refreshAll();
-    setTimeout(()=>status.textContent="",2000);
-  };
+    /**
+     * Bildirim (Toast) gösterir
+     */
+    function showToast(message) {
+        toastMessage.textContent = message;
+        toast.classList.remove('hidden');
+        setTimeout(() => {
+            toast.classList.add('hidden');
+        }, 3000);
+    }
+    
+    /**
+     * Arayüzü seçilen dile göre günceller
+     */
+    function updateLanguageUI(lang) {
+        const t = uiStrings[lang];
+        
+        document.documentElement.lang = lang;
+        document.getElementById('main-title').textContent = t.title;
+        searchInput.placeholder = t.searchPlaceholder;
+        showHistoryBtn.title = t.historyBtn;
+        
+        levelSelection.querySelector('[data-level="a1"]').textContent = t.levelA1;
+        levelSelection.querySelector('[data-level="a2"]').textContent = t.levelA2;
+        levelSelection.querySelector('[data-level="b1"]').textContent = t.levelB1;
+        levelSelection.querySelector('[data-level="b2"]').textContent = t.levelB2;
+        levelSelection.querySelector('[data-level="c1"]').textContent = t.levelC1;
+        
+        refreshWords.querySelector('.btn-text').textContent = t.refresh;
+        pinWords.querySelector('.btn-text').textContent = state.isPinned ? t.unpin : t.pin;
+        startQuizBtn.querySelector('.btn-text').textContent = t.startQuiz;
+        
+        document.getElementById('quiz-alert-strong').textContent = t.quizAlertTitle;
+        if (state.currentLevel) {
+            const minWords = (state.currentLevel === 'a1' || state.currentLevel === 'a2' || state.currentLevel === 'b1') ? 5 : 10;
+            quizAlertText.textContent = t.quizAlertText(minWords);
+            currentLevelTitle.textContent = t.toastLevel(state.currentLevel);
+        }
+        
+        exitQuizBtn.textContent = t.exitQuiz;
+        nextQuestionBtn.textContent = t.nextQuestion;
+        
+        quizResults.querySelector('#quiz-results-title').textContent = t.quizResultsTitle;
+        quizRestart.textContent = t.restartQuiz;
+        quizBackToWords.textContent = t.backToWords;
+        
+        cancelNote.textContent = t.cancel;
+        saveNote.textContent = t.save;
+        
+        exitQuizModal.querySelector('#exit-modal-title').textContent = t.exitModalTitle;
+        exitQuizModal.querySelector('#exit-modal-text').textContent = t.exitModalText;
+        cancelExit.textContent = t.cancel;
+        confirmExit.textContent = t.confirmExit;
+        
+        historyModal.querySelector('#history-modal-title').textContent = t.historyModalTitle;
+        noHistoryText.textContent = t.noHistoryText;
+        clearHistoryBtn.textContent = t.clearHistory;
+        
+        document.getElementById('footer-text').textContent = t.footerText;
 
-  // load categories & products for initial
-  await loadCategories();
-  await refreshAll();
-};
+        // Kelime listesini yeniden oluştur
+        if (state.currentLevel) {
+            displayWords(state.currentWords);
+        }
+        // Arama sonuçlarını temizle
+        clearSearchResults();
+    }
+    
+    /**
+     * localStorage'dan veri yükler
+     */
+    function loadFromLocalStorage() {
+        const savedNotes = localStorage.getItem('englishDreamNotes');
+        if (savedNotes) {
+            state.notes = JSON.parse(savedNotes);
+        }
+        
+        const savedPins = localStorage.getItem('englishDreamPins');
+        if (savedPins) {
+            state.pinnedWords = JSON.parse(savedPins);
+        }
+        
+        const savedHistory = localStorage.getItem('englishDreamHistory');
+        if (savedHistory) {
+            state.examHistory = JSON.parse(savedHistory);
+        }
+        
+        const savedLang = localStorage.getItem('englishDreamLang');
+        if (savedLang && uiStrings[savedLang]) {
+            state.currentLang = savedLang;
+            languageSelect.value = savedLang;
+        }
+    }
 
-// file handling with checks and thumbnails
-function handleFileList(fileList) {
-  const arr = Array.from(fileList);
-  const thumbs = el("thumbs");
-  for (const f of arr) {
-    if (!ALLOWED.includes(f.type)) { alert("Sadece JPG/PNG/WebP/GIF izinli."); continue; }
-    if (f.size > MAX_FILE_SIZE) { alert("Maksimum dosya boyutu 2MB."); continue; }
-    selectedFiles.push(f);
-    // thumb
-    const reader = new FileReader();
-    reader.onload = e => {
-      const div = document.createElement("div");
-      div.className = "w-24 h-24 border rounded overflow-hidden relative";
-      div.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover" />`;
-      thumbs.appendChild(div);
-    };
-    reader.readAsDataURL(f);
-  }
-}
+    /**
+     * localStorage'a veri kaydeder
+     */
+    function saveToLocalStorage(key, data) {
+        localStorage.setItem(key, JSON.stringify(data));
+    }
+
+    // --- KELİME YÖNETİMİ ---
+
+    /**
+     * Seviye seçimi yapar
+     */
+    function selectLevel(level) {
+        state.currentLevel = level;
+        state.isPinned = false;
+        wordArea.classList.remove('hidden');
+        quizArea.classList.add('hidden');
+        levelSelection.classList.add('hidden');
+        
+        currentLevelTitle.textContent = uiStrings[state.currentLang].toastLevel(level);
+        pinWords.querySelector('.btn-text').textContent = uiStrings[state.currentLang].pin;
+        pinWords.classList.remove('btn-primary');
+        pinWords.classList.add('btn-ghost');
+        
+        const minWords = (level === 'a1' || level === 'b1') ? 5 : 10;
+        quizAlertText.textContent = uiStrings[state.currentLang].quizAlertText(minWords);
+        
+        if (wordBank[level].length < 50) {
+            refreshWords.disabled = true;
+        } else {
+            refreshWords.disabled = false;
+        }
+
+        generateWords();
+    }
+
+    /**
+     * 50 kelime oluşturur
+     */
+    function generateWords() {
+        if (state.isPinned) return;
+
+        const levelWords = wordBank[state.currentLevel];
+        
+        // Eğer seviyedeki kelime sayısı 50'den azsa, hepsini al
+        if (levelWords.length <= 50) {
+            state.currentWords = [...levelWords];
+        } else {
+            // 50'den fazlaysa, rastgele 50 tane seç
+            const shuffled = [...levelWords].sort(() => 0.5 - Math.random());
+            state.currentWords = shuffled.slice(0, 50);
+        }
+        
+        // Sabitlenmiş kelimeleri listeye ekle (ve çiftleri kaldır)
+        const pinnedInThisLevel = state.pinnedWords
+            .filter(p => p.level === state.currentLevel)
+            .map(p => p.word);
+            
+        const combinedWords = [...pinnedInThisLevel, ...state.currentWords];
+        const uniqueWords = combinedWords.filter((word, index, self) =>
+            index === self.findIndex(w => w.en === word.en)
+        );
+
+        state.currentWords = uniqueWords;
+        displayWords(state.currentWords);
+        checkQuizButton();
+    }
+
+    /**
+     * Kelimeleri ekranda gösterir
+     */
+    function displayWords(words) {
+        wordList.innerHTML = '';
+        const lang = state.currentLang;
+        
+        words.forEach(word => {
+            const isPinned = state.pinnedWords.some(p => p.word.en === word.en && p.level === state.currentLevel);
+            const note = state.notes[`${state.currentLevel}-${word.en}`] || '';
+            
+            const card = document.createElement('div');
+            card.className = 'card p-5 relative';
+            card.innerHTML = `
+                ${isPinned ? '<i class="fas fa-thumbtack text-purple-400 absolute top-3 right-4"></i>' : ''}
+                <h3 class="text-2xl font-semibold text-white mb-2">${word.en}</h3>
+                <p class="text-lg text-gray-300 mb-4">${word.translations[lang]}</p>
+                <div class="text-sm text-gray-400 mb-4">
+                    <p class="mb-1">
+                        <strong>EN:</strong> <em>${word.sentences.en}</em>
+                        <button class="copy-btn ml-2 text-gray-500 hover:text-purple-300" data-sentence="${word.sentences.en}">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </p>
+                    <p>
+                        <strong>${lang.toUpperCase()}:</strong> <em>${word.sentences[lang]}</em>
+                    </p>
+                </div>
+                <div class="note-display p-3 bg-[#1a1a2e] rounded-md ${note ? '' : 'hidden'}">
+                    <p class="text-sm text-gray-300 whitespace-pre-wrap">${note}</p>
+                </div>
+                <div class="flex justify-end gap-2 mt-4">
+                    <button class="pin-word-btn btn btn-ghost btn-sm text-xs ${isPinned ? 'hidden' : ''}" data-word="${word.en}">
+                        ${uiStrings[lang].pinThis}
+                    </button>
+                    <button class="unpin-word-btn btn btn-secondary btn-sm text-xs ${isPinned ? '' : 'hidden'}" data-word="${word.en}">
+                        ${uiStrings[lang].unpinThis}
+                    </button>
+                    <button class="note-btn btn btn-secondary btn-sm text-xs" data-word="${word.en}">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                </div>
+            `;
+            
+            // Event Listeners for buttons
+            card.querySelector('.note-btn').addEventListener('click', () => openNoteModal(word.en));
+            const pinBtn = card.querySelector('.pin-word-btn');
+            const unpinBtn = card.querySelector('.unpin-word-btn');
+            if (pinBtn) {
+                pinBtn.addEventListener('click', () => pinWord(word, pinBtn, unpinBtn));
+            }
+            if (unpinBtn) {
+                unpinBtn.addEventListener('click', () => unpinWord(word.en, pinBtn, unpinBtn));
+            }
+            card.querySelector('.copy-btn').addEventListener('click', (e) => {
+                navigator.clipboard.writeText(e.currentTarget.dataset.sentence);
+                showToast(uiStrings[lang].toastCopied);
+            });
+
+            wordList.appendChild(card);
+        });
+    }
+    
+    /**
+     * Tek bir kelimeyi sabitle (arama sonuçlarından)
+     */
+    function pinWordFromSearch(word, level, button) {
+        const isPinned = state.pinnedWords.some(p => p.word.en === word.en && p.level === level);
+        if (!isPinned) {
+            state.pinnedWords.push({ level: level, word: word });
+            saveToLocalStorage('englishDreamPins', state.pinnedWords);
+            // Eğer o an o seviyedeysek, listeyi güncelle
+            if (level === state.currentLevel) {
+                generateWords();
+            }
+        }
+        // Butonu güncelle
+        button.textContent = uiStrings[state.currentLang].unpinThis;
+        button.classList.remove('pin-from-search-btn');
+        button.classList.add('unpin-from-search-btn');
+        button.dataset.level = level;
+    }
+
+    /**
+     * Tek bir kelimenin sabitlemesini kaldır (arama sonuçlarından)
+     */
+    function unpinWordFromSearch(enWord, level, button) {
+        state.pinnedWords = state.pinnedWords.filter(p => !(p.word.en === enWord && p.level === level));
+        saveToLocalStorage('englishDreamPins', state.pinnedWords);
+        // Eğer o an o seviyedeysek, listeyi güncelle
+        if (level === state.currentLevel) {
+            generateWords();
+        }
+        // Butonu güncelle
+        button.textContent = uiStrings[state.currentLang].pinThis;
+        button.classList.remove('unpin-from-search-btn');
+        button.classList.add('pin-from-search-btn');
+        button.dataset.level = level;
+    }
+
+
+    /**
+     * Sabitleme butonunu kontrol eder
+     */
+    function togglePin() {
+        state.isPinned = !state.isPinned;
+        if (state.isPinned) {
+            pinWords.querySelector('.btn-text').textContent = uiStrings[state.currentLang].unpin;
+            pinWords.classList.add('btn-primary');
+            pinWords.classList.remove('btn-ghost');
+            refreshWords.disabled = true;
+            showToast(uiStrings[state.currentLang].toastPinned);
+        } else {
+            pinWords.querySelector('.btn-text').textContent = uiStrings[state.currentLang].pin;
+            pinWords.classList.remove('btn-primary');
+            pinWords.classList.add('btn-ghost');
+            if (wordBank[state.currentLevel].length > 50) {
+                refreshWords.disabled = false;
+            }
+            showToast(uiStrings[state.currentLang].toastUnpinned);
+        }
+    }
+
+    /**
+     * Sınav başlatma butonunu kontrol eder
+     */
+    function checkQuizButton() {
+        const minWords = (state.currentLevel === 'a1' || state.currentLevel === 'a2' || state.currentLevel === 'b1') ? 5 : 10;
+        if (wordBank[state.currentLevel].length < minWords) {
+            startQuizBtn.disabled = true;
+            quizAlert.classList.remove('hidden');
+        } else {
+            startQuizBtn.disabled = false;
+            quizAlert.classList.add('hidden');
+        }
+    }
+    
+    /**
+     * Not modalını açar
+     */
+    function openNoteModal(enWord) {
+        const word = state.currentWords.find(w => w.en === enWord);
+        if (!word) return;
+        
+        noteModalTitle.textContent = uiStrings[state.currentLang].noteModalTitle(enWord);
+        noteTextarea.value = state.notes[`${state.currentLevel}-${enWord}`] || '';
+        noteTextarea.placeholder = uiStrings[state.currentLang].noteTextareaPlaceholder;
+        noteModal.dataset.word = enWord;
+        noteModal.classList.remove('hidden');
+    }
+
+    /**
+     * Notu kaydeder
+     */
+    function saveNoteHandler() {
+        const enWord = noteModal.dataset.word;
+        const note = noteTextarea.value;
+        state.notes[`${state.currentLevel}-${enWord}`] = note;
+        saveToLocalStorage('englishDreamNotes', state.notes);
+        noteModal.classList.add('hidden');
+        
+        // Ekrandaki notu güncelle
+        const wordCard = Array.from(wordList.querySelectorAll('button.note-btn'))
+            .find(btn => btn.dataset.word === enWord)
+            ?.closest('.card');
+            
+        if (wordCard) {
+            const noteDisplay = wordCard.querySelector('.note-display');
+            if (note) {
+                noteDisplay.querySelector('p').textContent = note;
+                noteDisplay.classList.remove('hidden');
+            } else {
+                noteDisplay.classList.add('hidden');
+            }
+        }
+        showToast(uiStrings[state.currentLang].toastNoteSaved(enWord));
+    }
+    
+    /**
+     * Bir kelimeyi sabitle (Karttan)
+     */
+    function pinWord(word, pinBtn, unpinBtn) {
+        const isPinned = state.pinnedWords.some(p => p.word.en === word.en && p.level === state.currentLevel);
+        if (!isPinned) {
+            state.pinnedWords.push({ level: state.currentLevel, word: word });
+            saveToLocalStorage('englishDreamPins', state.pinnedWords);
+            
+            // Kartı güncelle
+            const card = pinBtn.closest('.card');
+            card.insertAdjacentHTML('afterbegin', '<i class="fas fa-thumbtack text-purple-400 absolute top-3 right-4"></i>');
+            pinBtn.classList.add('hidden');
+            unpinBtn.classList.remove('hidden');
+        }
+    }
+
+    /**
+     * Bir kelimenin sabitlemesini kaldır (Karttan)
+     */
+    function unpinWord(enWord, pinBtn, unpinBtn) {
+        state.pinnedWords = state.pinnedWords.filter(p => !(p.word.en === enWord && p.level === state.currentLevel));
+        saveToLocalStorage('englishDreamPins', state.pinnedWords);
+        
+        // Kartı güncelle
+        const card = pinBtn.closest('.card');
+        const tackIcon = card.querySelector('.fa-thumbtack');
+        if (tackIcon) {
+            tackIcon.remove();
+        }
+        pinBtn.classList.remove('hidden');
+        unpinBtn.classList.add('hidden');
+        
+        // Eğer "Sabitle" modu açıksa ve kelime kaldırılırsa, kartı da kaldır
+        if (state.isPinned) {
+            card.remove();
+        }
+    }
+
+
+    // --- SINAV YÖNETİMİ ---
+
+    /**
+     * Sınavı başlatır
+     */
+    function startQuiz() {
+        state.quizState = 'active';
+        state.currentQuestionIndex = 0;
+        state.score = 0;
+        
+        state.quizQuestions = generateQuizQuestions();
+        
+        wordArea.classList.add('hidden');
+        quizArea.classList.remove('hidden');
+        quizResults.classList.add('hidden');
+        questionArea.classList.remove('hidden');
+        nextQuestionBtn.classList.remove('hidden');
+        
+        quizTitle.textContent = uiStrings[state.currentLang].quizTitle(state.currentLevel);
+        displayQuestion();
+    }
+
+    /**
+     * Sınav sorularını oluşturur
+     */
+    function generateQuizQuestions() {
+        const questions = [];
+        const lang = state.currentLang;
+        const levelWords = [...wordBank[state.currentLevel]]; // Kelime havuzu
+        const allWords = [...wordBank.a1, ...wordBank.a2, ...wordBank.b1, ...wordBank.b2, ...wordBank.c1]; // Tüm kelimeler (çeldirici için)
+
+        // Soru tiplerini belirle
+        let questionTypes = [];
+        let shortTextCount = 0;
+        
+        if (state.currentLevel === 'a1' || state.currentLevel === 'a2' || state.currentLevel === 'b1') {
+            questionTypes = ['fill_in_blank', 'translate_to_lang', 'translate_from_lang'];
+        } else {
+            // b2, c1
+            questionTypes = ['fill_in_blank_input', 'translate_to_lang_input'];
+            shortTextCount = 3;
+        }
+
+        // 1. Standart Kelime Soruları
+        const numStandardQuestions = 15 - shortTextCount;
+        shuffleArray(levelWords);
+        
+        for (let i = 0; i < numStandardQuestions; i++) {
+            const word = levelWords[i % levelWords.length]; // Kelimeler dönsün
+            const qType = questionTypes[i % questionTypes.length];
+            const q = { word: word };
+
+            // Çeldirici seçenekleri oluştur
+            const options = [word];
+            while (options.length < 4) {
+                const randomWord = allWords[getRandomInt(0, allWords.length)];
+                if (!options.some(opt => opt.en === randomWord.en)) {
+                    options.push(randomWord);
+                }
+            }
+            shuffleArray(options);
+            q.options = options;
+
+            switch (qType) {
+                case 'fill_in_blank':
+                    q.type = 'choice';
+                    q.question = `${uiStrings[lang].fillBlank}<br><br><strong class="text-gray-200">"${word.sentences.en.replace(new RegExp(word.en, 'i'), '_______')}"</strong>`;
+                    q.correctAnswer = word.en;
+                    break;
+                case 'translate_to_lang':
+                    q.type = 'choice';
+                    q.question = `${uiStrings[lang].translateTo(uiStrings[lang][lang] || lang)}<br><br><strong class="text-2xl text-white">${word.en}</strong>`;
+                    q.correctAnswer = word.translations[lang];
+                    q.options = q.options.map(opt => opt.translations[lang]);
+                    break;
+                case 'translate_from_lang':
+                    q.type = 'choice';
+                    q.question = `${uiStrings[lang].translateTo('İngilizce')}<br><br><strong class="text-2xl text-white">${word.translations[lang]}</strong>`;
+                    q.correctAnswer = word.en;
+                    q.options = q.options.map(opt => opt.en);
+                    break;
+                case 'fill_in_blank_input':
+                    q.type = 'input';
+                    q.question = `${uiStrings[lang].fillBlankInput}<br><br><strong class="text-gray-200">"${word.sentences.en.replace(new RegExp(word.en, 'i'), '_______')}"</strong>`;
+                    q.correctAnswer = word.en;
+                    break;
+                case 'translate_to_lang_input':
+                    q.type = 'input';
+                    q.question = `${uiStrings[lang].translateToInput(uiStrings[lang][lang] || lang)}<br><br><strong class="text-2xl text-white">${word.en}</strong>`;
+                    q.correctAnswer = word.translations[lang];
+                    break;
+            }
+            questions.push(q);
+        }
+        
+        // 2. Kısa Metin Soruları (B2/C1)
+        if (shortTextCount > 0) {
+            const levelTexts = [...shortTexts[state.currentLevel]];
+            shuffleArray(levelTexts);
+            
+            for(let i = 0; i < shortTextCount; i++) {
+                const text = levelTexts[i % levelTexts.length];
+                const q = {
+                    type: 'short_text',
+                    text: text.texts[lang],
+                    question: text.question.en, // Soru her zaman İngilizce
+                    options: text.question.options.map(opt => opt.en),
+                    correctAnswer: text.question.options.find(opt => opt.isCorrect).en,
+                    word: {} // Boş bir kelime nesnesi
+                };
+                questions.push(q);
+            }
+        }
+        
+        shuffleArray(questions);
+        return questions.slice(0, 15);
+    }
+
+    /**
+     * Soruyu ekranda gösterir
+     */
+    function displayQuestion() {
+        const q = state.quizQuestions[state.currentQuestionIndex];
+        const lang = state.currentLang;
+        
+        quizProgress.textContent = `${uiStrings[lang].question} ${state.currentQuestionIndex + 1} / 15`;
+        questionOptions.innerHTML = '';
+        inputAnswer.classList.add('hidden');
+        shortTextArea.classList.add('hidden');
+        inputAnswer.value = '';
+        
+        questionText.innerHTML = q.question;
+
+        if (q.type === 'short_text') {
+            shortTextArea.classList.remove('hidden');
+            shortTextTitle.textContent = uiStrings[lang].shortTextTitle;
+            shortTextContent.textContent = q.text;
+            
+            // Seçenekleri (choice) göster
+            q.options.forEach(option => {
+                const optionEl = document.createElement('button');
+                optionEl.className = 'quiz-option block w-full p-4 rounded-lg text-left text-lg';
+                optionEl.textContent = option;
+                optionEl.dataset.answer = option;
+                optionEl.addEventListener('click', () => selectAnswer(optionEl, q.type));
+                questionOptions.appendChild(optionEl);
+            });
+            
+        } else if (q.type === 'choice') {
+            q.options.forEach(option => {
+                const optionEl = document.createElement('button');
+                optionEl.className = 'quiz-option block w-full p-4 rounded-lg text-left text-lg';
+                optionEl.textContent = option;
+                optionEl.dataset.answer = option;
+                optionEl.addEventListener('click', () => selectAnswer(optionEl, q.type));
+                questionOptions.appendChild(optionEl);
+            });
+            
+        } else if (q.type === 'input') {
+            inputAnswer.classList.remove('hidden');
+            inputAnswer.placeholder = uiStrings[lang].noteTextareaPlaceholder; // "Cevabınızı buraya yazın..." gibi
+            // Giriş alanı için, 'Next' butonu doğrudan 'checkAnswer' yapacak
+        }
+        
+        nextQuestionBtn.disabled = true;
+        // Giriş tipi sorular için 'Next' butonu, seçim yapıldığında aktifleşmez,
+        // kullanıcı bir şey yazıp basar.
+        if(q.type === 'input') {
+            nextQuestionBtn.disabled = false;
+        }
+    }
+
+    /**
+     * Cevap seçildiğinde (çoktan seçmeli)
+     */
+    function selectAnswer(selectedOption, type) {
+        // Zaten bir cevap seçildiyse (kontrol aşamasındaysa) tekrar seçtirme
+        if (questionArea.dataset.checking) return;
+
+        // Önceki seçimi kaldır
+        const allOptions = questionOptions.querySelectorAll('.quiz-option');
+        allOptions.forEach(opt => opt.classList.remove('selected'));
+        
+        // Yeni seçimi yap
+        selectedOption.classList.add('selected');
+        nextQuestionBtn.disabled = false;
+    }
+
+    /**
+     * Cevabı kontrol eder ve sıradakine geçer
+     */
+    function checkAnswer() {
+        const q = state.quizQuestions[state.currentQuestionIndex];
+        let selectedAnswer = '';
+        let isCorrect = false;
+
+        if (q.type === 'choice' || q.type === 'short_text') {
+            const selectedOption = questionOptions.querySelector('.quiz-option.selected');
+            if (!selectedOption) return; // Cevap seçilmedi
+            
+            selectedAnswer = selectedOption.dataset.answer;
+            isCorrect = (selectedAnswer.toLowerCase() === q.correctAnswer.toLowerCase());
+            
+            // Görsel geri bildirim
+            questionArea.dataset.checking = 'true';
+            selectedOption.classList.add(isCorrect ? 'correct' : 'wrong');
+            
+            if (!isCorrect) {
+                const correctOption = Array.from(questionOptions.querySelectorAll('.quiz-option'))
+                    .find(opt => opt.dataset.answer.toLowerCase() === q.correctAnswer.toLowerCase());
+                if (correctOption) {
+                    correctOption.classList.add('correct');
+                }
+            }
+
+        } else if (q.type === 'input') {
+            selectedAnswer = inputAnswer.value.trim();
+            if (selectedAnswer === '') return; // Cevap yazılmadı
+            
+            // Cevabı küçük harfe çevirip karşılaştır
+            isCorrect = (selectedAnswer.toLowerCase() === q.correctAnswer.toLowerCase());
+            
+            // Görsel geri bildirim
+            questionArea.dataset.checking = 'true';
+            inputAnswer.classList.add(isCorrect ? 'border-green-500' : 'border-red-500');
+            inputAnswer.disabled = true;
+            
+            if (!isCorrect) {
+                // Doğru cevabı göster
+                const correctAnswerEl = document.createElement('p');
+                correctAnswerEl.className = 'text-green-400 mt-2';
+                correctAnswerEl.textContent = `Doğru Cevap: ${q.correctAnswer}`;
+                questionArea.appendChild(correctAnswerEl);
+            }
+        }
+        
+        if (isCorrect) {
+            state.score++;
+        }
+        
+        // Sıradaki soruya geçiş için bekleme
+        setTimeout(() => {
+            state.currentQuestionIndex++;
+            if (state.currentQuestionIndex < 15) {
+                // Ayarları sıfırla
+                questionArea.dataset.checking = '';
+                if(q.type === 'input') {
+                    inputAnswer.classList.remove('border-green-500', 'border-red-500');
+                    inputAnswer.disabled = false;
+                    const correctAnswerEl = questionArea.querySelector('.text-green-400');
+                    if(correctAnswerEl) correctAnswerEl.remove();
+                }
+                displayQuestion();
+            } else {
+                showQuizResults();
+            }
+        }, (q.type === 'input' || q.type === 'short_text') ? 2000 : 1000); // Input ve metin sorularında daha uzun bekle
+    }
+
+    /**
+     * Sınav sonuçlarını gösterir
+     */
+    function showQuizResults() {
+        state.quizState = 'results';
+        questionArea.classList.add('hidden');
+        quizResults.classList.remove('hidden');
+        nextQuestionBtn.classList.add('hidden');
+        exitQuizBtn.classList.add('hidden'); // Sonuç ekranında çıkış butonu olmasın
+
+        finalScore.textContent = uiStrings[state.currentLang].quizResultsScore(state.score);
+        
+        // Sınavı kaydet
+        saveExamResult();
+    }
+
+    /**
+     * Sınavdan çıkar, kelimelere döner
+     */
+    function exitQuiz() {
+        state.quizState = 'idle';
+        quizArea.classList.add('hidden');
+        wordArea.classList.remove('hidden');
+        levelSelection.classList.remove('hidden'); // Seviye seçimini tekrar göster
+        
+        // Sınav uyarı modalını gizle
+        exitQuizModal.classList.add('hidden');
+    }
+
+    /**
+     * Sınav sonucunu kaydeder
+     */
+    function saveExamResult() {
+        const result = {
+            level: state.currentLevel,
+            score: state.score,
+            total: 15,
+            date: new Date().toISOString()
+        };
+        state.examHistory.unshift(result); // Başa ekle
+        if (state.examHistory.length > 20) {
+            state.examHistory.pop(); // Sadece son 20'yi tut
+        }
+        saveToLocalStorage('englishDreamHistory', state.examHistory);
+    }
+    
+    /**
+     * Sınav geçmişi modalını gösterir
+     */
+    function showHistoryModal() {
+        historyList.innerHTML = '';
+        const lang = state.currentLang;
+        
+        if (state.examHistory.length === 0) {
+            noHistoryText.classList.remove('hidden');
+            clearHistoryBtn.classList.add('hidden');
+        } else {
+            noHistoryText.classList.add('hidden');
+            clearHistoryBtn.classList.remove('hidden');
+            
+            state.examHistory.forEach(result => {
+                const date = new Date(result.date);
+                const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+                
+                const item = document.createElement('div');
+                item.className = 'p-4 bg-[#3a3a4e] rounded-lg flex justify-between items-center';
+                item.innerHTML = `
+                    <div>
+                        <span class="font-semibold text-lg text-purple-300">${uiStrings[lang].quizTitle(result.level)}</span>
+                        <span class="block text-sm text-gray-400">${formattedDate}</span>
+                    </div>
+                    <span class="text-xl font-bold text-white">${result.score}/${result.total}</span>
+                `;
+                historyList.appendChild(item);
+            });
+        }
+        
+        historyModal.classList.remove('hidden');
+    }
+    
+    /**
+     * Sınav geçmişini temizler
+     */
+    function clearHistory() {
+        state.examHistory = [];
+        saveToLocalStorage('englishDreamHistory', state.examHistory);
+        historyList.innerHTML = '';
+        noHistoryText.classList.remove('hidden');
+        clearHistoryBtn.classList.add('hidden');
+        showToast(uiStrings[state.currentLang].toastHistoryCleared);
+    }
+    
+    // --- ARAMA VE ÇEVİRİ ---
+
+    /**
+     * Arama çubuğunu işler (Kelime Arama veya Cümle Çeviri)
+     */
+    async function handleSearch() {
+        const query = searchInput.value.trim();
+        const lang = state.currentLang;
+        if (!query) {
+            clearSearchResults();
+            return;
+        }
+
+        // 3 kelimeden azsa = Kelime Arama
+        if (query.split(' ').length < 3) {
+            searchWords(query);
+        } else {
+            // 3+ kelimeyse = Cümle Çeviri (Gemini)
+            await translateSentence(query);
+        }
+    }
+
+    /**
+     * Kelime veritabanında arama yapar
+     */
+    function searchWords(query) {
+        const lang = state.currentLang;
+        const results = [];
+        const lowerQuery = query.toLowerCase();
+        
+        ['a1', 'a2', 'b1', 'b2', 'c1'].forEach(level => {
+            wordBank[level].forEach(word => {
+                if (word.en.toLowerCase().includes(lowerQuery) || 
+                    word.translations[lang].toLowerCase().includes(lowerQuery)) {
+                    results.push({ level, word });
+                }
+            });
+        });
+
+        displaySearchResults(results);
+    }
+    
+    /**
+     * Arama sonuçlarını gösterir
+     */
+    function displaySearchResults(results) {
+        searchResults.innerHTML = '';
+        const lang = state.currentLang;
+
+        if (results.length === 0) {
+            searchResults.innerHTML = `<div class="p-3 text-gray-400">${uiStrings[lang].searchNotFound}</div>`;
+            searchResults.classList.remove('hidden');
+            return;
+        }
+
+        results.forEach(({ level, word }) => {
+            const isPinned = state.pinnedWords.some(p => p.word.en === word.en && p.level === level);
+            const resultEl = document.createElement('div');
+            resultEl.className = 'p-3 border-b border-gray-700 hover:bg-[#4a4a5e]';
+            resultEl.innerHTML = `
+                <div class="flex justify-between items-center">
+                    <div>
+                        <strong class="text-white">${word.en}</strong> 
+                        <span class="text-gray-300">(${word.translations[lang]})</span>
+                        <span class="text-xs text-purple-300 ml-2">${level.toUpperCase()}</span>
+                    </div>
+                    <button class="${isPinned ? 'unpin-from-search-btn' : 'pin-from-search-btn'} btn btn-ghost btn-sm text-xs" 
+                            data-word='${JSON.stringify(word)}' 
+                            data-level="${level}">
+                        ${isPinned ? uiStrings[lang].unpinThis : uiStrings[lang].pinThis}
+                    </button>
+                </div>
+            `;
+            searchResults.appendChild(resultEl);
+        });
+
+        searchResults.classList.remove('hidden');
+    }
+    
+    /**
+     * Arama sonuçlarını temizler/gizler
+     */
+    function clearSearchResults() {
+        searchResults.innerHTML = '';
+        searchResults.classList.add('hidden');
+    }
+
+    /**
+     * Gemini API ile cümle çevirir
+     */
+    async function translateSentence(query) {
+        if (!GEMINI_API_KEY) {
+            alert("Lütfen kodun içindeki GEMINI_API_KEY değişkenine kendi Google Gemini API anahtarınızı ekleyin.");
+            return;
+        }
+        
+        const lang = state.currentLang;
+        const targetLanguage = (lang === 'tr') ? "Turkish" : (lang === 'az') ? "Azerbaijani" : "Russian";
+        
+        // Basit bir dil tespiti:
+        const isLikelyEnglish = /[a-zA-Z]/.test(query) && !/[ğüşıöçĞÜŞİÖÇəƏ]/.test(query);
+        
+        let prompt;
+        if (isLikelyEnglish) {
+            prompt = `Translate the following English text to ${targetLanguage}. Sadece çeviriyi döndür, başka bir şey yazma:\n\n"${query}"`;
+        } else {
+            prompt = `Translate the following text to English. Sadece çeviriyi döndür, başka bir şey yazma:\n\n"${query}"`;
+        }
+        
+        showToast(uiStrings[lang].toastTranslating);
+        loadingSpinner.classList.remove('hidden');
+        clearSearchResults();
+
+        try {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: prompt }] }]
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('API request failed');
+            }
+
+            const data = await response.json();
+            const translation = data.candidates[0].content.parts[0].text.trim().replace(/"/g, ''); // Tırnakları temizle
+            
+            // Sonucu arama kutusuna göster
+            displayTranslationResult(query, translation, isLikelyEnglish, lang);
+
+        } catch (error) {
+            console.error('Gemini API Error:', error);
+            showToast(uiStrings[lang].toastTranslationError);
+            displayTranslationResult(query, "Çeviri hatası.", false, lang);
+        } finally {
+            loadingSpinner.classList.add('hidden');
+        }
+    }
+    
+    /**
+     * Çeviri sonucunu arama kutusunda gösterir
+     */
+    function displayTranslationResult(original, translation, isEng, lang) {
+        searchResults.innerHTML = '';
+        
+        const enWord = isEng ? original : translation;
+        const langWord = isEng ? translation : original;
+        
+        // Sahte "word" nesnesi oluştur
+        const pseudoWord = {
+            en: enWord,
+            translations: { [lang]: langWord },
+            sentences: { en: enWord, [lang]: langWord } // Cümleler için de aynısını kullan
+        };
+        const pseudoLevel = 'translation';
+        
+        // Bu çeviri zaten sabitlenmiş mi?
+        const isPinned = state.pinnedWords.some(p => p.word.en === enWord && p.level === pseudoLevel);
+
+        const resultEl = document.createElement('div');
+        resultEl.className = 'p-3 border-b border-gray-700';
+        resultEl.innerHTML = `
+            <div>
+                <strong class="text-white">${enWord}</strong>
+                <p class="text-gray-300">${langWord}</p>
+            </div>
+            <div class="text-right mt-2">
+                <button class="${isPinned ? 'unpin-from-search-btn' : 'pin-from-search-btn'} btn btn-ghost btn-sm text-xs" 
+                        data-word='${JSON.stringify(pseudoWord)}' 
+                        data-level="${pseudoLevel}">
+                    ${isPinned ? uiStrings[lang].unpinThis : uiStrings[lang].pinThis}
+                </button>
+            </div>
+        `;
+        searchResults.appendChild(resultEl);
+        searchResults.classList.remove('hidden');
+    }
+
+
+    // --- OLAY İZLEYİCİLERİ (Event Listeners) ---
+
+    // Başlangıç
+    document.addEventListener('DOMContentLoaded', () => {
+        loadFromLocalStorage();
+        updateLanguageUI(state.currentLang);
+    });
+
+    // Dil Değişimi
+    languageSelect.addEventListener('change', (e) => {
+        state.currentLang = e.target.value;
+        saveToLocalStorage('englishDreamLang', state.currentLang);
+        updateLanguageUI(state.currentLang);
+    });
+
+    // Seviye Seçimi
+    levelSelection.addEventListener('click', (e) => {
+        if (e.target.tagName === 'BUTTON') {
+            selectLevel(e.target.dataset.level);
+        }
+    });
+
+    // Kelime Yenile
+    refreshWords.addEventListener('click', generateWords);
+
+    // Kelimeleri Sabitle (Tüm Liste)
+    pinWords.addEventListener('click', togglePin);
+
+    // Sınav Başlat
+    startQuizBtn.addEventListener('click', startQuiz);
+
+    // Sonraki Soru
+    nextQuestionBtn.addEventListener('click', checkAnswer);
+
+    // Sınavdan Çıkış (Uyarı)
+    exitQuizBtn.addEventListener('click', () => {
+        exitQuizModal.classList.remove('hidden');
+    });
+    cancelExit.addEventListener('click', () => {
+        exitQuizModal.classList.add('hidden');
+    });
+    confirmExit.addEventListener('click', exitQuiz);
+
+    // Sınav Sonuç Ekranı Butonları
+    quizRestart.addEventListener('click', startQuiz);
+    quizBackToWords.addEventListener('click', exitQuiz);
+
+    // Not Modalı
+    saveNote.addEventListener('click', saveNoteHandler);
+    cancelNote.addEventListener('click', () => {
+        noteModal.classList.add('hidden');
+    });
+    
+    // Sınav Geçmişi Modalı
+    showHistoryBtn.addEventListener('click', showHistoryModal);
+    closeHistoryModal.addEventListener('click', () => {
+        historyModal.classList.add('hidden');
+    });
+    clearHistoryBtn.addEventListener('click', clearHistory);
+    
+    // Arama
+    searchButton.addEventListener('click', handleSearch);
+    searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            handleSearch();
+        }
+    });
+    // Arama sonuçları dışına tıklayınca kapat
+    document.addEventListener('click', (e) => {
+        if (!searchResults.contains(e.target) && e.target !== searchInput) {
+            clearSearchResults();
+        }
+    });
+    
+    // Arama Sonuçlarından Sabitleme/Kaldırma
+    searchResults.addEventListener('click', (e) => {
+        const pinBtn = e.target.closest('.pin-from-search-btn');
+        const unpinBtn = e.target.closest('.unpin-from-search-btn');
+        
+        if (pinBtn) {
+            const word = JSON.parse(pinBtn.dataset.word);
+            const level = pinBtn.dataset.level;
+            pinWordFromSearch(word, level, pinBtn);
+        } else if (unpinBtn) {
+            const word = JSON.parse(unpinBtn.dataset.word);
+            const level = unpinBtn.dataset.level;
+            unpinWordFromSearch(word.en, level, unpinBtn);
+        }
+    });
+
 </script>
+
 </body>
 </html>
