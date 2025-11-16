@@ -29,6 +29,38 @@
             box-shadow: 0 0 15px 5px rgba(250, 204, 21, 0.7); /* yellow-400 */
             border: 2px solid #FACC15; /* yellow-400 */
         }
+        /* Sınav Seçenekleri için özel stil */
+        .quiz-option {
+            display: block;
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #4B5563; /* gray-600 */
+            background-color: #374151; /* gray-700 */
+            border-radius: 8px;
+            color: #E5E7EB; /* gray-200 */
+            font-medium: 500;
+            text-align: left;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        .quiz-option:hover {
+            background-color: #4B5563; /* gray-600 */
+            border-color: #A78BFA; /* purple-400 */
+        }
+        .quiz-option.correct {
+            background-color: #10B981; /* green-500 */
+            border-color: #059669; /* green-600 */
+            color: #FFFFFF;
+        }
+        .quiz-option.incorrect {
+            background-color: #EF4444; /* red-500 */
+            border-color: #DC2626; /* red-600 */
+            color: #FFFFFF;
+        }
+        .quiz-option:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body class="bg-gray-900 min-h-screen text-gray-200">
@@ -107,17 +139,20 @@
             <svg class="animate-spin h-8 w-8 text-purple-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
+            </svg>
             <p class="mt-2 text-gray-400 font-medium">Kelimeler yükleniyor...</p>
         </div>
+    </main>
 
-        <!-- Sınav Arayüzü -->
-        <div id="quiz-container" class="hidden bg-gray-800 p-6 sm:p-8 rounded-lg shadow-xl max-w-3xl mx-auto">
+    <!-- Sınav Arayüzü (Başlangıçta gizli) -->
+    <div id="quiz-container" class="hidden max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+        <div class="bg-gray-800 p-6 sm:p-8 rounded-lg shadow-xl max-w-3xl mx-auto">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold text-gray-100">İngilizce Sınavı</h2>
-                <div class="text-lg font-semibold">
+                <div class="flex items-center">
                     <span id="quiz-progress" class="text-gray-300">Soru 1 / 15</span>
                     <span id="quiz-score" class="ml-4 text-green-400">Puan: 0</span>
+                    <button id="request-exit-quiz-btn" class="ml-4 text-sm bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700 transition" title="Sınavdan Çık">Çık</button>
                 </div>
             </div>
             <div id="question-area">
@@ -140,8 +175,8 @@
                 </div>
             </div>
         </div>
+    </div>
 
-    </main>
 
     <!-- Sabitlenen Kelimeler Modalı -->
     <div id="pinned-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
@@ -469,6 +504,7 @@
         const mainContent = document.getElementById('main-content');
         const quizProgress = document.getElementById('quiz-progress');
         const quizScore = document.getElementById('quiz-score');
+        const questionArea = document.getElementById('question-area');
         const questionText = document.getElementById('question-text');
         const optionsContainer = document.getElementById('options-container');
         const quizFeedback = document.getElementById('quiz-feedback');
@@ -476,6 +512,7 @@
         const finalScore = document.getElementById('final-score');
         const restartQuizBtn = document.getElementById('restart-quiz-btn');
         const exitQuizBtn = document.getElementById('exit-quiz-btn');
+        const requestExitQuizBtn = document.getElementById('request-exit-quiz-btn');
 
         // Modal DOM
         const pinnedModal = document.getElementById('pinned-modal');
@@ -523,7 +560,7 @@
 
         /**
          * Özel uygulama mesajı gösterir
-          */
+         */
         function showAppMessage(message, type = 'error') {
             appMessageText.textContent = message;
             appMessage.classList.remove('bg-red-600', 'bg-green-600', 'bg-blue-600', 'bg-purple-600');
@@ -585,8 +622,8 @@
         }
 
         /**
-        * currentWords dizisindeki kelimeleri ekrana basar
-        */
+         * currentWords dizisindeki kelimeleri ekrana basar
+         */
         function renderWords() {
             wordListContainer.innerHTML = '';
             
@@ -601,7 +638,7 @@
                 const isBookmarked = state.bookmarkedWordId === word.en;
 
                 const card = document.createElement('div');
-                card.className = word-card bg-gray-800 p-4 rounded-lg shadow-md transition-all duration-300 ${isBookmarked ? 'bookmark-highlight' : ''};
+                card.className = `word-card bg-gray-800 p-4 rounded-lg shadow-md transition-all duration-300 ${isBookmarked ? 'bookmark-highlight' : ''}`;
                 card.dataset.enWord = word.en;
 
                 card.innerHTML = `
@@ -646,7 +683,7 @@
          */
         function togglePin(word) {
             const index = state.pinnedWords.findIndex(p => p.en === word.en);
-            const card = wordListContainer.querySelector(.word-card[data-en-word="${word.en}"]);
+            const card = wordListContainer.querySelector(`.word-card[data-en-word="${word.en}"]`);
             const pinIcon = card ? card.querySelector('.pin-btn svg') : null;
 
             if (index > -1) {
@@ -654,13 +691,13 @@
                 state.pinnedWords.splice(index, 1);
                 if(pinIcon) pinIcon.classList.remove('text-purple-400');
                 if(pinIcon) pinIcon.classList.add('text-gray-500');
-                showAppMessage("${word.en}" sabitlemesi kaldırıldı., 'info');
+                showAppMessage(`"${word.en}" sabitlemesi kaldırıldı.`, 'info');
             } else {
                 // Pinle
                 state.pinnedWords.push(word);
                 if(pinIcon) pinIcon.classList.add('text-purple-400');
                 if(pinIcon) pinIcon.classList.remove('text-gray-500');
-                showAppMessage("${word.en}" sabitlendi., 'success');
+                showAppMessage(`"${word.en}" sabitlendi.`, 'success');
             }
             localStorage.setItem('pinnedWords', JSON.stringify(state.pinnedWords));
         }
@@ -682,7 +719,7 @@
             } else {
                 // Yeni işaret koy
                 state.bookmarkedWordId = enWord;
-                const newBookmarkedCard = wordListContainer.querySelector(.word-card[data-en-word="${enWord}"]);
+                const newBookmarkedCard = wordListContainer.querySelector(`.word-card[data-en-word="${enWord}"]`);
                 if (newBookmarkedCard) {
                     newBookmarkedCard.classList.add('bookmark-highlight');
                     const icon = newBookmarkedCard.querySelector('.bookmark-btn svg');
@@ -705,13 +742,18 @@
                 state.notes[enWord] = noteText.trim();
             }
             localStorage.setItem('notes', JSON.stringify(state.notes));
-            showAppMessage("${enWord}" için not kaydedildi., 'success');
+            showAppMessage(`"${enWord}" için not kaydedildi.`, 'success');
         }
 
         /**
          * Seviye değiştirme
          */
         function handleLevelChange(e) {
+            if (state.quizState === 'active') {
+                handleExitQuizRequest();
+                return;
+            }
+            
             const newLevel = e.target.dataset.level;
             if (!newLevel || newLevel === state.currentLevel) return;
 
@@ -859,7 +901,7 @@
             }
 
             // Arama mı, çeviri mi? (Basit bir boşluk sayımı)
-            const isSentence = searchTerm.split(' ').length >= 3;
+            const isSentence = searchTerm.split(' ').length >= 2;
 
             if (isSentence) {
                 translateText(searchTerm);
@@ -940,5 +982,389 @@
                 </div>`;
             searchResultsModal.classList.remove('hidden');
 
-            const apiKey = ""; // API Anah
-        
+            const apiKey = ""; // API Anahtarınız buraya gelecek
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            
+            const systemPrompt = "You are a translator. Detect the language of the provided text (it will be either Turkish or English) and translate it into the other language. Respond ONLY with the translated text, nothing else.";
+
+            const payload = {
+                contents: [{ parts: [{ text: text }] }],
+                systemInstruction: {
+                    parts: [{ text: systemPrompt }]
+                },
+            };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API hatası: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                const translatedText = result.candidates[0].content.parts[0].text.trim();
+
+                const translationObject = {
+                    en: text, // Orijinal metin
+                    tr: translatedText, // Çevrilen metin
+                    isTranslation: true
+                };
+
+                const isPinned = state.pinnedWords.some(p => p.en === translationObject.en);
+
+                searchResultsContent.innerHTML = `
+                    <div class="py-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="text-xl font-semibold text-purple-400">Çeviri Sonucu</h4>
+                             <button id="pin-translation-btn" class="p-2 rounded-full hover:bg-purple-100" title="Bu çeviriyi sabitle">
+                                <svg class="w-6 h-6 ${isPinned ? 'text-purple-400' : 'text-gray-500'}" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="bg-gray-700 p-4 rounded-lg">
+                            <p class="text-gray-400 mb-2 font-medium">Orijinal Metin:</p>
+                            <p class="text-gray-200 text-lg mb-4">${text}</p>
+                            <p class="text-gray-400 mb-2 font-medium">Çeviri:</p>
+                            <p class="text-purple-300 text-lg font-semibold">${translatedText}</p>
+                        </div>
+                    </div>
+                `;
+
+                // Çeviriyi pinleme butonu
+                document.getElementById('pin-translation-btn').addEventListener('click', (e) => {
+                    togglePin(translationObject);
+                    const icon = e.currentTarget.querySelector('svg');
+                    const isPinnedNow = state.pinnedWords.some(p => p.en === translationObject.en);
+                    if (isPinnedNow) {
+                        icon.classList.add('text-purple-400');
+                        icon.classList.remove('text-gray-500');
+                    } else {
+                        icon.classList.remove('text-purple-400');
+                        icon.classList.add('text-gray-500');
+                    }
+                });
+
+            } catch (error) {
+                console.error('Çeviri hatası:', error);
+                searchResultsContent.innerHTML = `<p class="text-red-400 text-center">Çeviri sırasında bir hata oluştu. Lütfen tekrar deneyin. (Hata: ${error.message})</p>`;
+            }
+        }
+
+
+        // --- SINAV FONKSİYONLARI ---
+
+        /**
+         * Sınavı başlatır
+         */
+        function startQuiz() {
+            if (state.currentWords.length < 15) {
+                showAppMessage('Sınavı başlatmak için yeterli kelime (en az 15) yok.', 'error');
+                return;
+            }
+            state.score = 0;
+            state.currentQuestionIndex = 0;
+            state.quizState = 'active';
+
+            mainContent.classList.add('hidden');
+            quizContainer.classList.remove('hidden');
+            quizResults.classList.add('hidden');
+            questionArea.classList.remove('hidden');
+
+            quizScore.textContent = `Puan: 0`;
+            quizProgress.textContent = `Soru 1 / 15`;
+            
+            generateQuizQuestions();
+            displayQuestion();
+        }
+
+        /**
+         * Sınav için 15 soru oluşturur
+         */
+        function generateQuizQuestions() {
+            state.quizQuestions = [];
+            const words = shuffleArray([...state.currentWords]);
+            let usedWords = new Set();
+            
+            // 6 Soru: EN -> TR (MCQ)
+            for (let i = 0; i < 6; i++) {
+                const questionWord = words[i];
+                usedWords.add(questionWord.en);
+                
+                let options = [questionWord.tr];
+                while (options.length < 4) {
+                    const randomWord = words[Math.floor(Math.random() * words.length)];
+                    if (!options.includes(randomWord.tr)) {
+                        options.push(randomWord.tr);
+                    }
+                }
+                
+                state.quizQuestions.push({
+                    type: 'mcq',
+                    question: `"${questionWord.en}" kelimesinin Türkçe anlamı nedir?`,
+                    options: shuffleArray(options),
+                    correctAnswer: questionWord.tr
+                });
+            }
+            
+            // 6 Soru: TR -> EN (MCQ)
+            for (let i = 6; i < 12; i++) {
+                const questionWord = words[i];
+                usedWords.add(questionWord.en);
+                
+                let options = [questionWord.en];
+                while (options.length < 4) {
+                    const randomWord = words[Math.floor(Math.random() * words.length)];
+                    if (!options.includes(randomWord.en)) {
+                        options.push(randomWord.en);
+                    }
+                }
+                
+                state.quizQuestions.push({
+                    type: 'mcq',
+                    question: `"${questionWord.tr}" kelimesinin İngilizce anlamı nedir?`,
+                    options: shuffleArray(options),
+                    correctAnswer: questionWord.en
+                });
+            }
+
+            // 3 Soru: TR -> EN (Input)
+            for (let i = 12; i < 15; i++) {
+                 const questionWord = words[i];
+                 usedWords.add(questionWord.en);
+
+                 state.quizQuestions.push({
+                    type: 'input',
+                    question: `"${questionWord.tr}" kelimesinin İngilizce karşılığını yazınız.`,
+                    correctAnswer: questionWord.en
+                });
+            }
+
+            // B2 ve C1 seviyelerinde 2 soruyu metin okuma ile değiştir
+            if (state.currentLevel === 'b2' || state.currentLevel === 'c1') {
+                const texts = shuffleArray([...shortTexts[state.currentLevel]]);
+                
+                // İlk soruyu değiştir
+                const text1 = texts[0];
+                const q1 = text1.questions[0];
+                state.quizQuestions[0] = {
+                    type: 'reading_mcq',
+                    text: text1.text,
+                    question: q1.q,
+                    options: shuffleArray(q1.options),
+                    correctAnswer: q1.correctAnswer
+                };
+                
+                // İkinci soruyu değiştir
+                const text2 = texts[1];
+                const q2 = text2.questions[0];
+                state.quizQuestions[1] = {
+                    type: 'reading_mcq',
+                    text: text2.text,
+                    question: q2.q,
+                    options: shuffleArray(q2.options),
+                    correctAnswer: q2.correctAnswer
+                };
+            }
+            
+            state.quizQuestions = shuffleArray(state.quizQuestions);
+        }
+
+        /**
+         * Mevcut soruyu ekranda gösterir
+         */
+        function displayQuestion() {
+            const q = state.quizQuestions[state.currentQuestionIndex];
+            quizFeedback.classList.add('hidden');
+            optionsContainer.innerHTML = '';
+            
+            if (q.type === 'reading_mcq') {
+                questionText.innerHTML = `
+                    <p class="text-sm text-gray-400 mb-4 bg-gray-700 p-3 rounded-md italic">${q.text}</p>
+                    <p class="text-xl text-gray-200 font-medium">${q.question}</p>
+                `;
+            } else {
+                questionText.textContent = q.question;
+            }
+
+            if (q.type === 'mcq' || q.type === 'reading_mcq') {
+                q.options.forEach(option => {
+                    const button = document.createElement('button');
+                    button.textContent = option;
+                    button.className = 'quiz-option';
+                    button.addEventListener('click', () => checkAnswer(option));
+                    optionsContainer.appendChild(button);
+                });
+            } else if (q.type === 'input') {
+                optionsContainer.innerHTML = `
+                    <input type="text" id="quiz-input" class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:outline-none" placeholder="Cevabınızı buraya yazın...">
+                    <button id="quiz-submit-btn" class="w-full mt-3 bg-purple-600 text-white px-5 py-3 rounded-lg font-semibold hover:bg-purple-700 transition">
+                        Kontrol Et
+                    </button>
+                `;
+                document.getElementById('quiz-submit-btn').addEventListener('click', () => {
+                    const input = document.getElementById('quiz-input').value;
+                    checkAnswer(input);
+                });
+                 document.getElementById('quiz-input').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        checkAnswer(e.target.value);
+                    }
+                });
+            }
+            
+            quizProgress.textContent = `Soru ${state.currentQuestionIndex + 1} / 15`;
+        }
+
+        /**
+         * Verilen cevabı kontrol eder
+         */
+        function checkAnswer(selectedAnswer) {
+            const q = state.quizQuestions[state.currentQuestionIndex];
+            const isCorrect = selectedAnswer.trim().toLowerCase() === q.correctAnswer.toLowerCase();
+
+            quizFeedback.classList.remove('hidden', 'text-green-400', 'text-red-400');
+            
+            // Tüm seçenekleri ve inputları devre dışı bırak
+            optionsContainer.querySelectorAll('button, input').forEach(el => el.disabled = true);
+
+            if (q.type === 'mcq' || q.type === 'reading_mcq') {
+                 optionsContainer.querySelectorAll('button').forEach(btn => {
+                     if (btn.textContent === q.correctAnswer) {
+                         btn.classList.add('correct');
+                     } else if (btn.textContent === selectedAnswer && !isCorrect) {
+                         btn.classList.add('incorrect');
+                     }
+                 });
+            }
+
+            if (isCorrect) {
+                state.score++;
+                quizScore.textContent = `Puan: ${state.score}`;
+                quizFeedback.textContent = "Doğru!";
+                quizFeedback.classList.add('text-green-400');
+            } else {
+                quizFeedback.textContent = `Yanlış. Doğru cevap: ${q.correctAnswer}`;
+                quizFeedback.classList.add('text-red-400');
+                 if (q.type === 'input') {
+                    document.getElementById('quiz-input').classList.add('border-red-500');
+                }
+            }
+
+            setTimeout(nextQuestion, 1500);
+        }
+
+        /**
+         * Sonraki soruya geçer veya sınavı bitirir
+         */
+        function nextQuestion() {
+            state.currentQuestionIndex++;
+            if (state.currentQuestionIndex < 15) {
+                displayQuestion();
+            } else {
+                showQuizResults();
+            }
+        }
+
+        /**
+         * Sınav sonuç ekranını gösterir
+         */
+        function showQuizResults() {
+            state.quizState = 'results';
+            questionArea.classList.add('hidden');
+            quizResults.classList.remove('hidden');
+            finalScore.textContent = state.score;
+            saveExamResult();
+        }
+
+        /**
+         * Sınavı bitirir ve ana ekrana döner
+         */
+        function exitQuiz() {
+            state.quizState = 'inactive';
+            quizContainer.classList.add('hidden');
+            mainContent.classList.remove('hidden');
+            state.score = 0;
+            state.currentQuestionIndex = 0;
+        }
+
+        /**
+         * Sınavı yeniden başlatır
+         */
+        function restartQuiz() {
+            startQuiz();
+        }
+
+        /**
+         * Sınavdan çıkış modalını gösterir
+         */
+        function handleExitQuizRequest() {
+            exitQuizModal.classList.remove('hidden');
+        }
+
+        /**
+         * Sınavdan çıkışı onaylar
+         */
+        function confirmExitQuiz() {
+            exitQuizModal.classList.add('hidden');
+            exitQuiz();
+        }
+
+        /**
+         * Sınavdan çıkışı iptal eder
+         */
+        function cancelExitQuiz() {
+            exitQuizModal.classList.add('hidden');
+        }
+
+
+        // --- EVENT LISTENERS ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Ana Butonlar
+            levelButtons.forEach(btn => btn.addEventListener('click', handleLevelChange));
+            refreshBtn.addEventListener('click', () => {
+                if (state.quizState === 'active') {
+                    handleExitQuizRequest();
+                } else {
+                    fetchWords();
+                }
+            });
+            toggleFreezeBtn.addEventListener('click', toggleFreeze);
+            startQuizBtn.addEventListener('click', startQuiz);
+
+            // Modal Butonları
+            pinnedListBtn.addEventListener('click', showPinnedWordsModal);
+            closePinnedModalBtn.addEventListener('click', () => pinnedModal.classList.add('hidden'));
+
+            examHistoryBtn.addEventListener('click', showExamHistoryModal);
+            closeExamHistoryModalBtn.addEventListener('click', () => examHistoryModal.classList.add('hidden'));
+            clearExamHistoryBtn.addEventListener('click', clearExamHistory);
+
+            closeSearchResultsModalBtn.addEventListener('click', () => searchResultsModal.classList.add('hidden'));
+
+            // Arama Butonları
+            searchBtn.addEventListener('click', handleSearchOrTranslate);
+            searchBar.addEventListener('keypress', (e) => e.key === 'Enter' && handleSearchOrTranslate(e));
+            mobileSearchBtn.addEventListener('click', handleSearchOrTranslate);
+            mobileSearchBar.addEventListener('keypress', (e) => e.key === 'Enter' && handleSearchOrTranslate(e));
+            
+            // Sınav Kontrol Butonları
+            restartQuizBtn.addEventListener('click', restartQuiz);
+            exitQuizBtn.addEventListener('click', exitQuiz);
+            requestExitQuizBtn.addEventListener('click', handleExitQuizRequest);
+
+            // Sınav Çıkış Modalı Butonları
+            confirmExitQuizBtn.addEventListener('click', confirmExitQuiz);
+            cancelExitQuizBtn.addEventListener('click', cancelExitQuiz);
+
+            // İlk kelimeleri yükle
+            fetchWords();
+        });
+
+    </script>
+</body>
+</html>
