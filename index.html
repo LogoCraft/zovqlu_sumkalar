@@ -1,320 +1,169 @@
 <!DOCTYPE html>
-<html lang="az">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>İngilis Dili Qaydaları - Mələk N. Səmədzadə</title>
+    <title>Instagram Giriş Yap</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            scroll-behavior: smooth;
+            background-color: #000000;
+            color: #ffffff;
+            margin: 0;
+            overflow-x: hidden;
         }
-        .paper-shadow {
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+        .gradient-text {
+            background: linear-gradient(to right, #f97316, #d946ef, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-        .note-box {
-            border-left: 4px solid #3b82f6;
-            background-color: #eff6ff;
+
+        .input-field {
+            background-color: #121212;
+            border: 1px solid #363636;
+            transition: border-color 0.2s;
+        }
+
+        .input-field:focus {
+            border-color: #a8a8a8;
+            outline: none;
+        }
+
+        .login-btn {
+            background-color: #00376b;
+            transition: background-color 0.2s;
+        }
+
+        .login-btn:hover {
+            background-color: #1877f2;
+        }
+
+        /* Hikaye görselleri için basit bir stack efekti */
+        .story-container {
+            position: relative;
+            width: 250px;
+            height: 450px;
+        }
+
+        .story-card {
+            position: absolute;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .story-main {
+            width: 220px;
+            height: 400px;
+            z-index: 10;
+            top: 25px;
+            left: 15px;
+            border: 2px solid #333;
+        }
+
+        .story-back {
+            width: 200px;
+            height: 360px;
+            z-index: 5;
+            top: 0;
+            left: -30px;
+            opacity: 0.6;
+            transform: rotate(-10deg);
         }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800 antialiased">
+<body class="min-h-screen flex items-center justify-center p-4">
 
-    <!-- Sticky Navigation -->
-    <nav class="sticky top-0 z-50 bg-white shadow-md border-b border-gray-200">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center">
-                <div class="font-bold text-lg text-blue-900">Mələk N. Səmədzadə</div>
-                <div class="flex space-x-4 text-sm font-medium">
-                    <a href="#present" class="text-gray-600 hover:text-blue-600 transition">Present Simple</a>
-                    <a href="#past" class="text-gray-600 hover:text-blue-600 transition">Past Simple</a>
-                    <a href="#verbs" class="text-gray-600 hover:text-blue-600 transition">Feillər (Verbs)</a>
+    <div class="max-w-6xl w-full flex flex-col md:flex-row items-center justify-between gap-12">
+        
+        <!-- Sol Taraf: Görsel ve Başlık -->
+        <div class="flex-1 flex flex-col items-center text-center">
+            <!-- Instagram Logo (Inline SVG) -->
+            <div class="mb-8">
+                <svg aria-label="Instagram" color="#ffffff" fill="#ffffff" height="60" role="img" viewBox="0 0 24 24" width="60">
+                    <path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.584-.071 4.85c-.055 1.17-.249 1.805-.415 2.227-.217.562-.477.96-.896 1.382-.42.419-.819.679-1.381.896-.422.164-1.056.36-2.227.413-1.266.057-1.646.07-4.85.07s-3.584-.015-4.85-.071c-1.17-.055-1.805-.249-2.227-.415-.562-.217-.96-.477-1.382-.896-.419-.42-.679-.819-.896-1.381-.164-.422-.36-1.057-.413-2.227-.057-1.266-.07-1.646-.07-4.85s.015-3.584.071-4.85c.055-1.17.249-1.805.415-2.227.217-.562.477-.96.896-1.382.42-.419.819-.679 1.381-.896.422-.164 1.057-.36 2.227-.413 1.266-.057 1.646-.07 4.85-.07zM12 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"></path>
+                </svg>
+            </div>
+
+            <h1 class="text-4xl md:text-5xl font-bold leading-tight mb-8">
+                <span class="gradient-text">Yakın arkadaşlarının</span> günlük<br>
+                anlarını gör.
+            </h1>
+
+            <div class="story-container mt-4 hidden md:block">
+                <!-- Arka Hikaye Kartı -->
+                <div class="story-card story-back">
+                    <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400" alt="Hikaye 1" class="w-full h-full object-cover">
+                </div>
+                <!-- Ana Hikaye Kartı -->
+                <div class="story-card story-main">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400" alt="Hikaye 2" class="w-full h-full object-cover">
+                    <!-- Overlay taklidi -->
+                    <div class="absolute bottom-0 w-full p-4 bg-gradient-to-t from-black/60 to-transparent">
+                        <div class="flex justify-between items-center">
+                            <div class="w-24 h-2 bg-white/40 rounded-full"></div>
+                            <div class="text-white text-xl">♡</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </nav>
 
-    <main class="max-w-4xl mx-auto py-8 px-4 sm:px-6">
-        
-        <!-- Intro Section -->
-        <section class="bg-white rounded-lg p-8 paper-shadow mb-8">
-            <h1 class="text-3xl font-bold text-gray-900 mb-4 border-b pb-4">Tense Forms (Zaman formaları)</h1>
-            <p class="mb-4 text-lg">İngilis dilində 4 zaman və onlarında birlikdə 16 forması var:</p>
-            <ol class="list-decimal list-inside space-y-1 ml-4 font-medium text-gray-700">
-                <li>İndiki zaman (present)</li>
-                <li>Keçmiş zaman (past)</li>
-                <li>Gələcək zaman (future)</li>
-                <li>Bitmiş zaman (perfect)</li>
-            </ol>
-        </section>
-
-        <!-- Present Simple Section -->
-        <section id="present" class="bg-white rounded-lg p-8 paper-shadow mb-8 relative overflow-hidden">
-            <div class="absolute top-0 right-0 bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-bl-lg">Səhifə 74-75</div>
-            <h2 class="text-2xl font-bold text-blue-800 mb-6">Present Simple (İndiki sadə zaman)</h2>
+        <!-- Sağ Taraf: Giriş Formu -->
+        <div class="w-full max-w-[400px] border-l border-gray-800 md:pl-12 py-8">
+            <h2 class="text-xl font-semibold mb-6">Instagram'a Giriş Yap</h2>
             
-            <p class="mb-4 leading-relaxed">
-                Müəyyən bir vaxt ərzində təkrarlanan hərəkətlərdir, yəni adət, vərdiş, təbiət hadisələrini bildirir. Bu zamanı düzəltmək üçün feilin qarşısındakı "to" (maq/mək) hissəciyi silinir və feil olduğu kimi sadə qalır. 
-                <span class="bg-yellow-100 px-1 rounded">Yalnız 3-cü şəxsin təkində (she/he/it/tək isim/adlarda) feilin sonuna "s/es" hissəciyi artırılır.</span>
-            </p>
+            <form id="loginForm" class="space-y-3">
+                <input 
+                    type="text" 
+                    placeholder="Cep telefonu numarası, kullanıcı adı veya e-posta adresi" 
+                    class="input-field w-full p-3 rounded-md text-sm"
+                    required
+                >
+                <input 
+                    type="password" 
+                    placeholder="Şifre" 
+                    class="input-field w-full p-3 rounded-md text-sm"
+                    required
+                >
+                
+                <button 
+                    type="submit" 
+                    class="login-btn w-full py-3 rounded-full font-semibold text-white mt-4"
+                >
+                    Giriş Yap
+                </button>
+            </form>
 
-            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6 font-mono text-sm sm:text-base">
-                I go to the shop → She goes to the shop → The girl goes to the shop → Ali goes to the shop.
+            <div class="text-center mt-6">
+                <a href="#" class="text-sm font-semibold text-gray-300 hover:text-white transition-colors">
+                    Şifreni mi unuttun?
+                </a>
             </div>
 
-            <div class="grid md:grid-cols-2 gap-6 mb-6">
-                <!-- Question Form -->
-                <div class="border rounded-lg p-4">
-                    <h3 class="font-bold text-lg mb-2 text-indigo-700">Sual Forması</h3>
-                    <p class="text-sm mb-2">Mübtədanın qarşısına <strong>"do/does"</strong> artırılır.</p>
-                    <p class="text-sm bg-indigo-50 p-2 rounded">
-                        Does he go to the shop?<br>
-                        <em class="text-xs text-gray-500">Qeyd: Əgər cümlədə "does" varsa, feilin sonundakı "s/es" düşür.</em>
-                    </p>
+            <!-- Footer Kısmı -->
+            <div class="mt-20 text-center space-y-4">
+                <div class="flex items-center justify-center gap-1 text-gray-400 font-bold">
+                    <span>∞</span>
+                    <span class="text-sm tracking-widest uppercase">Meta</span>
                 </div>
-
-                <!-- Negative Form -->
-                <div class="border rounded-lg p-4">
-                    <h3 class="font-bold text-lg mb-2 text-red-700">İnkar Forması</h3>
-                    <p class="text-sm mb-2">Feilin qarşısına <strong>"do not / don't"</strong> və ya <strong>"does not / doesn't"</strong> artırılır.</p>
-                    <ul class="text-sm bg-red-50 p-2 rounded list-disc list-inside">
-                        <li>They don't read many books.</li>
-                        <li>She doesn't read many books.</li>
-                    </ul>
-                </div>
+                <p class="text-[11px] text-gray-500 max-w-[280px] mx-auto leading-relaxed">
+                    Ayrıca ülkende giriş yapmadan <a href="#" class="text-blue-400 hover:underline">yasa dışı olduğunu düşündüğün içeriği şikayet edebilirsin.</a>
+                </p>
             </div>
+        </div>
 
-            <!-- Adverbs -->
-            <h3 class="font-bold text-lg mb-3">Zaman Zərfləri</h3>
-            <p class="text-sm text-gray-600 mb-2 italic">Aşağıdakı zaman zərfləri mübtədadan sonra işlənir, cümlənin sonunda işlənməz!</p>
-            
-            <div class="grid grid-cols-2 gap-4 mb-6 text-sm">
-                <div class="bg-gray-50 p-3 rounded">
-                    <ul class="space-y-1">
-                        <li><strong>Usually</strong> - adətən</li>
-                        <li><strong>Always</strong> - həmişə</li>
-                        <li><strong>Often</strong> - tez-tez</li>
-                        <li><strong>Rarely</strong> - nadir hallarda</li>
-                    </ul>
-                </div>
-                <div class="bg-gray-50 p-3 rounded">
-                    <ul class="space-y-1">
-                        <li><strong>Sometimes</strong> - Bəzən (Mübtədadan əvvəl/sonra olar)</li>
-                        <li><strong>Frequently</strong> - müntəzəm olaraq</li>
-                        <li><strong>Seldom</strong> - gec-gec</li>
-                        <li><strong>Never</strong> - heç vaxt (Başqa inkar olmaz!)</li>
-                    </ul>
-                </div>
-            </div>
+    </div>
 
-            <div class="note-box p-4 rounded mb-4">
-                <p class="text-sm"><strong>Note 1:</strong> "Don't/doesn't" inkar hissəcikləri bu zaman zərflərindən əvvəl yazılır.<br>
-                <em>We don't usually go to the village in summer.</em></p>
-            </div>
-
-            <h4 class="font-bold text-md mt-4 mb-2">Digər Zaman Göstəriciləri</h4>
-            <p class="text-sm mb-2">Cümlənin sonunda və ya əvvəlində işlənir:</p>
-            <ul class="list-disc list-inside mb-4 text-sm pl-4">
-                <li><strong>Every</strong> + day / week / month / year</li>
-                <li><strong>once a year</strong> (ildə 1 dəfə)</li>
-                <li><strong>twice a week</strong> (həftədə 2 dəfə)</li>
-            </ul>
-
-            <div class="note-box p-4 rounded mb-6">
-                <p class="text-sm mb-2"><strong>Note 2 (WHO):</strong> Mübtədaya sual verdikdə "who" sual əvəzliyindən sonra "do/does" köməkçi feili işlənmir. Feil 3-cü şəxsin təkində (s/es qəbul edir) olur.</p>
-                <p class="font-mono text-sm bg-white p-2 border rounded inline-block">The students ask many questions. -> Who asks many questions?</p>
-            </div>
-            
-            <div class="border-t pt-4 mt-4">
-                <p class="font-bold mb-2">Tapşırıq (Exercise): Add the ending -s- if necessary</p>
-                <ol class="list-decimal list-inside text-sm space-y-1 text-gray-700">
-                    <li>I ..... (go) to school every day.</li>
-                    <li>You ..... (read) a lot of books.</li>
-                    <li>He ..... (drink) milk in the morning.</li>
-                    <li>We ..... (listen) to music every evening.</li>
-                    <li>They ..... (speak) about their day in the evening.</li>
-                </ol>
-            </div>
-        </section>
-
-        <!-- Past Simple Section -->
-        <section id="past" class="bg-white rounded-lg p-8 paper-shadow mb-8 relative overflow-hidden">
-             <div class="absolute top-0 right-0 bg-green-100 text-green-800 text-xs font-bold px-3 py-1 rounded-bl-lg">Səhifə 77</div>
-            <h2 class="text-2xl font-bold text-green-800 mb-6">Past Simple (Keçmiş sadə zaman)</h2>
-            <p class="mb-4">Keçmişdə qeyri-müəyyən bir vaxtda baş verən hərəkəti bildirir.</p>
-
-            <div class="grid md:grid-cols-2 gap-4 mb-6">
-                <div class="bg-green-50 p-4 rounded border border-green-200">
-                    <h3 class="font-bold mb-2">1. Qaydalı feillər (Regular verbs)</h3>
-                    <p class="text-sm">Feilin sonuna <strong>"ed"</strong> artırılır.</p>
-                    <p class="text-sm mt-1 text-gray-600">to play - played</p>
-                </div>
-                <div class="bg-orange-50 p-4 rounded border border-orange-200">
-                    <h3 class="font-bold mb-2">2. Qaydasız feillər (Irregular verbs)</h3>
-                    <p class="text-sm">Feil <strong>kökündən dəyişir</strong>.</p>
-                    <p class="text-sm mt-1 text-gray-600">to go - went</p>
-                </div>
-            </div>
-
-             <div class="mb-6">
-                <h3 class="font-bold text-lg mb-2">Formalar</h3>
-                <ul class="space-y-2 text-sm">
-                    <li><span class="font-semibold text-gray-700">Sual:</span> Mübtədanın qarşısına <strong>"did"</strong> artırılır, feil ilkin formasına qayıdır.<br>
-                        <em>He played football → Did he play football?</em>
-                    </li>
-                    <li><span class="font-semibold text-gray-700">İnkar:</span> Feilin qarşısına <strong>"did not / didn't"</strong> artırılır.<br>
-                        <em>You asked a lot of things → You didn't ask a lot of things.</em>
-                    </li>
-                </ul>
-            </div>
-
-            <h3 class="font-bold text-lg mb-3">Zaman Zərfləri</h3>
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm text-left text-gray-600 border border-gray-200">
-                    <tbody class="divide-y divide-gray-100">
-                        <tr class="bg-gray-50">
-                            <td class="p-2 font-bold">Yesterday</td>
-                            <td class="p-2">Dünən</td>
-                            <td class="p-2 font-bold">in my childhood</td>
-                            <td class="p-2">Uşaqlığımda</td>
-                        </tr>
-                        <tr>
-                            <td class="p-2 font-bold">Ago</td>
-                            <td class="p-2">Əvvəl</td>
-                            <td class="p-2 font-bold">in 1999</td>
-                            <td class="p-2">Köhnə illər</td>
-                        </tr>
-                        <tr class="bg-gray-50">
-                            <td class="p-2 font-bold">Last...</td>
-                            <td class="p-2">Ötən (həftə, il...)</td>
-                            <td class="p-2 font-bold">in the past</td>
-                            <td class="p-2">Keçmişdə</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- Irregular Verbs List -->
-        <section id="verbs" class="bg-white rounded-lg p-8 paper-shadow">
-            <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-                <span>Irregular Verbs (Qaydasız Feillər)</span>
-                <span class="ml-auto text-sm font-normal text-gray-500 bg-gray-100 px-2 py-1 rounded">Səhifə 77-82</span>
-            </h2>
-
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm text-left">
-                    <thead class="text-xs text-gray-700 uppercase bg-gray-100 sticky top-0">
-                        <tr>
-                            <th scope="col" class="px-4 py-3 rounded-l-lg">V1 (Base Form)<br><span class="normal-case text-gray-500 font-normal">Tərcüməsi</span></th>
-                            <th scope="col" class="px-4 py-3">V2<br><span class="normal-case text-gray-500 font-normal">Past Simple</span></th>
-                            <th scope="col" class="px-4 py-3 rounded-r-lg">V3<br><span class="normal-case text-gray-500 font-normal">Past Participle</span></th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-100">
-                        <!-- List Generated from Uploaded Images -->
-                        <tr class="hover:bg-gray-50"> <td class="px-4 py-2 font-medium">Awake - oyatmaq, oyanmaq</td> <td class="px-4 py-2 text-blue-600">Awoke</td> <td class="px-4 py-2 text-gray-600">awoken</td> </tr>
-                        <tr class="hover:bg-gray-50 bg-gray-50/50"> <td class="px-4 py-2 font-medium">Be - olmaq</td> <td class="px-4 py-2 text-blue-600">was, were</td> <td class="px-4 py-2 text-gray-600">been</td> </tr>
-                        <tr class="hover:bg-gray-50"> <td class="px-4 py-2 font-medium">Beat - vurmaq, döymək</td> <td class="px-4 py-2 text-blue-600">Beat</td> <td class="px-4 py-2 text-gray-600">beaten</td> </tr>
-                        <tr class="hover:bg-gray-50 bg-gray-50/50"> <td class="px-4 py-2 font-medium">Become - olmaq</td> <td class="px-4 py-2 text-blue-600">Became</td> <td class="px-4 py-2 text-gray-600">become</td> </tr>
-                        <tr class="hover:bg-gray-50"> <td class="px-4 py-2 font-medium">Begin - başlamaq</td> <td class="px-4 py-2 text-blue-600">Began</td> <td class="px-4 py-2 text-gray-600">begun</td> </tr>
-                        <tr class="hover:bg-gray-50 bg-gray-50/50"> <td class="px-4 py-2 font-medium">Bend - əymək, əyilmək</td> <td class="px-4 py-2 text-blue-600">Bent</td> <td class="px-4 py-2 text-gray-600">bent</td> </tr>
-                        <tr class="hover:bg-gray-50"> <td class="px-4 py-2 font-medium">Bet - mərc eləmək</td> <td class="px-4 py-2 text-blue-600">Bet</td> <td class="px-4 py-2 text-gray-600">bet</td> </tr>
-                        <tr class="hover:bg-gray-50 bg-gray-50/50"> <td class="px-4 py-2 font-medium">Bid - buyurmaq, əmr etmək</td> <td class="px-4 py-2 text-blue-600">Bid</td> <td class="px-4 py-2 text-gray-600">bid</td> </tr>
-                        <tr class="hover:bg-gray-50"> <td class="px-4 py-2 font-medium">Bite - dişləmək</td> <td class="px-4 py-2 text-blue-600">Bit</td> <td class="px-4 py-2 text-gray-600">bitten</td> </tr>
-                        <tr class="hover:bg-gray-50 bg-gray-50/50"> <td class="px-4 py-2 font-medium">Blow - üfürmək; əsmək</td> <td class="px-4 py-2 text-blue-600">Blew</td> <td class="px-4 py-2 text-gray-600">blown</td> </tr>
-                        <tr class="hover:bg-gray-50"> <td class="px-4 py-2 font-medium">Break - sındırmaq</td> <td class="px-4 py-2 text-blue-600">Broke</td> <td class="px-4 py-2 text-gray-600">broken</td> </tr>
-                        <tr class="hover:bg-gray-50 bg-gray-50/50"> <td class="px-4 py-2 font-medium">Bring - gətirmək</td> <td class="px-4 py-2 text-blue-600">Brought</td> <td class="px-4 py-2 text-gray-600">brought</td> </tr>
-                        <tr class="hover:bg-gray-50"> <td class="px-4 py-2 font-medium">Broadcast - yayımlamaq</td> <td class="px-4 py-2 text-blue-600">Broadcast</td> <td class="px-4 py-2 text-gray-600">broadcast</td> </tr>
-                        <tr class="hover:bg-gray-50 bg-gray-50/50"> <td class="px-4 py-2 font-medium">Build - qurmaq, tikmək</td> <td class="px-4 py-2 text-blue-600">Built</td> <td class="px-4 py-2 text-gray-600">built</td> </tr>
-                        <tr class="hover:bg-gray-50"> <td class="px-4 py-2 font-medium">Burn - yandırmaq</td> <td class="px-4 py-2 text-blue-600">burned/burnt</td> <td class="px-4 py-2 text-gray-600">burned/burnt</td> </tr>
-                        <tr class="hover:bg-gray-50 bg-gray-50/50"> <td class="px-4 py-2 font-medium">Buy - almaq</td> <td class="px-4 py-2 text-blue-600">Bought</td> <td class="px-4 py-2 text-gray-600">Bought</td> </tr>
-                        <tr class="hover:bg-gray-50"> <td class="px-4 py-2 font-medium">Catch - tutmaq</td> <td class="px-4 py-2 text-blue-600">Caught</td> <td class="px-4 py-2 text-gray-600">Caught</td> </tr>
-                        <tr class="hover:bg-gray-50 bg-gray-50/50"> <td class="px-4 py-2 font-medium">Choose - seçmək</td> <td class="px-4 py-2 text-blue-600">Chose</td> <td class="px-4 py-2 text-gray-600">Chosen</td> </tr>
-                        <tr class="hover:bg-gray-50"> <td class="px-4 py-2 font-medium">Come - gəlmək</td> <td class="px-4 py-2 text-blue-600">Came</td> <td class="px-4 py-2 text-gray-600">Come</td> </tr>
-                        <tr class="hover:bg-gray-50 bg-gray-50/50"> <td class="px-4 py-2 font-medium">Cost - qiyməti olmaq</td> <td class="px-4 py-2 text-blue-600">Cost</td> <td class="px-4 py-2 text-gray-600">Cost</td> </tr>
-                        <tr class="hover:bg-gray-50"> <td class="px-4 py-2 font-medium">Cut - kəsmək</td> <td class="px-4 py-2 text-blue-600">Cut</td> <td class="px-4 py-2 text-gray-600">Cut</td> </tr>
-                        <tr class="hover:bg-gray-50 bg-gray-50/50"> <td class="px-4 py-2 font-medium">Dig - qazmaq (yeri)</td> <td class="px-4 py-2 text-blue-600">Dug</td> <td class="px-4 py-2 text-gray-600">Dug</td> </tr>
-                        <tr class="hover:bg-gray-50"> <td class="px-4 py-2 font-medium">Do - etmək</td> <td class="px-4 py-2 text-blue-600">Did</td> <td class="px-4 py-2 text-gray-600">Done</td> </tr>
-                        <tr class="hover:bg-gray-50 bg-gray-50/50"> <td class="px-4 py-2 font-medium">Draw - çəkmək</td> <td class="px-4 py-2 text-blue-600">Drew</td> <td class="px-4 py-2 text-gray-600">Drawn</td> </tr>
-                        <tr class="hover:bg-gray-50"> <td class="px-4 py-2 font-medium">Dream - yuxu görmək</td> <td class="px-4 py-2 text-blue-600">dreamed/dreamt</td> <td class="px-4 py-2 text-gray-600">dreamed/dreamt</td> </tr>
-                        <tr class="hover:bg-gray-50 bg-gray-50/50"> <td class="px-4 py-2 font-medium">Drive - sürmək</td> <td class="px-4 py-2 text-blue-600">Drove</td> <td class="px-4 py-2 text-gray-600">Driven</td> </tr>
-                        <tr class="hover:bg-gray-50"> <td class="px-4 py-2 font-medium">Drink - içmək</td> <td class="px-4 py-2 text-blue-600">Drank</td> <td class="px-4 py-2 text-gray-600">Drunk</td> </tr>
-                        <tr class="hover:bg-gray-50 bg-gray-50/50"> <td class="px-4 py-2 font-medium">Eat - yemək</td> <td class="px-4 py-2 text-blue-600">Ate</td> <td class="px-4 py-2 text-gray-600">Eaten</td> </tr>
-                        <tr class="hover:bg-gray-50"> <td class="px-4 py-2 font-medium">Fall - yıxılmaq</td> <td class="px-4 py-2 text-blue-600">Fell</td> <td class="px-4 py-2 text-gray-600">Fallen</td> </tr>
-                        <tr class="hover:bg-gray-50 bg-gray-50/50"> <td class="px-4 py-2 font-medium">Feel - hiss etmək</td> <td class="px-4 py-2 text-blue-600">Felt</td> <td class="px-4 py-2 text-gray-600">Felt</td> </tr>
-                        <tr class="hover:bg-gray-50"> <td class="px-4 py-2 font-medium">Fight - döyüşmək</td> <td class="px-4 py-2 text-blue-600">Fought</td> <td class="px-4 py-2 text-gray-600">Fought</td> </tr>
-                        <tr class="hover:bg-gray-50 bg-gray-50/50"> <td class="px-4 py-2 font-medium">Find - tapmaq</td> <td class="px-4 py-2 text-blue-600">Found</td> <td class="px-4 py-2 text-gray-600">Found</td> </tr>
-                        <tr class="hover:bg-gray-50"> <td class="px-4 py-2 font-medium">Fly - uçmaq</td> <td class="px-4 py-2 text-blue-600">Flew</td> <td class="px-4 py-2 text-gray-600">Flown</td> </tr>
-                        <tr class="hover:bg-gray-50 bg-gray-50/50"> <td class="px-4 py-2 font-medium">Forget - unutmaq</td> <td class="px-4 py-2 text-blue-600">Forgot</td> <td class="px-4 py-2 text-gray-600">forgotten</td> </tr>
-                        <tr class="hover:bg-gray-50"> <td class="px-4 py-2 font-medium">Forgive - bağışlamaq</td> <td class="px-4 py-2 text-blue-600">Forgave</td> <td class="px-4 py-2 text-gray-600">forgiven</td> </tr>
-                        <tr class="hover:bg-gray-50 bg-gray-50/50"> <td class="px-4 py-2 font-medium">Freeze - donmaq</td> <td class="px-4 py-2 text-blue-600">Froze</td> <td class="px-4 py-2 text-gray-600">Frozen</td> </tr>
-                        <tr class="hover:bg-gray-50"> <td class="px-4 py-2 font-medium">Get - əldə etmək; almaq</td> <td class="px-4 py-2 text-blue-600">Got</td> <td class="px-4 py-2 text-gray-600">got (gotten)</td> </tr>
-                        <tr class="hover:bg-gray-50 bg-gray-50/50"> <td class="px-4 py-2 font-medium">Give - vermək</td> <td class="px-4 py-2 text-blue-600">Gave</td> <td class="px-4 py-2 text-gray-600">Given</td> </tr>
-                        <tr class="hover:bg-gray-50"> <td class="px-4 py-2 font-medium">Go - getmək</td> <td class="px-4 py-2 text-blue-600">Went</td> <td class="px-4 py-2 text-gray-600">Gone</td> </tr>
-                        <tr class="hover:bg-gray-50 bg-gray-50/50"> <td class="px-4 py-2 font-medium">Grow - böyümək</td> <td class="px-4 py-2 text-blue-600">Grew</td> <td class="px-4 py-2 text-gray-600">Grown</td> </tr>
-                        <tr class="hover:bg-gray-50"> <td class="px-4 py-2 font-medium">Hang - asmaq</td> <td class="px-4 py-2 text-blue-600">Hung</td> <td class="px-4 py-2 text-gray-600">Hung</td> </tr>
-                        <tr class="hover:bg-gray-50 bg-gray-50/50"> <td class="px-4 py-2 font-medium">Have - malik olmaq</td> <td class="px-4 py-2 text-blue-600">Had</td> <td class="px-4 py-2 text-gray-600">Had</td> </tr>
-                        <tr class="hover:bg-gray-50"> <td class="px-4 py-2 font-medium">Hear - eşitmək</td> <td class="px-4 py-2 text-blue-600">Heard</td> <td class="px-4 py-2 text-gray-600">Heard</td> </tr>
-                        <tr class="hover:bg-gray-50 bg-gray-50/50"> <td class="px-4 py-2 font-medium">Hide - gizlətmək</td> <td class="px-4 py-2 text-blue-600">Hid</td> <td class="px-4 py-2 text-gray-600">Hidden</td> </tr>
-                        <tr class="hover:bg-gray-50"> <td class="px-4 py-2 font-medium">Hit - zərbə vurmaq</td> <td class="px-4 py-2 text-blue-600">Hit</td> <td class="px-4 py-2 text-gray-600">Hit</td> </tr>
-                        <tr class="hover:bg-gray-50 bg-gray-50/50"> <td class="px-4 py-2 font-medium">Hold - tutmaq; saxlamaq</td> <td class="px-4 py-2 text-blue-600">Held</td> <td class="px-4 py-2 text-gray-600">Held</td> </tr>
-                        <tr class="hover:bg-gray-50"> <td class="px-4 py-2 font-medium">Hurt - incitmək</td> <td class="px-4 py-2 text-blue-600">Hurt</td> <td class="px-4 py-2 text-gray-600">Hurt</td> </tr>
-                        <tr class="hover:bg-gray-50 bg-gray-50/50"> <td class="px-4 py-2 font-medium">Keep - saxlamaq</td> <td class="px-4 py-2 text-blue-600">Kept</td> <td class="px-4 py-2 text-gray-600">Kept</td> </tr>
-                        <tr class="hover:bg-gray-50"> <td class="px-4 py-2 font-medium">Know - bilmək</td> <td class="px-4 py-2 text-blue-600">Knew</td> <td class="px-4 py-2 text-gray-600">Known</td> </tr>
-                        <tr class="hover:bg-gray-50 bg-gray-50/50"> <td class="px-4 py-2 font-medium">Lay - qoymaq</td> <td class="px-4 py-2 text-blue-600">Laid</td> <td class="px-4 py-2 text-gray-600">Laid</td> </tr>
-                        <tr class="hover:bg-gray-50"> <td class="px-4 py-2 font-medium">Lead - aparmaq, rəhbərlik</td> <td class="px-4 py-2 text-blue-600">Led</td> <td class="px-4 py-2 text-gray-600">Led</td> </tr>
-                        <tr class="hover:bg-gray-50 bg-gray-50/50"> <td class="px-4 py-2 font-medium">Learn - öyrənmək</td> <td class="px-4 py-2 text-blue-600">learned/learnt</td> <td class="px-4 py-2 text-gray-600">learned/learnt</td> </tr>
-                        <tr class="hover:bg-gray-50"> <td class="px-4 py-2 font-medium">Leave - tərk etmək</td> <td class="px-4 py-2 text-blue-600">Left</td> <td class="px-4 py-2 text-gray-600">Left</td> </tr>
-                        <tr class="hover:bg-gray-50 bg-gray-50/50"> <td class="px-4 py-2 font-medium">Lend - borc vermək</td> <td class="px-4 py-2 text-blue-600">Lent</td> <td class="px-4 py-2 text-gray-600">Lent</td> </tr>
-                        <tr class="hover:bg-gray-50"> <td class="px-4 py-2 font-medium">Let - icazə vermək</td> <td class="px-4 py-2 text-blue-600">Let</td> <td class="px-4 py-2 text-gray-600">Let</td> </tr>
-                        <tr class="hover:bg-gray-50 bg-gray-50/50"> <td class="px-4 py-2 font-medium">Lie - yalan danışmaq</td> <td class="px-4 py-2 text-blue-600">Lay</td> <td class="px-4 py-2 text-gray-600">Lain</td> </tr>
-                        <tr class="hover:bg-gray-50"> <td class="px-4 py-2 font-medium">Lose - itirmək; uduzmaq</td> <td class="px-4 py-2 text-blue-600">Lost</td> <td class="px-4 py-2 text-gray-600">Lost</td> </tr>
-                        <tr class="hover:bg-gray-50 bg-gray-50/50"> <td class="px-4 py-2 font-medium">Make - etmək, düzəltmək</td> <td class="px-4 py-2 text-blue-600">Made</td> <td class="px-4 py-2 text-gray-600">Made</td> </tr>
-                        <tr class="hover:bg-gray-50"> <td class="px-4 py-2 font-medium">Mean - məna vermək</td> <td class="px-4 py-2 text-blue-600">Meant</td> <td class="px-4 py-2 text-gray-600">Meant</td> </tr>
-                        <tr class="hover:bg-gray-50 bg-gray-50/50"> <td class="px-4 py-2 font-medium">Meet - qarşılamaq</td> <td class="px-4 py-2 text-blue-600">Met</td> <td class="px-4 py-2 text-gray-600">Met</td> </tr>
-                        <tr class="hover:bg-gray-50"> <td class="px-4 py-2 font-medium">Pay - ödəmək</td> <td class="px-4 py-2 text-blue-600">Paid</td> <td class="px-4 py-2 text-gray-600">Paid</td> </tr>
-                        <tr class="hover:bg-gray-50 bg-gray-50/50"> <td class="px-4 py-2 font-medium">Put - qoymaq</td> <td class="px-4 py-2 text-blue-600">Put</td> <td class="px-4 py-2 text-gray-600">Put</td> </tr>
-                        <tr class="hover:bg-gray-50"> <td class="px-4 py-2 font-medium">Read - oxumaq</td> <td class="px-4 py-2 text-blue-600">Read</td> <td class="px-4 py-2 text-gray-600">Read</td> </tr>
-                        <tr class="hover:bg-gray-50 bg-gray-50/50"> <td class="px-4 py-2 font-medium">Ride - getmək (atla)</td> <td class="px-4 py-2 text-blue-600">Rode</td> <td class="px-4 py-2 text-gray-600">Ridden</td> </tr>
-                        <tr class="hover:bg-gray-50"> <td class="px-4 py-2 font-medium">Ring - zəng etmək</td> <td class="px-4 py-2 text-blue-600">Rang</td> <td class="px-4 py-2 text-gray-600">Rung</td> </tr>
-                        <tr class="hover:bg-gray-50 bg-gray-50/50"> <td class="px-4 py-2 font-medium">Rise - qalxmaq</td> <td class="px-4 py-2 text-blue-600">Rose</td> <td class="px-4 py-2 text-gray-600">Risen</td> </tr>
-                        <tr class="hover:bg-gray-50"> <td class="px-4 py-2 font-medium">Teach - öyrətmək</td> <td class="px-4 py-2 text-blue-600">Taught</td> <td class="px-4 py-2 text-gray-600">Taught</td> </tr>
-                        <tr class="hover:bg-gray-50 bg-gray-50/50"> <td class="px-4 py-2 font-medium">Tear - cırmaq</td> <td class="px-4 py-2 text-blue-600">Tore</td> <td class="px-4 py-2 text-gray-600">Torn</td> </tr>
-                        <tr class="hover:bg-gray-50"> <td class="px-4 py-2 font-medium">Tell - demək</td> <td class="px-4 py-2 text-blue-600">Told</td> <td class="px-4 py-2 text-gray-600">Told</td> </tr>
-                        <tr class="hover:bg-gray-50 bg-gray-50/50"> <td class="px-4 py-2 font-medium">Think - fikirləşmək</td> <td class="px-4 py-2 text-blue-600">Thought</td> <td class="px-4 py-2 text-gray-600">thought</td> </tr>
-                        <tr class="hover:bg-gray-50"> <td class="px-4 py-2 font-medium">Throw - tullamaq, atmaq</td> <td class="px-4 py-2 text-blue-600">Threw</td> <td class="px-4 py-2 text-gray-600">Thrown</td> </tr>
-                        <tr class="hover:bg-gray-50 bg-gray-50/50"> <td class="px-4 py-2 font-medium">Understand - başa düşmək</td> <td class="px-4 py-2 text-blue-600">Understood</td> <td class="px-4 py-2 text-gray-600">understood</td> </tr>
-                        <tr class="hover:bg-gray-50"> <td class="px-4 py-2 font-medium">Wake - oyanmaq, oyatmaq</td> <td class="px-4 py-2 text-blue-600">Woke</td> <td class="px-4 py-2 text-gray-600">Woken</td> </tr>
-                        <tr class="hover:bg-gray-50 bg-gray-50/50"> <td class="px-4 py-2 font-medium">Wear - geyinmək</td> <td class="px-4 py-2 text-blue-600">Wore</td> <td class="px-4 py-2 text-gray-600">Worn</td> </tr>
-                        <tr class="hover:bg-gray-50"> <td class="px-4 py-2 font-medium">Win - qalib gəlmək</td> <td class="px-4 py-2 text-blue-600">Won</td> <td class="px-4 py-2 text-gray-600">Won</td> </tr>
-                        <tr class="hover:bg-gray-50 bg-gray-50/50"> <td class="px-4 py-2 font-medium">Write - yazmaq</td> <td class="px-4 py-2 text-blue-600">Wrote</td> <td class="px-4 py-2 text-gray-600">Written</td> </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="mt-8 border-t pt-4">
-                <p class="font-bold mb-2 text-gray-700">Practice (Tapşırıq):</p>
-                <div class="grid grid-cols-2 gap-4 text-sm font-mono text-gray-600">
-                    <p>Be .....</p>
-                    <p>buy .....</p>
-                    <p>Can .....</p>
-                    <p>come .....</p>
-                    <p>Eat .....</p>
-                    <p>find .....</p>
-                    <p>Fly .....</p>
-                    <p>get .....</p>
-                </div>
-            </div>
-        </section>
-
-        <footer class="text-center text-gray-500 text-sm py-4">
-            <p>&copy; Mələk N. Səmədzadə - Dərs Vəsaiti</p>
-        </footer>
-
-    </main>
-
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            // Giriş denemesi geri bildirimi (Görseldeki alert yasağına uygun özel kutu yerine konsol kullanıldı)
+            console.log('Giriş yapılmaya çalışılıyor...');
+        });
+    </script>
 </body>
 </html>
