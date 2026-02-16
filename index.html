@@ -5,14 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Instagram Giriş Yap</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
             background-color: #000000;
             color: #ffffff;
             margin: 0;
-            overflow-x: hidden;
+            display: flex;
+            min-height: 100 screen;
+        }
+
+        /* Sol Taraf - Saf Siyah */
+        .left-section {
+            background-color: #000000;
+            flex: 1.2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            padding: 40px;
+        }
+
+        /* Sağ Taraf - Füme/Gri Geçiş */
+        .right-section {
+            background-color: #121212; /* Fotoğraftaki o koyu gri ton */
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-left: 1px solid #262626; /* Ara kesme çizgisi */
+            padding: 40px;
         }
 
         .gradient-text {
@@ -22,147 +47,145 @@
         }
 
         .input-field {
-            background-color: #121212;
+            background-color: #000000;
             border: 1px solid #363636;
+            color: #efefef;
             transition: border-color 0.2s;
         }
 
         .input-field:focus {
-            border-color: #a8a8a8;
+            border-color: #555555;
             outline: none;
         }
 
         .login-btn {
             background-color: #00376b;
-            transition: background-color 0.2s;
+            color: #ffffff;
+            font-weight: 600;
+            transition: all 0.2s;
         }
 
         .login-btn:hover {
             background-color: #1877f2;
         }
 
-        /* Hikaye görselleri için basit bir stack efekti */
-        .story-container {
+        /* Fotoğraftaki üst üste binen telefon/story efekti */
+        .story-stack {
             position: relative;
-            width: 250px;
-            height: 450px;
+            width: 320px;
+            height: 480px;
+            margin-top: 40px;
         }
 
-        .story-card {
+        .story-img {
             position: absolute;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border-radius: 24px;
+            object-fit: cover;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+            border: 1px solid #333;
         }
 
-        .story-main {
-            width: 220px;
-            height: 400px;
-            z-index: 10;
-            top: 25px;
-            left: 15px;
-            border: 2px solid #333;
+        .img-1 { width: 180px; height: 320px; left: 0; top: 60px; z-index: 1; transform: rotate(-5deg); filter: brightness(0.7); }
+        .img-2 { width: 210px; height: 380px; left: 50px; top: 20px; z-index: 3; border: 2px solid #444; }
+        .img-3 { width: 160px; height: 280px; right: 0; top: 100px; z-index: 2; transform: rotate(8deg); filter: brightness(0.6); }
+
+        .meta-text {
+            letter-spacing: 0.2em;
+            font-weight: 700;
+            color: #8e8e8e;
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
 
-        .story-back {
-            width: 200px;
-            height: 360px;
-            z-index: 5;
-            top: 0;
-            left: -30px;
-            opacity: 0.6;
-            transform: rotate(-10deg);
+        .meta-symbol {
+            font-size: 1.2rem;
+            margin-top: -2px;
         }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4">
+<body>
 
-    <div class="max-w-6xl w-full flex flex-col md:flex-row items-center justify-between gap-12">
-        
-        <!-- Sol Taraf: Görsel ve Başlık -->
-        <div class="flex-1 flex flex-col items-center text-center">
-            <!-- Instagram Logo (Inline SVG) -->
-            <div class="mb-8">
-                <svg aria-label="Instagram" color="#ffffff" fill="#ffffff" height="60" role="img" viewBox="0 0 24 24" width="60">
-                    <path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.584-.071 4.85c-.055 1.17-.249 1.805-.415 2.227-.217.562-.477.96-.896 1.382-.42.419-.819.679-1.381.896-.422.164-1.056.36-2.227.413-1.266.057-1.646.07-4.85.07s-3.584-.015-4.85-.071c-1.17-.055-1.805-.249-2.227-.415-.562-.217-.96-.477-1.382-.896-.419-.42-.679-.819-.896-1.381-.164-.422-.36-1.057-.413-2.227-.057-1.266-.07-1.646-.07-4.85s.015-3.584.071-4.85c.055-1.17.249-1.805.415-2.227.217-.562.477-.96.896-1.382.42-.419.819-.679 1.381-.896.422-.164 1.057-.36 2.227-.413 1.266-.057 1.646-.07 4.85-.07zM12 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"></path>
-                </svg>
-            </div>
-
-            <h1 class="text-4xl md:text-5xl font-bold leading-tight mb-8">
-                <span class="gradient-text">Yakın arkadaşlarının</span> günlük<br>
-                anlarını gör.
-            </h1>
-
-            <div class="story-container mt-4 hidden md:block">
-                <!-- Arka Hikaye Kartı -->
-                <div class="story-card story-back">
-                    <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400" alt="Hikaye 1" class="w-full h-full object-cover">
-                </div>
-                <!-- Ana Hikaye Kartı -->
-                <div class="story-card story-main">
-                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400" alt="Hikaye 2" class="w-full h-full object-cover">
-                    <!-- Overlay taklidi -->
-                    <div class="absolute bottom-0 w-full p-4 bg-gradient-to-t from-black/60 to-transparent">
-                        <div class="flex justify-between items-center">
-                            <div class="w-24 h-2 bg-white/40 rounded-full"></div>
-                            <div class="text-white text-xl">♡</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <!-- Sol Bölüm -->
+    <div class="left-section hidden md:flex">
+        <!-- Logo Sol Üstte -->
+        <div class="absolute top-10 left-10">
+            <svg aria-label="Instagram" height="42" role="img" viewBox="0 0 24 24" width="42">
+                <defs>
+                    <linearGradient id="insta-grad" x1="0%" y1="100%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#fdf497;" />
+                        <stop offset="45%" style="stop-color:#fd5949;" />
+                        <stop offset="60%" style="stop-color:#d6249f;" />
+                        <stop offset="90%" style="stop-color:#285AEB;" />
+                    </linearGradient>
+                </defs>
+                <path fill="url(#insta-grad)" d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.584-.071 4.85c-.055 1.17-.249 1.805-.415 2.227-.217.562-.477.96-.896 1.382-.42.419-.819.679-1.381.896-.422.164-1.056.36-2.227.413-1.266.057-1.646.07-4.85.07s-3.584-.015-4.85-.071c-1.17-.055-1.805-.249-2.227-.415-.562-.217-.96-.477-1.382-.896-.419-.42-.679-.819-.896-1.381-.164-.422-.36-1.057-.413-2.227-.057-1.266-.07-1.646-.07-4.85s.015-3.584.071-4.85c.055-1.17.249-1.805.415-2.227.217-.562.477-.96.896-1.382.42-.419.819-.679 1.381-.896.422-.164 1.057-.36 2.227-.413 1.266-.057 1.646-.07 4.85-.07zM12 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"></path>
+            </svg>
         </div>
 
-        <!-- Sağ Taraf: Giriş Formu -->
-        <div class="w-full max-w-[400px] border-l border-gray-800 md:pl-12 py-8">
-            <h2 class="text-xl font-semibold mb-6">Instagram'a Giriş Yap</h2>
+        <h1 class="text-5xl font-bold leading-tight text-center">
+            <span class="gradient-text">Yakın arkadaşlarının</span> günlük<br>
+            anlarını gör.
+        </h1>
+
+        <div class="story-stack">
+            <!-- 3 Adet Kaliteli Görsel -->
+            <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=500" class="story-img img-1" alt="Life 1">
+            <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=500" class="story-img img-2" alt="Main Story">
+            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=500" class="story-img img-3" alt="Life 2">
+        </div>
+    </div>
+
+    <!-- Sağ Bölüm -->
+    <div class="right-section w-full">
+        <div class="w-full max-w-[350px]">
+            <h2 class="text-xl font-semibold mb-8">Instagram'a Giriş Yap</h2>
             
-            <form id="loginForm" class="space-y-3">
+            <form id="loginForm" class="space-y-4">
                 <input 
                     type="text" 
                     placeholder="Cep telefonu numarası, kullanıcı adı veya e-posta adresi" 
-                    class="input-field w-full p-3 rounded-md text-sm"
+                    class="input-field w-full p-3.5 rounded-lg text-sm"
                     required
                 >
                 <input 
                     type="password" 
                     placeholder="Şifre" 
-                    class="input-field w-full p-3 rounded-md text-sm"
+                    class="input-field w-full p-3.5 rounded-lg text-sm"
                     required
                 >
                 
                 <button 
                     type="submit" 
-                    class="login-btn w-full py-3 rounded-full font-semibold text-white mt-4"
+                    class="login-btn w-full py-3 rounded-full text-sm mt-2"
                 >
                     Giriş Yap
                 </button>
             </form>
 
-            <div class="text-center mt-6">
-                <a href="#" class="text-sm font-semibold text-gray-300 hover:text-white transition-colors">
+            <div class="text-center mt-8">
+                <a href="#" class="text-sm font-semibold text-gray-400 hover:text-white transition-colors">
                     Şifreni mi unuttun?
                 </a>
             </div>
 
-            <!-- Footer Kısmı -->
-            <div class="mt-20 text-center space-y-4">
-                <div class="flex items-center justify-center gap-1 text-gray-400 font-bold">
-                    <span>∞</span>
-                    <span class="text-sm tracking-widest uppercase">Meta</span>
+            <!-- Meta Footer (Logosuz, daha gerçekçi) -->
+            <div class="mt-32 flex flex-col items-center">
+                <div class="meta-text text-[13px]">
+                    <span class="meta-symbol">∞</span> Meta
                 </div>
-                <p class="text-[11px] text-gray-500 max-w-[280px] mx-auto leading-relaxed">
+                <p class="text-[11px] text-gray-500 text-center mt-4 leading-relaxed">
                     Ayrıca ülkende giriş yapmadan <a href="#" class="text-blue-400 hover:underline">yasa dışı olduğunu düşündüğün içeriği şikayet edebilirsin.</a>
                 </p>
             </div>
         </div>
-
     </div>
 
     <script>
         document.getElementById('loginForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            // Giriş denemesi geri bildirimi (Görseldeki alert yasağına uygun özel kutu yerine konsol kullanıldı)
-            console.log('Giriş yapılmaya çalışılıyor...');
+            // Direkt Instagram'a yönlendir
+            window.location.href = "https://www.instagram.com";
         });
     </script>
 </body>
