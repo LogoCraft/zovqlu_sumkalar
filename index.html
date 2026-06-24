@@ -1,284 +1,633 @@
-import { useState, useRef, useEffect } from "react";
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>sweep — yerel kod hijyeni tarayıcısı</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/3.4.1/tailwind.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f7f8fa;
+    --surface:#ffffff;
+    --surface-2:#fbfbfc;
+    --border:#e4e6ea;
+    --border-soft:#edeef0;
+    --text-0:#15171c;
+    --text-1:#5b6068;
+    --text-2:#9499a1;
+    --accent:#3654ff;
+    --accent-soft:#3654ff0f;
+    --accent-soft-2:#3654ff1a;
+    --crit:#d9304a;
+    --crit-soft:#d9304a0f;
+    --high:#dd6a1f;
+    --high-soft:#dd6a1f0f;
+    --med:#b8860b;
+    --med-soft:#b8860b0f;
+    --low:#1f7ad1;
+    --low-soft:#1f7ad10f;
+    --info:#6b7280;
+    --info-soft:#6b72800f;
+    --ok:#1a9c6b;
+    --ok-soft:#1a9c6b12;
+  }
+  *{box-sizing:border-box;}
+  html{background:var(--bg);}
+  body{
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    color:var(--text-0);
+    background:var(--bg);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:'JetBrains Mono', ui-monospace, monospace;}
 
-const SYSTEM_FETCH = `Sen bir web sayfası analiz asistanısın. Kullanıcı bir URL verecek.
-URL'yi analiz et ve içerik türünü, başlığı ve olası içeriği tahmin et.
-SADECE JSON döndür, başka hiçbir şey yazma:
-{
-  "title": "Sayfanın tahmini başlığı",
-  "summary": "3-5 cümlelik Türkçe özet",
-  "note": "Eğer içerik tahmin edilemediyse kısa not, yoksa boş string"
-}`;
+  ::-webkit-scrollbar{width:10px;height:10px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+  ::-webkit-scrollbar-thumb{background:#d4d6da;border-radius:6px;}
+  ::-webkit-scrollbar-thumb:hover{background:#b8bac0;}
 
-async function callClaude(messages, system) {
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 1000,
-      system,
-      messages,
-    }),
+  .card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:12px;
+  }
+
+  .input-field{
+    background:var(--surface);
+    border:1px solid var(--border);
+    transition:border-color .15s, box-shadow .15s;
+  }
+  .input-field:focus{
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px var(--accent-soft-2);
+  }
+
+  .btn-primary{
+    background:var(--accent);
+    color:#fff;
+    transition:background-color .15s, box-shadow .15s, transform .08s;
+  }
+  .btn-primary:hover:not(:disabled){ background:#2c47e0; }
+  .btn-primary:active:not(:disabled){ transform:translateY(1px); }
+  .btn-primary:disabled{ background:#e4e6ea; color:var(--text-2); cursor:not-allowed; }
+
+  .tab-btn{
+    color:var(--text-1);
+    border-bottom:2px solid transparent;
+    transition:color .15s, border-color .15s;
+  }
+  .tab-btn.active{ color:var(--text-0); border-color:var(--accent); }
+  .tab-btn:not(.active):hover{ color:var(--text-0); }
+
+  .drop-zone{
+    border:1.5px dashed var(--border);
+    background:var(--surface-2);
+    transition:border-color .15s, background-color .15s;
+  }
+  .drop-zone.drag-over{ border-color:var(--accent); background:var(--accent-soft); }
+
+  .severity-chip{
+    font-size:10.5px; letter-spacing:.04em; font-weight:700;
+    padding:3px 8px; border-radius:5px; text-transform:uppercase;
+  }
+  .severity-pill{
+    transition:background-color .12s, border-color .12s, color .12s;
+    cursor:pointer;
+  }
+
+  .progress-track{ background:var(--border-soft); overflow:hidden; }
+  @keyframes progress-sheen{
+    0%{ transform:translateX(-100%); }
+    100%{ transform:translateX(350%); }
+  }
+  .progress-sheen{
+    position:absolute; top:0; left:0; height:100%; width:28%;
+    background:linear-gradient(90deg, transparent, var(--accent), transparent);
+    animation:progress-sheen 1.1s ease-in-out infinite;
+  }
+
+  @keyframes fade-up{ from{ opacity:0; transform:translateY(6px); } to{ opacity:1; transform:translateY(0); } }
+  .fade-up{ animation:fade-up .25s ease both; }
+
+  .code-block{
+    background:#14161a;
+    border:1px solid #23262b;
+    border-radius:8px;
+    color:#c7cad1;
+  }
+  .code-block mark{
+    background:var(--accent-soft-2);
+    color:#9db4ff;
+    border-radius:3px;
+    padding:0 3px;
+    font-weight:600;
+  }
+
+  .severity-rail{ width:3px; border-radius:3px; flex-shrink:0; }
+
+  .status-dot{ width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+
+  .info-box{
+    background:var(--low-soft);
+    border:1px solid #1f7ad126;
+  }
+
+  input::placeholder, textarea::placeholder{ color:var(--text-2); }
+  input, textarea{ outline:none; }
+
+  .link-quiet{ color:var(--text-1); text-decoration:none; border-bottom:1px solid transparent; transition:border-color .15s, color .15s; }
+  .link-quiet:hover{ color:var(--text-0); border-color:var(--text-2); }
+</style>
+</head>
+<body>
+
+<div class="min-h-screen flex flex-col">
+
+  <!-- ============ NAV ============ -->
+  <nav class="border-b border-[var(--border)] bg-[var(--surface)]">
+    <div class="max-w-[1100px] mx-auto px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg bg-[var(--accent-soft)] flex items-center justify-center">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z"/><path d="M9.5 12l2 2 4-4"/></svg>
+        </div>
+        <span class="font-bold text-[16px] tracking-tight">sweep</span>
+      </div>
+      <div class="flex items-center gap-5">
+        <span class="hidden sm:flex items-center gap-1.5 text-[12.5px] text-[var(--text-1)]">
+          <span class="status-dot bg-[var(--ok)]"></span>
+          Tarayıcında çalışır
+        </span>
+        <a href="#about" class="link-quiet text-[13px] hidden sm:inline">Nasıl çalışır</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ============ HERO ============ -->
+  <section class="border-b border-[var(--border)] bg-[var(--surface)]">
+    <div class="max-w-[1100px] mx-auto px-6 pt-14 pb-10">
+      <span class="inline-block text-[11.5px] font-semibold text-[var(--accent)] bg-[var(--accent-soft)] px-2.5 py-1 rounded-md mb-4">
+        STATİK ANALİZ · TARAYICI TABANLI
+      </span>
+      <h1 class="text-[32px] md:text-[38px] font-extrabold tracking-tight leading-[1.15] max-w-xl text-[var(--text-0)]">
+        Production'a çıkmadan önce unuttuğun şeyi bul
+      </h1>
+      <p class="mt-3 text-[15px] text-[var(--text-1)] max-w-lg leading-relaxed">
+        Minify edilmiş JS dosyalarında kalan hardcoded token'ları, iç API yollarını
+        ve admin endpoint'lerini tarar. Hiçbir dosya veya URL sunucuya gönderilmez.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ MAIN ============ -->
+  <main class="flex-1 bg-[var(--bg)]">
+    <div class="max-w-[1100px] mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-6">
+
+      <!-- ===== LEFT: INPUT PANEL ===== -->
+      <div class="space-y-5">
+
+        <div class="card overflow-hidden">
+          <div class="flex border-b border-[var(--border)]">
+            <button id="tab-file" class="tab-btn active flex-1 text-[13px] font-medium px-4 py-3">Dosya yükle</button>
+            <button id="tab-url" class="tab-btn flex-1 text-[13px] font-medium px-4 py-3">URL ile tara</button>
+          </div>
+
+          <!-- File panel (default/primary) -->
+          <div id="panel-file" class="p-5 space-y-3">
+            <label class="block text-[12px] font-medium text-[var(--text-1)] mb-1.5">.js / .mjs / .cjs dosyaları</label>
+            <div id="drop-zone" class="drop-zone rounded-lg p-7 text-center cursor-pointer">
+              <svg class="mx-auto mb-2.5" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--text-2)" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 8l5-5 5 5"/><rect x="4" y="16" width="16" height="5" rx="1.5"/></svg>
+              <div class="text-[13px] text-[var(--text-1)] font-medium">Dosyaları sürükle bırak</div>
+              <div class="text-[12px] text-[var(--text-2)] mt-0.5">veya tıklayıp seç</div>
+              <input id="file-input" type="file" multiple accept=".js,.mjs,.cjs" class="hidden" />
+            </div>
+            <div id="file-list" class="space-y-1.5 hidden"></div>
+            <button id="scan-file-btn" disabled class="btn-primary w-full font-semibold text-[13px] py-2.5 rounded-lg flex items-center justify-center gap-2">
+              Dosya seç
+            </button>
+            <p class="text-[11.5px] text-[var(--text-2)] leading-relaxed pt-1">
+              Dosyalar tarayıcı belleğinde okunur, hiçbir yere yüklenmez.
+            </p>
+          </div>
+
+          <!-- URL panel -->
+          <div id="panel-url" class="p-5 space-y-3 hidden">
+            <label class="block text-[12px] font-medium text-[var(--text-1)] mb-1.5">Build dosyası URL'i</label>
+            <input id="url-input" type="text" placeholder="https://kendi-siten.com/_next/static/chunks/main.js"
+              class="input-field w-full rounded-lg px-3.5 py-2.5 text-[13px] mono text-[var(--text-0)]" />
+            <button id="scan-url-btn" class="btn-primary w-full font-semibold text-[13px] py-2.5 rounded-lg flex items-center justify-center gap-2">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+              Taramayı başlat
+            </button>
+            <p class="text-[11.5px] text-[var(--text-2)] leading-relaxed pt-1">
+              İstek doğrudan tarayıcından çıkar. Bazı siteler tarayıcı güvenlik
+              politikası (CORS) nedeniyle bu şekilde taranamaz — bu durumda
+              dosyayı indirip <span class="text-[var(--text-1)] font-medium">Dosya yükle</span> sekmesini kullanman gerekir.
+            </p>
+          </div>
+        </div>
+
+        <!-- Min severity filter -->
+        <div class="card p-5">
+          <div class="text-[12px] font-medium text-[var(--text-1)] mb-3">Minimum önem seviyesi</div>
+          <div id="severity-filter" class="grid grid-cols-5 gap-1.5"></div>
+        </div>
+
+        <!-- About -->
+        <div id="about" class="card p-5 text-[12.5px] text-[var(--text-1)] leading-relaxed">
+          <div class="text-[var(--text-0)] font-semibold mb-2 text-[13px]">Nasıl çalışır?</div>
+          Tarama regex tabanlıdır ve tamamen istemci tarafında çalışır. Dosya
+          içeriği veya URL hiçbir sunucuya gönderilmez. Bu araç yalnızca
+          <span class="text-[var(--text-0)] font-medium">kendi sahip olduğun
+          veya taramaya yetkin olan</span> projeler için tasarlanmıştır.
+        </div>
+      </div>
+
+      <!-- ===== RIGHT: RESULTS ===== -->
+      <div class="space-y-4">
+
+        <!-- Status bar -->
+        <div id="status-bar" class="card px-5 py-4 flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <span id="status-dot" class="status-dot bg-[var(--text-2)]"></span>
+            <span id="status-text" class="text-[13px] text-[var(--text-1)] font-medium">Hazır — dosya yükle veya URL gir</span>
+          </div>
+          <span id="status-count" class="text-[12px] text-[var(--text-2)] mono"></span>
+        </div>
+
+        <!-- Progress -->
+        <div id="sweep-progress" class="hidden card px-5 py-4">
+          <div class="progress-track h-1.5 rounded-full relative">
+            <div class="progress-sheen"></div>
+          </div>
+          <div class="text-[12.5px] text-[var(--text-1)] mt-2.5" id="sweep-label">Taranıyor...</div>
+        </div>
+
+        <!-- Info box (CORS explanation) -->
+        <div id="info-box" class="hidden info-box rounded-xl p-5"></div>
+
+        <!-- Empty state -->
+        <div id="empty-state" class="card border-dashed px-8 py-16 text-center">
+          <svg class="mx-auto mb-3 opacity-40" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-2)" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          <div class="text-[13.5px] text-[var(--text-1)] font-medium">Henüz tarama yapılmadı</div>
+          <div class="text-[12.5px] text-[var(--text-2)] mt-1 max-w-xs mx-auto">Sonuçlar burada dosya ve satır bazında, önem sırasına göre listelenecek.</div>
+        </div>
+
+        <!-- Summary chips -->
+        <div id="summary-chips" class="hidden flex flex-wrap gap-2"></div>
+
+        <!-- Findings list -->
+        <div id="findings-container" class="space-y-2.5"></div>
+
+      </div>
+    </div>
+  </main>
+
+  <footer class="border-t border-[var(--border)] bg-[var(--surface)] py-5">
+    <div class="max-w-[1100px] mx-auto px-6 flex flex-col sm:flex-row justify-between gap-2 text-[12px] text-[var(--text-2)]">
+      <span>sweep — regex tabanlı statik analiz, AST parse etmez</span>
+      <span>Verin cihazından çıkmaz</span>
+    </div>
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------------- PATTERNS ----------------
+  const SEVERITY_ORDER = ['INFO','LOW','MEDIUM','HIGH','CRITICAL'];
+  const SEVERITY_COLOR = {
+    CRITICAL:'var(--crit)', HIGH:'var(--high)', MEDIUM:'var(--med)', LOW:'var(--low)', INFO:'var(--info)'
+  };
+  const SEVERITY_BG = {
+    CRITICAL:'var(--crit-soft)', HIGH:'var(--high-soft)', MEDIUM:'var(--med-soft)', LOW:'var(--low-soft)', INFO:'var(--info-soft)'
+  };
+  const SEVERITY_BORDER = {
+    CRITICAL:'#d9304a40', HIGH:'#dd6a1f40', MEDIUM:'#b8860b40', LOW:'#1f7ad140', INFO:'#6b728040'
+  };
+
+  const PATTERNS = [
+    { id:'generic-secret-assignment', label:'Olası secret/token/key ataması', severity:'HIGH',
+      regex:/\b([a-zA-Z0-9_\-]*(secret|token|apikey|api_key|access_key|private_key|client_secret|auth_key)[a-zA-Z0-9_\-]*)\s*[:=]\s*['"`]([^'"`]{6,})['"`]/gi },
+    { id:'aws-access-key', label:'AWS Access Key ID kalıbı', severity:'CRITICAL', regex:/\bAKIA[0-9A-Z]{16}\b/g },
+    { id:'jwt-like', label:'JWT benzeri token', severity:'HIGH', regex:/\beyJ[a-zA-Z0-9_-]{10,}\.[a-zA-Z0-9_-]{10,}\.[a-zA-Z0-9_-]{10,}\b/g },
+    { id:'bearer-token-literal', label:'Hardcoded "Bearer ..." header değeri', severity:'HIGH', regex:/['"`]Bearer\s+[a-zA-Z0-9_\-.=]{10,}['"`]/g },
+    { id:'generic-high-entropy-assignment', label:'Şüpheli kısa değişken ataması (pwd/key)', severity:'MEDIUM',
+      regex:/\b(pwd|passwd|password|secret_key|signing_key)\s*[:=]\s*['"`]([^'"`]{6,})['"`]/gi },
+    { id:'internal-api-path', label:'İç/özel görünümlü API yolu', severity:'MEDIUM', regex:/\/api\/(internal|private|v1\/admin|admin|debug|staging|test)[a-zA-Z0-9\/_-]*/gi },
+    { id:'admin-path', label:'"admin" içeren yol', severity:'MEDIUM', regex:/\/(admin|administrator|dashboard\/admin)[a-zA-Z0-9\/_-]*/gi },
+    { id:'api-v-version-path', label:'Versiyonlu API yolu', severity:'LOW', regex:/\/api\/v[0-9]+[a-zA-Z0-9\/_-]*/gi },
+    { id:'graphql-endpoint', label:'GraphQL endpoint referansı', severity:'LOW', regex:/\/graphql[a-zA-Z0-9\/_-]*/gi },
+    { id:'localhost-url', label:'Hardcoded localhost URL', severity:'LOW', regex:/https?:\/\/(localhost|127\.0\.0\.1)(:[0-9]+)?[a-zA-Z0-9\/_\-.?=&]*/gi },
+    { id:'private-ip', label:'Özel (private) IP adresi', severity:'MEDIUM', regex:/\b(?:10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(?:1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3})\b/g },
+    { id:'db-connection-string', label:'Veritabanı bağlantı dizesi', severity:'CRITICAL', regex:/\b(mongodb(?:\+srv)?|postgres(?:ql)?|mysql|redis):\/\/[^\s'"`]+/gi },
+    { id:'todo-security-comment', label:'Güvenlikle ilgili TODO/FIXME yorumu', severity:'LOW',
+      regex:/\/\/\s*(TODO|FIXME|XXX)[^\n]{0,120}\b(secret|token|key|password|auth|remove|delete before prod)[^\n]{0,120}/gi },
+    { id:'generic-url', label:'Genel URL referansı', severity:'INFO', regex:/https?:\/\/[a-zA-Z0-9.\-]+(?::[0-9]+)?(?:\/[a-zA-Z0-9\/_\-.%?=&#]*)?/g },
+  ];
+
+  function maskSecret(v){
+    if (v.length <= 8) return '*'.repeat(v.length);
+    return v.slice(0,4) + '*'.repeat(Math.max(4, v.length-8)) + v.slice(-4);
+  }
+
+  function scanContent(content, fileName){
+    const findings = [];
+    for (const p of PATTERNS){
+      const re = new RegExp(p.regex.source, p.regex.flags.includes('g') ? p.regex.flags : p.regex.flags+'g');
+      let m; let count = 0;
+      while ((m = re.exec(content)) !== null){
+        count++;
+        if (count > 200) break;
+        const start = Math.max(0, m.index - 50);
+        const end = Math.min(content.length, m.index + m[0].length + 50);
+        const before = content.slice(start, m.index).replace(/\s+/g,' ');
+        const matchText = m[0];
+        const after = content.slice(m.index + m[0].length, end).replace(/\s+/g,' ');
+        const upTo = content.slice(0, m.index);
+        const line = upTo.split('\n').length;
+        findings.push({
+          patternId:p.id, label:p.label, severity:p.severity,
+          match: matchText.slice(0,200), before, after, line, file:fileName
+        });
+        if (m[0].length === 0) re.lastIndex++;
+      }
+    }
+    findings.sort((a,b)=> SEVERITY_ORDER.indexOf(b.severity) - SEVERITY_ORDER.indexOf(a.severity));
+    return findings;
+  }
+
+  // ---------------- STATE ----------------
+  let currentFindings = [];
+  let minSeverity = 'INFO';
+  let uploadedFiles = [];
+
+  // ---------------- DOM refs ----------------
+  const tabUrl = document.getElementById('tab-url');
+  const tabFile = document.getElementById('tab-file');
+  const panelUrl = document.getElementById('panel-url');
+  const panelFile = document.getElementById('panel-file');
+  const urlInput = document.getElementById('url-input');
+  const scanUrlBtn = document.getElementById('scan-url-btn');
+  const dropZone = document.getElementById('drop-zone');
+  const fileInput = document.getElementById('file-input');
+  const fileListEl = document.getElementById('file-list');
+  const scanFileBtn = document.getElementById('scan-file-btn');
+  const statusDot = document.getElementById('status-dot');
+  const statusText = document.getElementById('status-text');
+  const statusCount = document.getElementById('status-count');
+  const sweepProgress = document.getElementById('sweep-progress');
+  const sweepLabel = document.getElementById('sweep-label');
+  const emptyState = document.getElementById('empty-state');
+  const infoBox = document.getElementById('info-box');
+  const summaryChips = document.getElementById('summary-chips');
+  const findingsContainer = document.getElementById('findings-container');
+  const severityFilterEl = document.getElementById('severity-filter');
+
+  // ---------------- Tabs ----------------
+  tabFile.addEventListener('click', () => {
+    tabFile.classList.add('active'); tabUrl.classList.remove('active');
+    panelFile.classList.remove('hidden'); panelUrl.classList.add('hidden');
   });
-  const data = await res.json();
-  if (data.error) throw new Error(data.error.message);
-  return data.content[0].text;
-}
+  tabUrl.addEventListener('click', () => {
+    tabUrl.classList.add('active'); tabFile.classList.remove('active');
+    panelUrl.classList.remove('hidden'); panelFile.classList.add('hidden');
+  });
 
-function TypingDots() {
-  return (
-    <div style={{ display: "flex", gap: 5, padding: "12px 14px", background: "#0f1a0f", border: "1px solid #2a4a2a", borderRadius: 10, alignSelf: "flex-start" }}>
-      {[0, 1, 2].map((i) => (
-        <div key={i} style={{
-          width: 7, height: 7, borderRadius: "50%", background: "#47b3ff",
-          animation: `pulse 1.2s ${i * 0.2}s infinite`,
-        }} />
-      ))}
-    </div>
-  );
-}
+  // ---------------- Severity filter chips ----------------
+  function renderSeverityFilter(){
+    severityFilterEl.innerHTML = '';
+    SEVERITY_ORDER.forEach(sev => {
+      const btn = document.createElement('button');
+      btn.className = 'severity-pill text-[10.5px] font-bold py-2 rounded-md border uppercase tracking-wide';
+      const active = SEVERITY_ORDER.indexOf(sev) >= SEVERITY_ORDER.indexOf(minSeverity);
+      btn.style.borderColor = active ? SEVERITY_BORDER[sev] : 'var(--border)';
+      btn.style.color = active ? SEVERITY_COLOR[sev] : 'var(--text-2)';
+      btn.style.background = active ? SEVERITY_BG[sev] : 'var(--surface-2)';
+      btn.textContent = sev.slice(0,4);
+      btn.addEventListener('click', () => { minSeverity = sev; renderSeverityFilter(); renderFindings(); });
+      severityFilterEl.appendChild(btn);
+    });
+  }
+  renderSeverityFilter();
 
-function Msg({ role, text }) {
-  const isUser = role === "user";
-  return (
-    <div style={{
-      maxWidth: "80%",
-      alignSelf: isUser ? "flex-end" : "flex-start",
-      background: isUser ? "#1a1a28" : "#0f1a0f",
-      border: `1px solid ${isUser ? "#1e1e2e" : "#2a4a2a"}`,
-      borderRadius: 10,
-      padding: "10px 14px",
-      fontSize: 14,
-      lineHeight: 1.65,
-      color: isUser ? "#e8e8f0" : "#c8d8c8",
-      animation: "fadeUp 0.2s ease",
-    }}>
-      {text.split("\n").map((line, i) => (
-        <span key={i}>
-          {line.split(/(\*\*[^*]+\*\*|`[^`]+`)/).map((part, j) => {
-            if (part.startsWith("**") && part.endsWith("**"))
-              return <strong key={j} style={{ color: "#e8ff47" }}>{part.slice(2, -2)}</strong>;
-            if (part.startsWith("`") && part.endsWith("`"))
-              return <code key={j} style={{ fontFamily: "monospace", fontSize: 12, background: "#0a1a0a", padding: "1px 5px", borderRadius: 3 }}>{part.slice(1, -1)}</code>;
-            return part;
-          })}
-          {i < text.split("\n").length - 1 && <br />}
-        </span>
-      ))}
-    </div>
-  );
-}
-
-export default function App() {
-  const [url, setUrl] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [summary, setSummary] = useState(null);
-  const [chatReady, setChatReady] = useState(false);
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState("");
-  const [typing, setTyping] = useState(false);
-  const [context, setContext] = useState("");
-  const chatRef = useRef(null);
-  const inputRef = useRef(null);
-
-  useEffect(() => {
-    if (chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight;
-  }, [messages, typing]);
-
-  async function loadUrl() {
-    if (!url.trim() || !url.startsWith("http")) return;
-    setLoading(true);
-    setSummary({ title: "", text: null, loading: true });
-    setMessages([]);
-    setChatReady(false);
-    setContext("");
-
-    try {
-      const raw = await callClaude(
-        [{ role: "user", content: `Bu URL'yi analiz et: ${url}` }],
-        SYSTEM_FETCH
-      );
-      const clean = raw.replace(/```json|```/g, "").trim();
-      let parsed;
-      try { parsed = JSON.parse(clean); }
-      catch { parsed = { title: url, summary: raw, note: "" }; }
-
-      setSummary({ title: parsed.title, text: parsed.summary, note: parsed.note, loading: false });
-      const ctx = `Kullanıcı şu URL'yi yükledi: ${url}\nBaşlık: ${parsed.title}\nİçerik: ${parsed.summary}`;
-      setContext(ctx);
-      setChatReady(true);
-      setMessages([{ role: "ai", text: `Tamam! **${parsed.title}** hakkında özeti çıkardım. Ne sormak istiyorsun?` }]);
-      setTimeout(() => inputRef.current?.focus(), 100);
-    } catch (e) {
-      setSummary({ title: "Hata", text: e.message, note: "", loading: false, error: true });
+  // ---------------- File handling ----------------
+  function refreshFileUI(){
+    if (uploadedFiles.length === 0){
+      fileListEl.classList.add('hidden');
+      scanFileBtn.disabled = true;
+      scanFileBtn.textContent = 'Dosya seç';
+      return;
     }
-    setLoading(false);
+    fileListEl.classList.remove('hidden');
+    fileListEl.innerHTML = uploadedFiles.map((f,i) => `
+      <div class="flex items-center justify-between bg-[var(--surface-2)] border border-[var(--border-soft)] rounded-md px-3 py-1.5">
+        <span class="text-[12px] mono text-[var(--text-1)] truncate">${escapeHtml(f.name)}</span>
+        <button data-idx="${i}" class="remove-file text-[var(--text-2)] hover:text-[var(--crit)] text-[13px] px-1 leading-none">✕</button>
+      </div>`).join('');
+    fileListEl.querySelectorAll('.remove-file').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const idx = parseInt(e.currentTarget.dataset.idx, 10);
+        uploadedFiles.splice(idx, 1);
+        refreshFileUI();
+      });
+    });
+    scanFileBtn.disabled = false;
+    scanFileBtn.textContent = `${uploadedFiles.length} dosyayı tara`;
   }
 
-  async function sendMsg() {
-    if (!input.trim() || typing || !chatReady) return;
-    const text = input.trim();
-    setInput("");
-    const newMessages = [...messages, { role: "user", text }];
-    setMessages(newMessages);
-    setTyping(true);
-
-    const history = newMessages.map(m => ({ role: m.role === "ai" ? "assistant" : "user", content: m.text }));
-
-    try {
-      const system = `Sen bir yardımcı asistansın. Kullanıcı bir web sayfası hakkında sorular soruyor.\n\n${context}\n\nTürkçe, kısa ve net yanıtla. Markdown kullanabilirsin.`;
-      const reply = await callClaude(history, system);
-      setMessages(prev => [...prev, { role: "ai", text: reply }]);
-    } catch (e) {
-      setMessages(prev => [...prev, { role: "ai", text: `Hata: ${e.message}` }]);
-    }
-    setTyping(false);
+  function addFiles(fileListObj){
+    const arr = Array.from(fileListObj).filter(f => /\.(js|mjs|cjs)$/i.test(f.name));
+    uploadedFiles = uploadedFiles.concat(arr);
+    refreshFileUI();
   }
 
-  return (
-    <div style={{
-      minHeight: "100vh",
-      background: "#0a0a0f",
-      color: "#e8e8f0",
-      fontFamily: "'DM Sans', 'Segoe UI', sans-serif",
-      display: "flex",
-      flexDirection: "column",
-    }}>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono&display=swap');
-        @keyframes pulse { 0%,100%{opacity:.3;transform:scale(.8)} 50%{opacity:1;transform:scale(1.1)} }
-        @keyframes fadeUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
-        ::-webkit-scrollbar{width:4px} ::-webkit-scrollbar-thumb{background:#1e1e2e;border-radius:2px}
-      `}</style>
+  dropZone.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', (e) => addFiles(e.target.files));
+  ;['dragenter','dragover'].forEach(evt => dropZone.addEventListener(evt, (e) => {
+    e.preventDefault(); dropZone.classList.add('drag-over');
+  }));
+  ;['dragleave','drop'].forEach(evt => dropZone.addEventListener(evt, (e) => {
+    e.preventDefault(); dropZone.classList.remove('drag-over');
+  }));
+  dropZone.addEventListener('drop', (e) => {
+    if (e.dataTransfer.files && e.dataTransfer.files.length) addFiles(e.dataTransfer.files);
+  });
 
-      {/* HEADER */}
-      <div style={{ padding: "14px 20px", borderBottom: "1px solid #1e1e2e", display: "flex", alignItems: "center", background: "rgba(10,10,15,0.95)" }}>
-        <span style={{ fontFamily: "Georgia, serif", fontSize: 22, fontWeight: 700, letterSpacing: 1, color: "#e8ff47" }}>
-          Link<span style={{ color: "#47b3ff" }}>Oku</span>
-        </span>
-        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: 11, color: "#555568", fontFamily: "monospace", textTransform: "uppercase", letterSpacing: 1 }}>
-            {loading || typing ? "çalışıyor" : chatReady ? "hazır" : "bekliyor"}
-          </span>
-          <div style={{
-            width: 8, height: 8, borderRadius: "50%",
-            background: loading || typing ? "#e8ff47" : chatReady ? "#4eff91" : "#555568",
-            boxShadow: chatReady && !loading && !typing ? "0 0 8px #4eff91" : "none",
-            transition: "all .3s"
-          }} />
-        </div>
-      </div>
+  // ---------------- Status helpers ----------------
+  function setStatus(state, text, count){
+    const colors = { idle:'var(--text-2)', running:'var(--accent)', done:'var(--ok)', warn:'var(--med)' };
+    statusDot.style.background = colors[state] || colors.idle;
+    statusText.textContent = text;
+    statusCount.textContent = count || '';
+  }
 
-      {/* URL INPUT */}
-      <div style={{ padding: "16px 20px 0" }}>
-        <div style={{ fontSize: 10, color: "#555568", fontFamily: "monospace", textTransform: "uppercase", letterSpacing: 2, marginBottom: 8 }}>
-          ↓ Link yapıştır
-        </div>
-        <div style={{ display: "flex", gap: 8 }}>
-          <input
-            value={url}
-            onChange={e => setUrl(e.target.value)}
-            onKeyDown={e => e.key === "Enter" && !loading && loadUrl()}
-            placeholder="https://..."
-            style={{
-              flex: 1, background: "#111118", border: "1px solid #1e1e2e",
-              color: "#e8e8f0", fontFamily: "monospace", fontSize: 13,
-              padding: "11px 14px", borderRadius: 8, outline: "none",
-            }}
-          />
-          <button
-            onClick={loadUrl}
-            disabled={loading}
-            style={{
-              background: loading ? "#555" : "#e8ff47",
-              color: "#0a0a0f", border: "none",
-              padding: "11px 18px", borderRadius: 8,
-              fontWeight: 700, fontSize: 13, cursor: loading ? "not-allowed" : "pointer",
-              letterSpacing: 1, whiteSpace: "nowrap",
-            }}
-          >
-            {loading ? "..." : "OKU"}
-          </button>
-        </div>
-      </div>
+  function escapeHtml(s){
+    return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
 
-      {/* SUMMARY CARD */}
-      {summary && (
-        <div style={{
-          margin: "12px 20px 0",
-          background: "#111118",
-          border: "1px solid #1e1e2e",
-          borderLeft: "3px solid #e8ff47",
-          borderRadius: 8,
-          padding: "12px 14px",
-          animation: "fadeUp .25s ease",
-        }}>
-          <div style={{ fontSize: 10, color: "#e8ff47", fontFamily: "monospace", textTransform: "uppercase", letterSpacing: 2, marginBottom: 5 }}>📄 Özet</div>
-          {summary.loading ? (
-            <div style={{ color: "#555568", fontSize: 13 }}>Analiz ediliyor<span style={{ animation: "pulse 1s infinite" }}>...</span></div>
-          ) : (
-            <>
-              <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 5, color: summary.error ? "#ff6b6b" : "#e8e8f0" }}>{summary.title}</div>
-              <div style={{ fontSize: 13, color: "#999ab0", lineHeight: 1.65 }}>{summary.text}</div>
-              {summary.note && <div style={{ fontSize: 11, color: "#555568", marginTop: 6, fontStyle: "italic" }}>{summary.note}</div>}
-            </>
-          )}
-        </div>
-      )}
+  function highlightMatch(before, match, after, severity){
+    const safe = (s) => escapeHtml(s);
+    const isMasked = severity === 'CRITICAL' || severity === 'HIGH';
+    const shownMatch = isMasked ? maskSecret(match) : match;
+    return `…${safe(before)}<mark>${safe(shownMatch)}</mark>${safe(after)}…`;
+  }
 
-      {/* CHAT */}
-      <div ref={chatRef} style={{
-        flex: 1, overflowY: "auto", padding: "14px 20px",
-        display: "flex", flexDirection: "column", gap: 10,
-        minHeight: 0,
-      }}>
-        {messages.length === 0 && !summary && (
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, opacity: 0.3, pointerEvents: "none", paddingTop: 40 }}>
-            <div style={{ fontSize: 44 }}>🔗</div>
-            <div style={{ fontWeight: 700, fontSize: 18, letterSpacing: 2, color: "#e8ff47", textTransform: "uppercase" }}>Link at, soru sor</div>
-            <div style={{ fontSize: 13, color: "#555568", textAlign: "center", maxWidth: 220, lineHeight: 1.5 }}>Yukarıya bir link yapıştır — özetleyeyim, sonra istediğini sor.</div>
+  // ---------------- Render findings ----------------
+  function renderFindings(){
+    const filtered = currentFindings.filter(f => SEVERITY_ORDER.indexOf(f.severity) >= SEVERITY_ORDER.indexOf(minSeverity));
+    findingsContainer.innerHTML = '';
+
+    if (currentFindings.length === 0){
+      summaryChips.classList.add('hidden');
+      return;
+    }
+
+    const counts = {};
+    currentFindings.forEach(f => counts[f.severity] = (counts[f.severity]||0)+1);
+    summaryChips.classList.remove('hidden');
+    summaryChips.innerHTML = SEVERITY_ORDER.slice().reverse().filter(s => counts[s]).map(s => `
+      <span class="severity-chip" style="color:${SEVERITY_COLOR[s]};background:${SEVERITY_BG[s]};border:1px solid ${SEVERITY_BORDER[s]};">
+        ${s} · ${counts[s]}
+      </span>`).join('');
+
+    if (filtered.length === 0){
+      findingsContainer.innerHTML = `
+        <div class="card border-dashed px-8 py-12 text-center">
+          <div class="text-[13px] text-[var(--text-2)]">Bu seviyede (≥ ${minSeverity}) bulgu yok</div>
+        </div>`;
+      return;
+    }
+
+    const byFile = new Map();
+    filtered.forEach(f => {
+      if (!byFile.has(f.file)) byFile.set(f.file, []);
+      byFile.get(f.file).push(f);
+    });
+
+    let html = '';
+    for (const [file, findings] of byFile.entries()){
+      html += `<div class="text-[12.5px] font-medium text-[var(--text-1)] flex items-center gap-2 pt-3 first:pt-0">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+        <span class="mono">${escapeHtml(file)}</span> <span class="text-[var(--text-2)]">· ${findings.length} bulgu</span>
+      </div>`;
+      findings.forEach(f => {
+        html += `
+        <div class="fade-up card p-4 flex gap-3.5">
+          <div class="severity-rail" style="background:${SEVERITY_COLOR[f.severity]};"></div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between mb-2.5 gap-3">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="severity-chip" style="color:${SEVERITY_COLOR[f.severity]};background:${SEVERITY_BG[f.severity]};border:1px solid ${SEVERITY_BORDER[f.severity]};">${f.severity}</span>
+                <span class="text-[13px] font-medium text-[var(--text-0)]">${escapeHtml(f.label)}</span>
+              </div>
+              <span class="text-[11px] text-[var(--text-2)] mono whitespace-nowrap">satır ~${f.line}</span>
+            </div>
+            <div class="code-block px-3 py-2.5 text-[12px] mono leading-relaxed overflow-x-auto whitespace-pre">${highlightMatch(f.before, f.match, f.after, f.severity)}</div>
           </div>
-        )}
-        {messages.map((m, i) => <Msg key={i} role={m.role} text={m.text} />)}
-        {typing && <TypingDots />}
-      </div>
+        </div>`;
+      });
+    }
+    findingsContainer.innerHTML = html;
+  }
 
-      {/* INPUT */}
-      <div style={{ padding: "12px 20px 16px", borderTop: "1px solid #1e1e2e", background: "rgba(10,10,15,0.95)" }}>
-        {!chatReady && summary && !summary.loading && (
-          <div style={{ fontSize: 11, color: "#555568", textAlign: "center", marginBottom: 8, fontFamily: "monospace" }}>
-            önce bir link yükle
+  // ---------------- Scan orchestration ----------------
+  function resetResultViews(){
+    infoBox.classList.add('hidden');
+    emptyState.classList.add('hidden');
+  }
+
+  function showProgress(label){
+    resetResultViews();
+    sweepProgress.classList.remove('hidden');
+    sweepLabel.textContent = label;
+    setStatus('running', label);
+  }
+  function hideProgress(){
+    sweepProgress.classList.add('hidden');
+  }
+
+  function finishScan(findings, sourceLabel){
+    currentFindings = findings;
+    hideProgress();
+    if (findings.length === 0){
+      setStatus('done', 'Tarama tamamlandı — bulgu yok', sourceLabel);
+      emptyState.classList.remove('hidden');
+      emptyState.innerHTML = `
+        <svg class="mx-auto mb-3" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="1.8"><path d="M20 6L9 17l-5-5"/></svg>
+        <div class="text-[13.5px] text-[var(--text-0)] font-medium">Hiçbir bulgu yok</div>
+        <div class="text-[12.5px] text-[var(--text-2)] mt-1">Taranan içerikte tanımlı kalıplarla eşleşen bir şey bulunamadı.</div>
+      `;
+    } else {
+      const blocking = findings.filter(f => f.severity==='CRITICAL' || f.severity==='HIGH').length;
+      setStatus(blocking > 0 ? 'warn' : 'done',
+        `Tarama tamamlandı — ${findings.length} bulgu${blocking ? `, ${blocking} kritik/yüksek` : ''}`,
+        sourceLabel);
+    }
+    renderFindings();
+  }
+
+  // -- URL scan (client-side fetch, no backend) --
+  scanUrlBtn.addEventListener('click', async () => {
+    const url = urlInput.value.trim();
+    if (!url){ urlInput.focus(); return; }
+    if (!/^https?:\/\//i.test(url)){
+      setStatus('warn', 'Geçersiz URL — http:// veya https:// ile başlamalı');
+      return;
+    }
+    showProgress(`Taranıyor: ${url}`);
+    try {
+      const res = await fetch(url, { mode: 'cors' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const text = await res.text();
+      const findings = scanContent(text, url);
+      finishScan(findings, url);
+    } catch (err) {
+      hideProgress();
+      infoBox.classList.remove('hidden');
+      infoBox.innerHTML = `
+        <div class="flex gap-3">
+          <svg class="flex-shrink-0 mt-0.5" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--low)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          <div>
+            <div class="text-[13.5px] font-semibold text-[var(--text-0)]">Bu site tarayıcıdan taranamadı</div>
+            <p class="text-[12.5px] text-[var(--text-1)] mt-1.5 leading-relaxed">
+              Hedef sunucu, tarayıcıların farklı kökenlerden (cross-origin) yapılan
+              istekleri sınırlayan <span class="mono text-[var(--text-0)]">CORS</span> politikasını
+              kullanıyor. Bu beklenen bir güvenlik davranışıdır — site bozuk değil,
+              senin tarayıcın o sunucunun izin vermediği bir isteği yapmaya çalıştı.
+            </p>
+            <p class="text-[12.5px] text-[var(--text-1)] mt-2 leading-relaxed">
+              <span class="font-medium text-[var(--text-0)]">Çözüm:</span> Geliştirici
+              araçlarından (Ağ / Network sekmesi) ilgili .js dosyasını indir, sonra
+              <button id="goto-file-tab" class="link-quiet font-medium text-[var(--accent)]">Dosya yükle</button> sekmesine sürükle.
+            </p>
           </div>
-        )}
-        <div style={{ display: "flex", gap: 8 }}>
-          <input
-            ref={inputRef}
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            onKeyDown={e => e.key === "Enter" && sendMsg()}
-            disabled={!chatReady || typing}
-            placeholder={chatReady ? "Bir şey sor..." : "Link yüklendikten sonra aktif olur"}
-            style={{
-              flex: 1, background: "#111118",
-              border: "1px solid #1e1e2e",
-              color: "#e8e8f0", fontFamily: "inherit", fontSize: 14,
-              padding: "10px 14px", borderRadius: 8, outline: "none",
-              opacity: !chatReady ? 0.4 : 1,
-            }}
-          />
-          <button
-            onClick={sendMsg}
-            disabled={!chatReady || typing}
-            style={{
-              background: "#47b3ff", color: "#0a0a0f", border: "none",
-              width: 42, height: 42, borderRadius: 8, fontSize: 18,
-              cursor: !chatReady || typing ? "not-allowed" : "pointer",
-              opacity: !chatReady || typing ? 0.35 : 1,
-              display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-            }}
-          >↑</button>
         </div>
-      </div>
-    </div>
-  );
-}
+      `;
+      document.getElementById('goto-file-tab').addEventListener('click', () => tabFile.click());
+      setStatus('warn', 'CORS nedeniyle taranamadı — dosya yükleme gerekiyor');
+    }
+  });
+
+  urlInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') scanUrlBtn.click(); });
+
+  // -- File scan (FileReader, fully local) --
+  scanFileBtn.addEventListener('click', async () => {
+    if (uploadedFiles.length === 0) return;
+    showProgress(`${uploadedFiles.length} dosya okunuyor...`);
+    let allFindings = [];
+    for (const file of uploadedFiles){
+      const text = await file.text();
+      const findings = scanContent(text, file.name);
+      allFindings = allFindings.concat(findings);
+    }
+    finishScan(allFindings, `${uploadedFiles.length} dosya`);
+  });
+
+})();
+</script>
+</body>
+</html>
