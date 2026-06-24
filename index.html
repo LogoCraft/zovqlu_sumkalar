@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CyberDelve · JS Artifact Analyzer</title>
+    <title>CyberDelve · Mass JS Artifact Analyzer</title>
     <script src="https://cdn.tailwindcss.com">
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,7 +20,6 @@
         :root {
             --bg-deep: #0a0f1d;
             --bg-card: #111827;
-            --bg-card-hover: #1a2332;
             --neon-red: #ff0055;
             --neon-red-glow: rgba(255, 0, 85, 0.35);
             --neon-green: #00ff88;
@@ -29,14 +28,9 @@
             --text-primary: #e6edf3;
             --text-secondary: #8b949e;
             --border-dim: #1e2a3a;
-            --danger-bg: rgba(255, 0, 85, 0.08);
-            --success-bg: rgba(0, 255, 136, 0.06);
-        }
-        html {
-            scroll-behavior: smooth;
         }
         body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            font-family: 'Inter', system-ui, sans-serif;
             background: var(--bg-deep);
             color: var(--text-primary);
             min-height: 100vh;
@@ -48,32 +42,15 @@
         .font-mono-custom {
             font-family: 'JetBrains Mono', monospace;
         }
-
-        /* Glass card */
         .glass-card {
             background: rgba(17, 24, 39, 0.75);
             backdrop-filter: blur(16px) saturate(1.3);
-            -webkit-backdrop-filter: blur(16px) saturate(1.3);
             border: 1px solid rgba(255, 255, 255, 0.04);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
         }
         .glass-card:hover {
             border-color: rgba(255, 0, 85, 0.15);
         }
-
-        /* Neon glow accents */
-        .neon-border-bottom {
-            border-bottom: 2px solid transparent;
-            border-image: linear-gradient(90deg, var(--neon-red), var(--neon-green), var(--neon-cyan)) 1;
-        }
-        .glow-red {
-            box-shadow: 0 0 20px var(--neon-red-glow);
-        }
-        .glow-green {
-            box-shadow: 0 0 20px var(--neon-green-glow);
-        }
-
-        /* Scan button */
         .btn-scan {
             background: linear-gradient(135deg, #ff0055 0%, #cc0044 100%);
             transition: all 0.25s ease;
@@ -86,8 +63,11 @@
         .btn-scan:active {
             transform: translateY(0) scale(0.97);
         }
-
-        /* Drag zone */
+        .btn-scan:disabled {
+            opacity: 0.6;
+            transform: none;
+            cursor: not-allowed;
+        }
         .drop-zone {
             border: 2px dashed rgba(255, 255, 255, 0.08);
             transition: all 0.3s ease;
@@ -102,8 +82,6 @@
             background: rgba(0, 255, 136, 0.08);
             box-shadow: 0 0 40px rgba(0, 255, 136, 0.12);
         }
-
-        /* Table styling */
         .results-table {
             border-collapse: separate;
             border-spacing: 0;
@@ -113,17 +91,17 @@
         }
         .results-table th {
             font-weight: 600;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             text-transform: uppercase;
             letter-spacing: 0.08em;
             color: var(--text-secondary);
-            padding: 12px 16px;
+            padding: 10px 14px;
             border-bottom: 1px solid var(--border-dim);
         }
         .results-table td {
-            padding: 12px 16px;
+            padding: 10px 14px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-            font-size: 0.875rem;
+            font-size: 0.8rem;
         }
         .results-table tbody tr {
             transition: background 0.15s ease;
@@ -131,12 +109,11 @@
         .results-table tbody tr:hover {
             background: rgba(255, 255, 255, 0.02);
         }
-
         .badge-endpoint {
             display: inline-block;
             padding: 2px 10px;
             border-radius: 9999px;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 600;
             letter-spacing: 0.04em;
             background: rgba(0, 255, 136, 0.10);
@@ -147,41 +124,50 @@
             display: inline-block;
             padding: 2px 10px;
             border-radius: 9999px;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 600;
             letter-spacing: 0.04em;
             background: rgba(255, 0, 85, 0.10);
             color: #ff3366;
             border: 1px solid rgba(255, 0, 85, 0.15);
         }
-
+        .badge-source {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.6rem;
+            font-weight: 500;
+            background: rgba(0, 212, 255, 0.08);
+            color: #00d4ff;
+            border: 1px solid rgba(0, 212, 255, 0.10);
+            max-width: 160px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
         .value-truncate {
-            max-width: 380px;
+            max-width: 350px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
         @media (max-width: 640px) {
             .value-truncate {
-                max-width: 200px;
+                max-width: 180px;
             }
         }
-
-        /* Alert toast */
         .toast-alert {
             position: fixed;
             top: 24px;
             right: 24px;
             z-index: 9999;
-            max-width: 420px;
+            max-width: 480px;
             transform: translateX(120%);
             transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .toast-alert.show {
             transform: translateX(0);
         }
-
-        /* Scrollbar */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -196,8 +182,6 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #3a4a5a;
         }
-
-        /* Pulse dot for logo */
         .pulse-dot {
             display: inline-block;
             width: 10px;
@@ -218,13 +202,9 @@
                 transform: scale(0.75);
             }
         }
-
-        /* Stats counter animation */
         .stat-num {
             font-variant-numeric: tabular-nums;
         }
-
-        /* Loading spinner */
         .spinner {
             width: 20px;
             height: 20px;
@@ -238,8 +218,6 @@
                 transform: rotate(360deg);
             }
         }
-
-        /* Fade in */
         .fade-in {
             animation: fadeIn 0.35s ease forwards;
         }
@@ -253,36 +231,40 @@
                 transform: translateY(0);
             }
         }
-
-        /* Filter active */
-        .filter-btn {
-            transition: all 0.2s ease;
-        }
         .filter-btn.active-filter {
             background: rgba(255, 0, 85, 0.15);
             color: #ff3366;
             border-color: rgba(255, 0, 85, 0.3);
         }
+        .scan-log {
+            max-height: 120px;
+            overflow-y: auto;
+            font-size: 0.7rem;
+            line-height: 1.4;
+        }
+        .scan-log::-webkit-scrollbar {
+            width: 3px;
+        }
     </style>
 </head>
 <body>
 
-    <!-- ====== TOAST ALERT ====== -->
+    <!-- Toast -->
     <div id="toast" class="toast-alert glass-card rounded-xl p-4 pr-5 border border-red-900/30 shadow-2xl" role="alert">
         <div class="flex items-start gap-3">
             <div class="shrink-0 mt-0.5 text-red-500 text-lg">⚠</div>
             <div class="flex-1 min-w-0">
-                <p id="toast-title" class="text-sm font-semibold text-red-400">CORS Bloklandı</p>
+                <p id="toast-title" class="text-sm font-semibold text-red-400">Bildiriş</p>
                 <p id="toast-msg" class="text-xs text-gray-400 mt-1 leading-relaxed"></p>
             </div>
             <button onclick="dismissToast()" class="shrink-0 text-gray-500 hover:text-white transition ml-2">&times;</button>
         </div>
     </div>
 
-    <!-- ====== MAIN WRAPPER ====== -->
+    <!-- Main -->
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
 
-        <!-- ====== HEADER / LOGO ====== -->
+        <!-- Header -->
         <header class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-10 fade-in">
             <div class="flex items-center gap-4">
                 <div class="relative flex items-center justify-center w-12 h-12 rounded-xl bg-[#111827] border border-white/5 shadow-lg">
@@ -293,20 +275,20 @@
                     <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight">
                         <span style="background:linear-gradient(135deg,#ff0055 0%,#ff3366 50%,#00ff88 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">CyberDelve</span>
                         <span class="text-gray-300 font-light hidden sm:inline"> · </span>
-                        <span class="text-sm sm:text-base font-medium text-gray-400 hidden sm:inline">JS Artifact Analyzer</span>
+                        <span class="text-sm sm:text-base font-medium text-gray-400 hidden sm:inline">Mass JS Analyzer</span>
                     </h1>
-                    <p class="text-xs text-gray-500 mt-0.5 font-mono-custom">v2.1 · secure code review &amp; secret scanner</p>
+                    <p class="text-xs text-gray-500 mt-0.5 font-mono-custom">v3.0 · recursive script extraction &amp; deep scan</p>
                 </div>
             </div>
             <div class="flex items-center gap-3 text-xs text-gray-500 font-mono-custom">
                 <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-green-500 shadow-lg shadow-green-500/30"></span>client-side</span>
                 <span class="hidden sm:inline">|</span>
-                <span class="hidden sm:inline">no backend</span>
+                <span class="hidden sm:inline">mass analysis</span>
             </div>
         </header>
 
-        <!-- ====== STATS ROW ====== -->
-        <div class="grid grid-cols-3 gap-3 sm:gap-5 mb-8 fade-in">
+        <!-- Stats -->
+        <div class="grid grid-cols-4 gap-3 sm:gap-5 mb-8 fade-in">
             <div class="glass-card rounded-xl py-3 sm:py-4 px-4 text-center">
                 <p class="text-2xl sm:text-3xl font-bold font-mono-custom text-green-400 stat-num" id="stat-endpoints">0</p>
                 <p class="text-xs text-gray-500 mt-0.5 uppercase tracking-wider">Endpoints</p>
@@ -316,81 +298,93 @@
                 <p class="text-xs text-gray-500 mt-0.5 uppercase tracking-wider">Secrets</p>
             </div>
             <div class="glass-card rounded-xl py-3 sm:py-4 px-4 text-center">
-                <p class="text-2xl sm:text-3xl font-bold font-mono-custom text-cyan-400 stat-num" id="stat-lines">0</p>
-                <p class="text-xs text-gray-500 mt-0.5 uppercase tracking-wider">Lines</p>
+                <p class="text-2xl sm:text-3xl font-bold font-mono-custom text-cyan-400 stat-num" id="stat-files">0</p>
+                <p class="text-xs text-gray-500 mt-0.5 uppercase tracking-wider">JS Fayllar</p>
+            </div>
+            <div class="glass-card rounded-xl py-3 sm:py-4 px-4 text-center">
+                <p class="text-2xl sm:text-3xl font-bold font-mono-custom text-gray-300 stat-num" id="stat-lines">0</p>
+                <p class="text-xs text-gray-500 mt-0.5 uppercase tracking-wider">Sətirlər</p>
             </div>
         </div>
 
-        <!-- ====== INPUT SECTION ====== -->
+        <!-- Input Section -->
         <div class="grid md:grid-cols-2 gap-5 mb-8 fade-in">
 
-            <!-- LEFT: URL Scan -->
+            <!-- LEFT: URL Scan (HTML page) -->
             <div class="glass-card rounded-2xl p-5 sm:p-6">
                 <div class="flex items-center gap-2.5 mb-4">
                     <span class="text-red-400 text-lg">🌐</span>
-                    <h2 class="text-sm font-semibold uppercase tracking-widest text-gray-400">URL ilə Skandala</h2>
+                    <h2 class="text-sm font-semibold uppercase tracking-widest text-gray-400">Sayt URL-i ilə Skandala</h2>
                 </div>
+                <p class="text-xs text-gray-500 mb-3 font-mono-custom">HTML səhifəsinin ünvanını daxil edin. Bütün JS faylları avtomatik tapılıb analiz olunacaq.</p>
                 <div class="flex gap-2">
-                    <input id="url-input" type="url" placeholder="https://example.com/app.js" class="flex-1 bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 outline-none transition focus:border-red-500/40 focus:ring-1 focus:ring-red-500/20 font-mono-custom">
+                    <input id="url-input" type="url" placeholder="https://hedef-sayt.com" class="flex-1 bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 outline-none transition focus:border-red-500/40 focus:ring-1 focus:ring-red-500/20 font-mono-custom">
                     <button id="btn-scan-url" class="btn-scan px-5 py-3 rounded-xl text-white text-sm font-semibold tracking-wide flex items-center gap-2 whitespace-nowrap">
                         <span>Skan et</span>
                         <span>→</span>
                     </button>
                 </div>
-                <p class="text-xs text-gray-600 mt-3 font-mono-custom">.js faylına birbaşa URL daxil edin</p>
             </div>
 
-            <!-- RIGHT: Drag & Drop -->
+            <!-- RIGHT: Drag & Drop (HTML or JS) -->
             <div class="glass-card rounded-2xl p-5 sm:p-6">
                 <div class="flex items-center gap-2.5 mb-4">
                     <span class="text-green-400 text-lg">📂</span>
                     <h2 class="text-sm font-semibold uppercase tracking-widest text-gray-400">Faylı Sürüşdür &amp; Burax</h2>
                 </div>
+                <p class="text-xs text-gray-500 mb-3 font-mono-custom">.html faylı atın — bütün JS referansları analiz olunsun. Tək .js faylı da dəstəklənir.</p>
                 <div id="drop-zone" class="drop-zone rounded-xl p-6 sm:p-8 text-center cursor-pointer transition">
                     <div class="flex flex-col items-center gap-2 pointer-events-none">
                         <div class="text-3xl text-gray-600">⬆</div>
-                        <p class="text-sm text-gray-400 font-medium">.js faylını buraya atın</p>
+                        <p class="text-sm text-gray-400 font-medium">HTML və ya JS faylını atın</p>
                         <p class="text-xs text-gray-600">və ya <span class="text-green-400/80 underline underline-offset-2 decoration-green-500/30">klikləyib seçin</span></p>
                     </div>
-                    <input id="file-input" type="file" accept=".js,.mjs,.cjs,.jsx,.ts,.tsx,.json,.html,.htm" class="hidden">
+                    <input id="file-input" type="file" accept=".html,.htm,.js,.mjs,.cjs,.jsx,.ts,.tsx,.json" class="hidden">
                 </div>
             </div>
         </div>
 
-        <!-- ====== RESULTS SECTION ====== -->
+        <!-- Scan Log & Progress -->
+        <div id="progress-section" class="hidden glass-card rounded-2xl p-4 mb-6 fade-in">
+            <div class="flex items-center justify-between mb-2">
+                <h3 class="text-xs font-semibold uppercase tracking-widest text-gray-500">Skən Prosesi</h3>
+                <span id="progress-label" class="text-xs font-mono-custom text-gray-500">0 / 0 fayl</span>
+            </div>
+            <div class="w-full bg-black/40 rounded-full h-1.5 mb-3">
+                <div id="progress-bar" class="h-1.5 rounded-full bg-gradient-to-r from-red-500 to-green-500 transition-all duration-300" style="width:0%"></div>
+            </div>
+            <div id="scan-log" class="scan-log text-gray-500 font-mono-custom"></div>
+        </div>
+
+        <!-- Results -->
         <div id="results-section" class="hidden fade-in">
-            <!-- Toolbar -->
             <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
                 <div class="flex items-center gap-2">
-                    <h3 class="text-sm font-semibold uppercase tracking-widest text-gray-400">Nəticələr</h3>
+                    <h3 class="text-sm font-semibold uppercase tracking-widest text-gray-400">Analiz Nəticələri</h3>
                     <span id="result-count" class="text-xs font-mono-custom text-gray-500 bg-white/5 px-2.5 py-0.5 rounded-full">0</span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <!-- Filter buttons -->
                     <button data-filter="all" class="filter-btn active-filter text-xs px-3 py-1.5 rounded-lg border border-white/5 text-gray-400 hover:text-white transition">Hamısı</button>
                     <button data-filter="endpoint" class="filter-btn text-xs px-3 py-1.5 rounded-lg border border-white/5 text-gray-400 hover:text-white transition">Endpoint</button>
                     <button data-filter="secret" class="filter-btn text-xs px-3 py-1.5 rounded-lg border border-white/5 text-gray-400 hover:text-white transition">Secret</button>
-                    <!-- Search -->
                     <div class="relative">
                         <input id="search-input" type="text" placeholder="Axtar..." class="w-36 sm:w-48 bg-black/40 border border-white/5 rounded-lg px-3 py-1.5 text-xs text-white placeholder-gray-600 outline-none transition focus:border-gray-500/30 font-mono-custom">
                     </div>
                 </div>
             </div>
 
-            <!-- Table -->
             <div class="glass-card rounded-2xl overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="results-table w-full text-left">
                         <thead>
                             <tr>
-                                <th class="w-24">Tip</th>
-                                <th>Dəyər / Məzmun</th>
-                                <th class="hidden sm:table-cell w-28">Sətir</th>
+                                <th class="w-20">Tip</th>
+                                <th>Dəyər</th>
+                                <th class="hidden sm:table-cell w-20">Sətir</th>
+                                <th class="hidden md:table-cell w-40">Mənbə Fayl</th>
                             </tr>
                         </thead>
-                        <tbody id="results-body">
-                            <!-- Rows injected by JS -->
-                        </tbody>
+                        <tbody id="results-body"></tbody>
                     </table>
                 </div>
                 <div id="empty-state" class="hidden py-12 text-center">
@@ -399,9 +393,8 @@
             </div>
         </div>
 
-        <!-- ====== FOOTER ====== -->
         <footer class="mt-12 text-center text-xs text-gray-700 font-mono-custom border-t border-white/[0.02] pt-6">
-            CyberDelve JS Analyzer · bütün analiz brauzer daxilində aparılır
+            CyberDelve Mass JS Analyzer · bütün analiz brauzer daxilində aparılır · heç bir məlumat serverə göndərilmir
         </footer>
     </div>
 
@@ -409,7 +402,7 @@
         (function() {
             'use strict';
 
-            // ---- DOM refs ----
+            // DOM refs
             const urlInput = document.getElementById('url-input');
             const btnScan = document.getElementById('btn-scan-url');
             const dropZone = document.getElementById('drop-zone');
@@ -422,16 +415,23 @@
             const filterBtns = document.querySelectorAll('.filter-btn');
             const statEndpoints = document.getElementById('stat-endpoints');
             const statSecrets = document.getElementById('stat-secrets');
+            const statFiles = document.getElementById('stat-files');
             const statLines = document.getElementById('stat-lines');
             const toast = document.getElementById('toast');
             const toastMsg = document.getElementById('toast-msg');
+            const progressSection = document.getElementById('progress-section');
+            const progressBar = document.getElementById('progress-bar');
+            const progressLabel = document.getElementById('progress-label');
+            const scanLog = document.getElementById('scan-log');
 
-            // ---- State ----
-            let allResults = []; // { type: 'endpoint'|'secret', value: string, line: number }
+            // State
+            let allResults = [];
             let currentFilter = 'all';
             let currentSearch = '';
+            let scannedFiles = new Set();
+            let totalFiles = 0;
+            let completedFiles = 0;
 
-            // ---- Toast ----
             window.dismissToast = function() {
                 toast.classList.remove('show');
             };
@@ -439,73 +439,74 @@
             function showToast(msg) {
                 toastMsg.textContent = msg;
                 toast.classList.add('show');
-                setTimeout(() => toast.classList.remove('show'), 7000);
+                setTimeout(() => toast.classList.remove('show'), 8000);
             }
 
-            // ---- Drop zone events ----
+            function logScan(msg) {
+                const div = document.createElement('div');
+                div.textContent = '> ' + msg;
+                scanLog.appendChild(div);
+                scanLog.scrollTop = scanLog.scrollHeight;
+            }
+
+            function resetProgress() {
+                scannedFiles.clear();
+                totalFiles = 0;
+                completedFiles = 0;
+                progressBar.style.width = '0%';
+                progressLabel.textContent = '0 / 0 fayl';
+                scanLog.innerHTML = '';
+                progressSection.classList.remove('hidden');
+            }
+
+            function updateProgress() {
+                const pct = totalFiles > 0 ? Math.round((completedFiles / totalFiles) * 100) : 0;
+                progressBar.style.width = pct + '%';
+                progressLabel.textContent = completedFiles + ' / ' + totalFiles + ' fayl';
+            }
+
+            // ---- Drop zone ----
             dropZone.addEventListener('click', () => fileInput.click());
-
-            dropZone.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                dropZone.classList.add('drag-over');
-            });
-
-            dropZone.addEventListener('dragleave', () => {
-                dropZone.classList.remove('drag-over');
-            });
-
+            dropZone.addEventListener('dragover', (e) => { e.preventDefault();
+                dropZone.classList.add('drag-over'); });
+            dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('drag-over'); });
             dropZone.addEventListener('drop', (e) => {
                 e.preventDefault();
                 dropZone.classList.remove('drag-over');
-                const files = e.dataTransfer.files;
-                if (files.length > 0) {
-                    processFile(files[0]);
+                if (e.dataTransfer.files.length > 0) {
+                    processFile(e.dataTransfer.files[0]);
                 }
             });
-
             fileInput.addEventListener('change', () => {
-                if (fileInput.files.length > 0) {
-                    processFile(fileInput.files[0]);
-                }
+                if (fileInput.files.length > 0) processFile(fileInput.files[0]);
             });
 
             // ---- URL scan ----
             btnScan.addEventListener('click', handleUrlScan);
-            urlInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') handleUrlScan();
-            });
+            urlInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleUrlScan(); });
 
             async function handleUrlScan() {
                 const url = urlInput.value.trim();
-                if (!url) {
-                    showToast('Zəhmət olmasa bir URL daxil edin.');
-                    return;
-                }
+                if (!url) { showToast('Zəhmət olmasa sayt URL-i daxil edin.'); return; }
+                try { new URL(url); } catch { showToast('Düzgün URL daxil edin (https://...).'); return; }
 
-                // Basic validation
-                try {
-                    new URL(url);
-                } catch {
-                    showToast('Düzgün bir URL daxil edin (https://...).');
-                    return;
-                }
-
-                // Visual loading state
                 btnScan.disabled = true;
                 btnScan.innerHTML = '<span class="spinner"></span><span>Yüklənir...</span>';
+                resetProgress();
+                logScan('🔍 HTML yüklənir: ' + url);
 
                 try {
-                    const response = await fetch(url, { mode: 'cors' });
-                    if (!response.ok) {
-                        throw new Error(`HTTP ${response.status}`);
-                    }
-                    const text = await response.text();
-                    analyzeText(text, `URL: ${url}`);
+                    const resp = await fetch(url, { mode: 'cors' });
+                    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                    const html = await resp.text();
+                    logScan('✅ HTML yükləndi (' + html.length + ' bayt)');
+                    await processHtmlContent(html, url);
                 } catch (err) {
-                    // CORS or network error
                     showToast(
-                        'Bu sayt brauzer təhlükəsizlik siyasəti (CORS) səbəbindən birbaşa oxunmur. Lütfən, saytın .js faylını kompüterinizə endirib aşağıdakı "Sürüşdür-Burax" sahəsinə əlavə edin.'
+                        'Bu sayt CORS səbəbindən birbaşa oxunmur. Lütfən, səhifənin HTML mənbəyini (Ctrl+U) endirib Drag & Drop sahəsinə atın.'
                         );
+                    logScan('❌ Xəta: ' + err.message);
+                    progressSection.classList.add('hidden');
                 } finally {
                     btnScan.disabled = false;
                     btnScan.innerHTML = '<span>Skan et</span><span>→</span>';
@@ -514,136 +515,285 @@
 
             // ---- File processing ----
             function processFile(file) {
-                // Accept .js and common text-based formats
-                const validExts = ['.js', '.mjs', '.cjs', '.jsx', '.ts', '.tsx', '.json', '.html', '.htm'];
                 const ext = '.' + file.name.split('.').pop().toLowerCase();
-                if (!validExts.includes(ext)) {
-                    showToast('Yalnız .js, .mjs, .cjs, .jsx, .ts, .tsx, .json, .html faylları dəstəklənir.');
+                const htmlExts = ['.html', '.htm'];
+                const jsExts = ['.js', '.mjs', '.cjs', '.jsx', '.ts', '.tsx', '.json'];
+
+                if (![...htmlExts, ...jsExts].includes(ext)) {
+                    showToast('Yalnız .html, .htm, .js, .mjs, .cjs, .jsx, .ts, .tsx, .json faylları dəstəklənir.');
                     return;
                 }
 
                 const reader = new FileReader();
-                reader.onload = (e) => {
+                reader.onload = async (e) => {
                     const text = e.target.result;
-                    analyzeText(text, file.name);
+                    resetProgress();
+
+                    if (htmlExts.includes(ext)) {
+                        logScan('📄 HTML fayl oxundu: ' + file.name);
+                        await processHtmlContent(text, file.name);
+                    } else {
+                        logScan('📜 JS fayl oxundu: ' + file.name);
+                        await analyzeSingleJsFile(text, file.name);
+                    }
                 };
-                reader.onerror = () => {
-                    showToast('Fayl oxunarkən xəta baş verdi.');
-                };
+                reader.onerror = () => showToast('Fayl oxunarkən xəta baş verdi.');
                 reader.readAsText(file);
             }
 
-            // ---- Core Analysis Engine ----
-            function analyzeText(text, sourceLabel) {
+            // ---- Extract script URLs from HTML ----
+            function extractScriptUrls(html, baseUrl) {
+                const urls = [];
+                // <script src="...">
+                const scriptRegex = /<script[^>]+src\s*=\s*["']([^"']+)["']/gi;
+                let m;
+                while ((m = scriptRegex.exec(html)) !== null) {
+                    let src = m[1].trim();
+                    // Resolve relative URLs
+                    if (baseUrl && !src.startsWith('http://') && !src.startsWith('https://') && !src.startsWith('//')) {
+                        try {
+                            const base = baseUrl.endsWith('/') ? baseUrl : baseUrl.substring(0, baseUrl.lastIndexOf('/') +
+                            1);
+                            src = new URL(src, base).href;
+                        } catch { /* keep as is */ }
+                    } else if (src.startsWith('//')) {
+                        src = 'https:' + src;
+                    }
+                    if (src) urls.push(src);
+                }
+                // import statements (ES modules inline)
+                const importRegex = /(?:import\s+(?:["'][^"']+["']|\{[^}]*\}\s+from\s+["']([^"']+)["'])|import\s+["']([^"']+)["'])/g;
+                importRegex.lastIndex = 0;
+                while ((m = importRegex.exec(html)) !== null) {
+                    const imp = (m[1] || m[2] || '').trim();
+                    if (imp && (imp.endsWith('.js') || imp.includes('/'))) {
+                        if (baseUrl && !imp.startsWith('http://') && !imp.startsWith('https://') && !imp.startsWith('//')) {
+                            try {
+                                const base = baseUrl.endsWith('/') ? baseUrl : baseUrl.substring(0, baseUrl.lastIndexOf(
+                                '/') + 1);
+                                const resolved = new URL(imp, base).href;
+                                urls.push(resolved);
+                            } catch { urls.push(imp); }
+                        } else {
+                            urls.push(imp);
+                        }
+                    }
+                }
+                // Dynamic imports: import("...")
+                const dynImportRegex = /import\s*\(\s*["']([^"']+)["']\s*\)/g;
+                dynImportRegex.lastIndex = 0;
+                while ((m = dynImportRegex.exec(html)) !== null) {
+                    let imp = m[1].trim();
+                    if (baseUrl && !imp.startsWith('http://') && !imp.startsWith('https://') && !imp.startsWith('//')) {
+                        try {
+                            const base = baseUrl.endsWith('/') ? baseUrl : baseUrl.substring(0, baseUrl.lastIndexOf('/') +
+                            1);
+                            imp = new URL(imp, base).href;
+                        } catch { /* */ }
+                    }
+                    if (imp) urls.push(imp);
+                }
+                // Also find inline <script> blocks with import statements
+                const inlineScriptRegex = /<script[^>]*>([\s\S]*?)<\/script>/gi;
+                inlineScriptRegex.lastIndex = 0;
+                while ((m = inlineScriptRegex.exec(html)) !== null) {
+                    const code = m[1];
+                    const inlineImportRegex = /(?:from\s+["']([^"']+\.js[^"']*)["']|import\s+["']([^"']+\.js[^"']*)["'])/g;
+                    let im;
+                    while ((im = inlineImportRegex.exec(code)) !== null) {
+                        let imp = (im[1] || im[2] || '').trim();
+                        if (imp && baseUrl) {
+                            if (!imp.startsWith('http://') && !imp.startsWith('https://') && !imp.startsWith('//')) {
+                                try {
+                                    const base = baseUrl.endsWith('/') ? baseUrl : baseUrl.substring(0, baseUrl
+                                        .lastIndexOf('/') + 1);
+                                    imp = new URL(imp, base).href;
+                                } catch { /* */ }
+                            }
+                            if (imp) urls.push(imp);
+                        }
+                    }
+                }
+                return [...new Set(urls)];
+            }
+
+            // ---- Process HTML content ----
+            async function processHtmlContent(html, sourceName) {
+                const baseUrl = sourceName.startsWith('http') ? sourceName : null;
+                const scriptUrls = extractScriptUrls(html, baseUrl);
+
+                logScan('🔗 Tapılan script faylları: ' + scriptUrls.length);
+
+                if (scriptUrls.length === 0) {
+                    // No external scripts found, analyze the HTML itself for inline scripts
+                    logScan('⚠ Xarici script tapılmadı. HTML daxili kodlar analiz olunur...');
+                    // Extract inline scripts and concatenate
+                    const inlineRegex = /<script[^>]*>([\s\S]*?)<\/script>/gi;
+                    let allJs = '';
+                    let m;
+                    while ((m = inlineRegex.exec(html)) !== null) {
+                        allJs += m[1] + '\n';
+                    }
+                    if (allJs.trim().length > 0) {
+                        await analyzeSingleJsFile(allJs, sourceName + ' (inline scripts)');
+                    } else {
+                        // Just analyze the HTML itself
+                        await analyzeSingleJsFile(html, sourceName);
+                    }
+                    progressSection.classList.add('hidden');
+                    return;
+                }
+
+                // Prepare to fetch all JS files
+                totalFiles = scriptUrls.length;
+                completedFiles = 0;
+                updateProgress();
+
+                let allJsContent = '';
+                const baseName = sourceName.replace(/\.html?$/i, '');
+
+                // Fetch each JS file
+                for (let i = 0; i < scriptUrls.length; i++) {
+                    const scriptUrl = scriptUrls[i];
+                    const shortName = scriptUrl.split('/').pop() || 'script-' + (i + 1) + '.js';
+                    logScan('⬇ [' + (i + 1) + '/' + totalFiles + '] ' + shortName);
+
+                    try {
+                        const resp = await fetch(scriptUrl, { mode: 'cors' });
+                        if (resp.ok) {
+                            const code = await resp.text();
+                            allJsContent += '\n\n// ==== ' + shortName + ' ====\n\n' + code;
+                            scannedFiles.add(scriptUrl);
+                            logScan('  ✅ ' + code.length + ' bayt');
+                        } else {
+                            logScan('  ⚠ HTTP ' + resp.status + ' — keçildi');
+                        }
+                    } catch (err) {
+                        logScan('  ⚠ Yüklənmədi: ' + err.message);
+                    }
+
+                    completedFiles++;
+                    updateProgress();
+                }
+
+                logScan('📊 Ümumi kod: ' + allJsContent.length + ' bayt, ' + scannedFiles.size + ' fayl');
+
+                if (allJsContent.trim().length === 0) {
+                    showToast('Heç bir JS faylı yüklənə bilmədi. CORS və ya şəbəkə xətası.');
+                    logScan('❌ Heç bir JS kodu əldə olunmadı.');
+                    progressSection.classList.add('hidden');
+                    return;
+                }
+
+                // Send the concatenated code for analysis
+                await analyzeSingleJsFile(allJsContent, sourceName + ' (' + scannedFiles.size + ' JS fayl)');
+
+                // Delay hiding progress
+                setTimeout(() => {
+                    progressSection.classList.add('hidden');
+                }, 1500);
+            }
+
+            // ---- Analyze single JS text ----
+            async function analyzeSingleJsFile(text, sourceLabel) {
                 const lines = text.split('\n');
                 const totalLines = lines.length;
 
-                const endpoints = new Map(); // key -> { value, line }
+                const endpoints = new Map();
                 const secrets = new Map();
 
-                // ---- Regex Patterns ----
-                // 1) URLs & API endpoints
-                const urlRegex = /(?:https?:\/\/[^\s"'`<>]+\.[^\s"'`<>]+)|(?:\/[a-zA-Z_][a-zA-Z0-9_\-./]*?(?:api|v[0-9]+|graphql|rest|auth|login|signup|user|admin|config|token|oauth|callback|webhook|upload|download|static)[a-zA-Z0-9_\-/.]*)/gi;
+                const urlRegex = /(?:https?:\/\/[^\s"'`<>]+\.[^\s"'`<>]+)|(?:\/[a-zA-Z_][a-zA-Z0-9_\-./]*?(?:api|v[0-9]+|graphql|rest|auth|login|signup|user|admin|config|token|oauth|callback|webhook|upload|download|static|endpoint|service|proxy|gateway|backend)[a-zA-Z0-9_\-/.]*)/gi;
 
-                // 2) Secrets (key = "value" pattern after known keywords)
                 const secretRegex = /(?:"(?:api_key|apikey|secret|token|password|jwt|access_key|secret_key|private_key|auth_token|refresh_token|session_secret|client_secret|apiSecret|apiKey|passwd|pass)"\s*:\s*"([^"]+)")|(?:'(?:api_key|apikey|secret|token|password|jwt|access_key|secret_key|private_key|auth_token|refresh_token|session_secret|client_secret|apiSecret|apiKey|passwd|pass)'\s*:\s*'([^']+)')|(?:["'](?:api_key|apikey|secret|token|password|jwt|access_key|secret_key|private_key|auth_token|refresh_token|session_secret|client_secret|apiSecret|apiKey|passwd|pass)["']\s*[=:]\s*["']([^"']+)["'])/gi;
 
-                // ---- Scan each line ----
                 for (let i = 0; i < lines.length; i++) {
                     const line = lines[i];
                     const lineNum = i + 1;
 
-                    // Endpoints
-                    let m;
-                    // Reset lastIndex for global regex
                     urlRegex.lastIndex = 0;
+                    let m;
                     while ((m = urlRegex.exec(line)) !== null) {
                         const val = m[0].trim();
-                        if (val.length > 3 && !endpoints.has(val)) {
-                            endpoints.set(val, { value: val, line: lineNum });
+                        if (val.length > 3) {
+                            const key = val + '_' + sourceLabel + '_' + lineNum;
+                            if (!endpoints.has(key)) {
+                                endpoints.set(key, { value: val, line: lineNum, source: sourceLabel });
+                            }
                         }
                     }
 
-                    // Secrets
                     secretRegex.lastIndex = 0;
                     while ((m = secretRegex.exec(line)) !== null) {
-                        // Capture group: either group 1, 2, or 3
                         const captured = m[1] || m[2] || m[3];
                         if (captured && captured.trim().length > 0) {
                             const secretVal = captured.trim();
-                            // Avoid false positives: ignore template literals or obvious placeholders
-                            if (!secretVal.includes('${') && !secretVal.startsWith('process.') && !secretVal
-                                .startsWith('YOUR_')) {
-                                const key = secretVal + '_' + lineNum;
+                            if (!secretVal.includes('${') && !secretVal.startsWith('process.') && !secretVal.startsWith(
+                                    'YOUR_')) {
+                                const key = secretVal + '_' + sourceLabel + '_' + lineNum;
                                 if (!secrets.has(key)) {
-                                    secrets.set(key, { value: secretVal, line: lineNum });
+                                    secrets.set(key, { value: secretVal, line: lineNum, source: sourceLabel });
                                 }
                             }
                         }
                     }
 
-                    // Additional: find common patterns like "key": "long-string-without-spaces"
-                    // that might be tokens even if not using exact keyword
+                    // Loose tokens
                     const looseTokenRegex = /["'](?:token|bearer|auth|session|access|refresh|secret|key|jwt|apikey|api_key)["']\s*[:=]\s*["']([a-zA-Z0-9_\-\.]{16,})["']/gi;
                     looseTokenRegex.lastIndex = 0;
                     while ((m = looseTokenRegex.exec(line)) !== null) {
                         const captured = m[1];
                         if (captured && captured.trim().length > 0) {
-                            const key = 'loose_' + captured + '_' + lineNum;
+                            const key = 'loose_' + sourceLabel + '_' + captured.substring(0, 10) + '_' + lineNum;
                             if (!secrets.has(key)) {
-                                secrets.set(key, { value: captured, line: lineNum });
+                                secrets.set(key, { value: captured, line: lineNum, source: sourceLabel });
                             }
                         }
                     }
 
-                    // Find JWT tokens (eyJ... pattern)
+                    // JWT
                     const jwtRegex = /["']([a-zA-Z0-9_\-]{20,}\.[a-zA-Z0-9_\-]{4,}\.[a-zA-Z0-9_\-]{4,})["']/g;
                     jwtRegex.lastIndex = 0;
                     while ((m = jwtRegex.exec(line)) !== null) {
                         const captured = m[1];
                         if (captured && captured.split('.').length === 3) {
-                            const key = 'jwt_' + captured.substring(0, 20) + '_' + lineNum;
+                            const key = 'jwt_' + sourceLabel + '_' + captured.substring(0, 16) + '_' + lineNum;
                             if (!secrets.has(key)) {
-                                secrets.set(key, { value: captured, line: lineNum });
+                                secrets.set(key, { value: captured, line: lineNum, source: sourceLabel });
                             }
                         }
                     }
                 }
 
-                // ---- Build results ----
                 const endpointArr = Array.from(endpoints.values());
                 const secretArr = Array.from(secrets.values());
 
                 allResults = [
-                    ...endpointArr.map(r => ({ type: 'endpoint', value: r.value, line: r.line })),
-                    ...secretArr.map(r => ({ type: 'secret', value: r.value, line: r.line }))
+                    ...endpointArr.map(r => ({ type: 'endpoint', value: r.value, line: r.line, source: r.source })),
+                    ...secretArr.map(r => ({ type: 'secret', value: r.value, line: r.line, source: r.source }))
                 ];
 
-                // Update stats
                 statEndpoints.textContent = endpointArr.length;
                 statSecrets.textContent = secretArr.length;
+                statFiles.textContent = scannedFiles.size > 0 ? scannedFiles.size : 1;
                 statLines.textContent = totalLines.toLocaleString();
 
-                // Render
                 renderResults();
-
-                // Show section
                 resultsSection.classList.remove('hidden');
                 resultsSection.classList.add('fade-in');
-
-                // Scroll to results smoothly
                 resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+                logScan('✅ Analiz tamam. ' + endpointArr.length + ' endpoint, ' + secretArr.length + ' secret tapıldı.');
             }
 
             // ---- Render ----
             function renderResults() {
                 const filtered = allResults.filter(r => {
-                    // Filter by type
                     if (currentFilter !== 'all' && r.type !== currentFilter) return false;
-                    // Search
                     if (currentSearch) {
                         const q = currentSearch.toLowerCase();
-                        return r.value.toLowerCase().includes(q) || String(r.line).includes(q);
+                        return r.value.toLowerCase().includes(q) ||
+                            String(r.line).includes(q) ||
+                            (r.source || '').toLowerCase().includes(q);
                     }
                     return true;
                 });
@@ -663,9 +813,8 @@
                     const badgeClass = isEndpoint ? 'badge-endpoint' : 'badge-secret';
                     const badgeLabel = isEndpoint ? 'ENDPOINT' : 'SECRET';
                     const rowColor = isEndpoint ? 'text-green-300' : 'text-red-300';
-
-                    // Escape HTML for value
                     const escaped = escapeHtml(r.value);
+                    const sourceShort = r.source ? r.source.split('/').pop() || r.source : '-';
 
                     html += `<tr class="fade-in">
                         <td><span class="${badgeClass}">${badgeLabel}</span></td>
@@ -673,6 +822,7 @@
                             <span class="value-truncate block" title="${escaped}">${escaped}</span>
                         </td>
                         <td class="hidden sm:table-cell font-mono-custom text-xs text-gray-500">${r.line}</td>
+                        <td class="hidden md:table-cell"><span class="badge-source" title="${escapeHtml(r.source || '')}">${escapeHtml(sourceShort)}</span></td>
                     </tr>`;
                 }
                 resultsBody.innerHTML = html;
@@ -684,13 +834,12 @@
                 return div.innerHTML;
             }
 
-            // ---- Search ----
+            // ---- Search & Filter ----
             searchInput.addEventListener('input', (e) => {
                 currentSearch = e.target.value.trim();
                 renderResults();
             });
 
-            // ---- Filter buttons ----
             filterBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
                     filterBtns.forEach(b => b.classList.remove('active-filter'));
@@ -700,7 +849,7 @@
                 });
             });
 
-            // ---- Drag-drop visual feedback for whole page (optional) ----
+            // Prevent page reload on drop
             document.addEventListener('dragover', (e) => e.preventDefault());
             document.addEventListener('drop', (e) => e.preventDefault());
 
