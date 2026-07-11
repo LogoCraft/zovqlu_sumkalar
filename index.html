@@ -1,1 +1,458 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Elay Mammadli · Cybersecurity Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
+    <style>
+        /* === RESET & BASE === */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            transition: background .45s ease, color .45s ease;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
 
+        /* === THEME (default dark) === */
+        :root, [data-theme="dark"] {
+            --bg: #0b0b0f;
+            --surface: #14141c;
+            --border: #1e1e2a;
+            --text: #e4e4ed;
+            --text-muted: #8888a0;
+            --accent: #6c5ce7;
+            --accent-glow: rgba(108,92,231,.3);
+            --card-bg: #12121a;
+        }
+        [data-theme="light"] {
+            --bg: #f5f5fa;
+            --surface: #ffffff;
+            --border: #e2e2ec;
+            --text: #1a1a24;
+            --text-muted: #6e6e82;
+            --accent: #6c5ce7;
+            --accent-glow: rgba(108,92,231,.15);
+            --card-bg: #ffffff;
+        }
+
+        /* === LAYOUT === */
+        .container {
+            max-width: 780px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* === HEADER / NAV === */
+        header {
+            padding: 24px 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .logo {
+            font-weight: 800;
+            font-size: 1.25rem;
+            letter-spacing: -.03em;
+            color: var(--accent);
+        }
+        .logo span { color: var(--text); }
+
+        .theme-toggle {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            padding: 6px 14px;
+            font-size: .8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: .2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .theme-toggle:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        .theme-toggle .icon { font-size: 1rem; line-height: 1; }
+
+        /* === LANGUAGE SWITCHER === */
+        .lang-bar {
+            display: flex;
+            gap: 6px;
+        }
+        .lang-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 4px 12px;
+            font-size: .72rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: .2s;
+            text-transform: uppercase;
+            letter-spacing: .03em;
+        }
+        .lang-btn:hover,
+        .lang-btn.active {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-glow);
+        }
+
+        /* === HERO === */
+        .hero {
+            padding: 60px 0 40px;
+            text-align: center;
+        }
+        .hero-badge {
+            display: inline-block;
+            background: var(--accent-glow);
+            color: var(--accent);
+            font-size: .75rem;
+            font-weight: 700;
+            padding: 6px 18px;
+            border-radius: 40px;
+            letter-spacing: .04em;
+            margin-bottom: 20px;
+            border: 1px solid rgba(108,92,231,.25);
+        }
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            letter-spacing: -.04em;
+            line-height: 1.15;
+        }
+        .hero h1 .highlight {
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 520px;
+            margin: 16px auto 0;
+        }
+
+        /* === DIVIDER === */
+        .divider {
+            width: 48px;
+            height: 3px;
+            background: var(--accent);
+            border-radius: 4px;
+            margin: 16px auto 0;
+        }
+
+        /* === SECTION === */
+        section {
+            padding: 32px 0;
+        }
+        .section-title {
+            font-size: .8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: var(--text-muted);
+            margin-bottom: 18px;
+        }
+
+        /* === CONTACT CARDS === */
+        .contact-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .contact-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 14px 18px;
+            text-decoration: none;
+            color: var(--text);
+            transition: .2s;
+        }
+        .contact-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,.25);
+        }
+        .contact-card .emoji {
+            font-size: 1.3rem;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--surface);
+            border-radius: 10px;
+            flex-shrink: 0;
+        }
+        .contact-card .label {
+            font-size: .75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+        .contact-card .value {
+            font-size: .95rem;
+            font-weight: 600;
+            word-break: break-all;
+        }
+
+        /* === SKILLS (minimal) === */
+        .skill-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .skill-tag {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 6px 16px;
+            font-size: .82rem;
+            font-weight: 500;
+            color: var(--text);
+            transition: .2s;
+        }
+        .skill-tag:hover {
+            border-color: var(--accent);
+            background: var(--accent-glow);
+        }
+
+        /* === FOOTER === */
+        footer {
+            padding: 32px 0 40px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: .8rem;
+            border-top: 1px solid var(--border);
+            margin-top: 16px;
+        }
+
+        /* === SCROLL REVEAL (lightweight) === */
+        .reveal {
+            opacity: 0;
+            transform: translateY(28px);
+            transition: opacity .55s ease, transform .55s ease;
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 600px) {
+            .hero h1 { font-size: 2.2rem; }
+            header { flex-wrap: wrap; gap: 12px; }
+            .lang-bar { order: 3; width: 100%; justify-content: center; }
+        }
+
+        /* === SELECTION === */
+        ::selection { background: var(--accent); color: #fff; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- ===== HEADER ===== -->
+        <header>
+            <div class="logo">e<span>lay</span></div>
+            <div style="display:flex;align-items:center;gap:12px;">
+                <div class="lang-bar">
+                    <button class="lang-btn active" data-lang="en">EN</button>
+                    <button class="lang-btn" data-lang="ru">RU</button>
+                    <button class="lang-btn" data-lang="tr">TR</button>
+                    <button class="lang-btn" data-lang="az">AZ</button>
+                </div>
+                <div class="theme-toggle" id="themeToggle">
+                    <span class="icon" id="themeIcon">🌙</span>
+                    <span id="themeLabel">Dark</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- ===== HERO ===== -->
+        <section class="hero reveal">
+            <div class="hero-badge" data-i18n="badge">🔒 Cybersecurity Student</div>
+            <h1><span class="highlight" data-i18n="name">Elay Mammadli</span></h1>
+            <p data-i18n="subtitle">Building secure digital futures — one line of code at a time.</p>
+            <div class="divider"></div>
+        </section>
+
+        <!-- ===== CONTACT ===== -->
+        <section class="reveal">
+            <div class="section-title" data-i18n="connect">📬 Connect</div>
+            <div class="contact-grid">
+                <a href="mailto:elaymemmedli27@gmail.com" class="contact-card">
+                    <div class="emoji">✉️</div>
+                    <div>
+                        <div class="label" data-i18n="email_label">Email</div>
+                        <div class="value">elaymemmedli27@gmail.com</div>
+                    </div>
+                </a>
+                <a href="https://github.com/Vorlixx" target="_blank" rel="noopener" class="contact-card">
+                    <div class="emoji">🐙</div>
+                    <div>
+                        <div class="label">GitHub</div>
+                        <div class="value">github.com/Vorlixx</div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- ===== SKILLS (compact) ===== -->
+        <section class="reveal">
+            <div class="section-title" data-i18n="skills">🛡️ Focus Areas</div>
+            <div class="skill-tags">
+                <span class="skill-tag">Penetration Testing</span>
+                <span class="skill-tag">Vulnerability Assessment</span>
+                <span class="skill-tag">Network Security</span>
+                <span class="skill-tag">Python / Bash</span>
+                <span class="skill-tag">OWASP Top 10</span>
+                <span class="skill-tag">CTF / HTB</span>
+            </div>
+        </section>
+
+        <!-- ===== FOOTER ===== -->
+        <footer>
+            <p data-i18n="footer">© 2026 Elay Mammadli · Built with purpose</p>
+        </footer>
+
+    </div>
+
+    <script>
+        // ============================================
+        // 1. THEME TOGGLE (dark ↔ light)
+        // ============================================
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon  = document.getElementById('themeIcon');
+        const themeLabel = document.getElementById('themeLabel');
+        const html       = document.documentElement;
+
+        function setTheme(mode) {
+            html.setAttribute('data-theme', mode);
+            localStorage.setItem('theme', mode);
+            if (mode === 'light') {
+                themeIcon.textContent = '☀️';
+                themeLabel.textContent = 'Light';
+            } else {
+                themeIcon.textContent = '🌙';
+                themeLabel.textContent = 'Dark';
+            }
+        }
+
+        // restore saved theme
+        const saved = localStorage.getItem('theme');
+        if (saved) setTheme(saved);
+
+        themeToggle.addEventListener('click', () => {
+            const cur = html.getAttribute('data-theme');
+            setTheme(cur === 'dark' ? 'light' : 'dark');
+        });
+
+        // ============================================
+        // 2. I18n — translations
+        // ============================================
+        const translations = {
+            en: {
+                badge: '🔒 Cybersecurity Student',
+                name: 'Elay Mammadli',
+                subtitle: 'Building secure digital futures — one line of code at a time.',
+                connect: '📬 Connect',
+                email_label: 'Email',
+                skills: '🛡️ Focus Areas',
+                footer: '© 2026 Elay Mammadli · Built with purpose'
+            },
+            ru: {
+                badge: '🔒 Студент по кибербезопасности',
+                name: 'Элай Мамедли',
+                subtitle: 'Создаю безопасное цифровое будущее — строка за строкой.',
+                connect: '📬 Контакты',
+                email_label: 'Почта',
+                skills: '🛡️ Направления',
+                footer: '© 2026 Элай Мамедли · Сделано с целью'
+            },
+            tr: {
+                badge: '🔒 Siber Güvenlik Öğrencisi',
+                name: 'Elay Mammadlı',
+                subtitle: 'Güvenli dijital gelecekler inşa ediyorum — her satırda.',
+                connect: '📬 İletişim',
+                email_label: 'E-posta',
+                skills: '🛡️ İlgi Alanları',
+                footer: '© 2026 Elay Mammadlı · Amaçla yapıldı'
+            },
+            az: {
+                badge: '🔒 Kibertəhlükəsizlik Tələbəsi',
+                name: 'Elay Məmmədli',
+                subtitle: 'Təhlükəsiz rəqəmsal gələcək qururam — sətir-sətir.',
+                connect: '📬 Əlaqə',
+                email_label: 'E-poçt',
+                skills: '🛡️ İstiqamətlər',
+                footer: '© 2026 Elay Məmmədli · Məqsədlə hazırlanmışdır'
+            }
+        };
+
+        const langBtns = document.querySelectorAll('.lang-btn');
+        const i18nEls  = document.querySelectorAll('[data-i18n]');
+
+        function setLanguage(lang) {
+            const t = translations[lang];
+            if (!t) return;
+
+            i18nEls.forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key] !== undefined) el.textContent = t[key];
+            });
+
+            langBtns.forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`.lang-btn[data-lang="${lang}"]`)?.classList.add('active');
+            localStorage.setItem('lang', lang);
+        }
+
+        // restore saved language
+        const savedLang = localStorage.getItem('lang') || 'en';
+        setLanguage(savedLang);
+
+        langBtns.forEach(btn => {
+            btn.addEventListener('click', () => setLanguage(btn.getAttribute('data-lang')));
+        });
+
+        // ============================================
+        // 3. SCROLL REVEAL (lightweight IntersectionObserver)
+        // ============================================
+        const revealEls = document.querySelectorAll('.reveal');
+        if ('IntersectionObserver' in window) {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+            revealEls.forEach(el => observer.observe(el));
+        } else {
+            // fallback: show all immediately
+            revealEls.forEach(el => el.classList.add('visible'));
+        }
+    </script>
+
+</body>
+</html>
