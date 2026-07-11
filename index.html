@@ -47,6 +47,26 @@
             color: #fff;
         }
 
+        /* ===== REVEAL ON SCROLL ===== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+                        transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+            will-change: opacity, transform;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.4s; }
+        .reveal-delay-5 { transition-delay: 0.5s; }
+
         /* ===== LOADING SCREEN ===== */
         #loading-screen {
             position: fixed;
@@ -107,7 +127,7 @@
             100% { width: 100%; }
         }
 
-        /* ===== NOISE OVERLAY (yüngül, performans üçün aşağı opacity) ===== */
+        /* ===== NOISE OVERLAY ===== */
         .noise-overlay {
             position: fixed;
             inset: 0;
@@ -119,7 +139,6 @@
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
             background-repeat: repeat;
             background-size: 256px 256px;
-            /* Köhnə cihazlarda noise göstərmək optionaldır */
         }
 
         /* ===== BACKGROUND LINE EFFECT ===== */
@@ -147,7 +166,6 @@
             opacity: 0.4;
             top: -50vh;
             animation: dropLine 12s infinite linear;
-            /* will-change performansı artırır */
             will-change: transform;
         }
 
@@ -793,6 +811,11 @@
 
         .project-row:hover .project-arrow {
             color: var(--accent-blue);
+            transform: translateX(4px)
+            }
+
+        .project-row:hover .project-arrow {
+            color: var(--accent-blue);
             transform: translateX(4px) rotate(45deg);
         }
 
@@ -1117,7 +1140,7 @@
         <header>
             <div class="logo">ElayMammadli</div>
 
-            <!-- Dil seçimi - 4 dil -->
+            <!-- Dil seçimi -->
             <div class="lang-switch" style="justify-content:center;">
                 <a href="#" class="active" data-lang="en">EN</a>
                 <a href="#" data-lang="ru">RU</a>
@@ -1203,10 +1226,10 @@
     <section class="about-section" id="about">
         <div class="about-container">
             <div class="about-left">
-                <span class="section-label"><span data-key="aboutLabel">About</span></span>
-                <h2 class="about-headline"><span data-key="aboutHeadline">About Me</span></h2>
+                <span class="section-label reveal"><span data-key="aboutLabel">About</span></span>
+                <h2 class="about-headline reveal reveal-delay-1"><span data-key="aboutHeadline">About Me</span></h2>
 
-                <div class="about-visual">
+                <div class="about-visual reveal reveal-delay-2">
                     <div class="code-skeleton">
                         <span class="line"><span class="syntax-keyword">const</span> <span class="syntax-prop">elay</span> <span class="syntax-bracket">=</span> {</span>
                         <span class="line">  role: <span class="syntax-string">'CyberSec Student'</span>,</span>
@@ -1229,13 +1252,13 @@
             </div>
 
             <div class="about-right">
-                <p class="about-bio" data-key="bio">
+                <p class="about-bio reveal reveal-delay-1" data-key="bio">
                     Hi, I'm Elay. A CyberSec student who designs and builds security-focused projects.
                     I share my work as open source to grow my skills and contribute to the community.
                     I work with HTML, CSS, JavaScript, Python, and I'm exploring cybersecurity and penetration testing.
                 </p>
 
-                <div class="about-stats">
+                <div class="about-stats reveal reveal-delay-2">
                     <div class="stat-item">
                         <div class="stat-number">01</div>
                         <div class="stat-label" data-key="stat1">Cyber Security<br>Penetration Testing</div>
@@ -1250,7 +1273,7 @@
                     </div>
                 </div>
 
-                <div class="about-cta-row">
+                <div class="about-cta-row reveal reveal-delay-3">
                     <a href="#portfolio" class="about-link">
                         <span data-key="viewProjects">View My Projects</span>
                         <span class="arrow-icon">→</span>
@@ -1261,7 +1284,7 @@
     </section>
 
     <!-- ===== MARQUEE ===== -->
-    <section class="marquee-section">
+    <section class="marquee-section reveal">
         <div class="marquee-content">
             <span>Python</span> <span class="outlined">JavaScript</span>
             <span>HTML</span> <span class="outlined">CSS</span>
@@ -1282,12 +1305,12 @@
     <!-- ===== PORTFOLIO ===== -->
     <section class="portfolio-section" id="portfolio">
         <div class="portfolio-container">
-            <span class="section-label" style="margin-bottom: 3rem;"><span data-key="selectedWorks">Selected Works</span></span>
-            <h2 class="about-headline"><span data-key="latestProjects">Latest Projects</span></h2>
+            <span class="section-label reveal" style="margin-bottom: 3rem;"><span data-key="selectedWorks">Selected Works</span></span>
+            <h2 class="about-headline reveal reveal-delay-1"><span data-key="latestProjects">Latest Projects</span></h2>
             <br>
 
             <div class="project-list">
-                <div class="project-row" style="cursor:default;">
+                <div class="project-row reveal reveal-delay-1" style="cursor:default;">
                     <span class="project-num">01</span>
                     <h3 class="project-title" style="color:var(--text-muted);">···</h3>
                     <div class="project-right">
@@ -1299,7 +1322,7 @@
                     </div>
                 </div>
 
-                <div class="project-row" style="cursor:default;">
+                <div class="project-row reveal reveal-delay-2" style="cursor:default;">
                     <span class="project-num">02</span>
                     <h3 class="project-title" style="color:var(--text-muted);">···</h3>
                     <div class="project-right">
@@ -1311,7 +1334,7 @@
                     </div>
                 </div>
 
-                <div class="project-row" style="cursor:default;">
+                <div class="project-row reveal reveal-delay-3" style="cursor:default;">
                     <span class="project-num">03</span>
                     <h3 class="project-title" style="color:var(--text-muted);">···</h3>
                     <div class="project-right">
@@ -1324,7 +1347,7 @@
                 </div>
             </div>
 
-            <div class="github-container">
+            <div class="github-container reveal reveal-delay-3">
                 <a href="https://github.com/Vorlixx" target="_blank" class="github-btn">
                     <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
                         <path d="M12 .5a12 12 0 0 0-3.79 23.39c.6.11.82-.26.82-.58v-2.04c-3.34.73-4.04-1.42-4.04-1.42-.55-1.37-1.33-1.73-1.33-1.73-1.09-.74.08-.72.08-.72 1.2.08 1.84 1.23 1.84 1.23 1.07 1.82 2.8 1.3 3.48.99.11-.77.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.92 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.53.12-3.18 0 0 1.01-.32 3.3 1.23a11.4 11.4 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.6-2.8 5.62-5.48 5.92.43.37.82 1.09.82 2.2v3.27c0 .32.21.69.83.58A12 12 0 0 0 12 .5z"/>
@@ -1339,17 +1362,17 @@
     <!-- ===== CONTACT ===== -->
     <section class="contact-section" id="contact">
         <div class="contact-container">
-            <span class="section-label"><span data-key="contactLabel">Contact</span></span>
-            <h2 class="contact-headline">
+            <span class="section-label reveal"><span data-key="contactLabel">Contact</span></span>
+            <h2 class="contact-headline reveal reveal-delay-1">
                 <span data-key="contactLine1">Got an idea?</span><br>
                 <span class="highlight" data-key="contactLine2">Let's build together.</span>
             </h2>
-            <p class="contact-description" data-key="contactDesc">
+            <p class="contact-description reveal reveal-delay-2" data-key="contactDesc">
                 I'm always open to new projects, collaborations, or just saying hello.
                 Reach out and let's bring your ideas to life.
             </p>
 
-            <a href="mailto:elaymemmedli27@gmail.com" class="contact-email-btn">
+            <a href="mailto:elaymemmedli27@gmail.com" class="contact-email-btn reveal reveal-delay-3">
                 elaymemmedli27@gmail.com
                 <span class="btn-icon">↗</span>
             </a>
@@ -1377,7 +1400,7 @@
             }, 2200);
         });
 
-        // === DIL DƏSTƏYİ (Multi-language) ===
+        // === DIL DƏSTƏYİ ===
         const translations = {
             en: {
                 home: 'Home',
@@ -1438,7 +1461,7 @@
                 contactLabel: 'Контакты',
                 contactLine1: 'Есть идея?',
                 contactLine2: 'Давайте создадим вместе.',
-                contactDesc: 'Я всегда открыт для новых проектов, сотрудничества или просто приветствия. Свяжитесь со мной, и我们一起 воплотим ваши идеи в жизнь.',
+                contactDesc: 'Я всегда открыт для новых проектов, сотрудничества или просто приветствия. Свяжитесь со мной, и воплотим ваши идеи в жизнь.',
                 footerAbout: 'Обо мне',
                 footerProjects: 'Проекты',
                 footerTop: 'Наверх ↑'
@@ -1523,16 +1546,13 @@
                 }
             });
 
-            // HTML lang attr
             document.documentElement.lang = lang;
 
-            // Active class on lang switches
             document.querySelectorAll('.lang-switch a').forEach(a => {
                 a.classList.toggle('active', a.getAttribute('data-lang') === lang);
             });
         }
 
-        // Lang switch click
         document.querySelectorAll('.lang-switch a').forEach(a => {
             a.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -1540,7 +1560,7 @@
             });
         });
 
-        // === MENU TOGGLE ===
+        // === MENU ===
         const menuPill = document.getElementById('menuPill');
         const dropdownMenu = document.getElementById('dropdownMenu');
 
@@ -1561,7 +1581,7 @@
             });
         });
 
-        // === NATIVE SMOOTH SCROLL (Lenis yox, köhnə cihazlarda donma olmasın deyə) ===
+        // === SMOOTH SCROLL (native) ===
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
                 const target = document.querySelector(this.getAttribute('href'));
@@ -1572,7 +1592,28 @@
             });
         });
 
-        // === Initial language ===
+        // === INTERSECTION OBSERVER — SCROLL REVEAL ===
+        const revealElements = document.querySelectorAll('.reveal');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    // Bir dəfə göründükdən sonra observeri ayır — təkrar animasiya olmasın
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            root: null,
+            rootMargin: '0px 0px -60px 0px',
+            threshold: 0.1
+        });
+
+        revealElements.forEach(el => {
+            observer.observe(el);
+        });
+
+        // === INITIAL LANGUAGE ===
         setLanguage('en');
     </script>
 </body>
