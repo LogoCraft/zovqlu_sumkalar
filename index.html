@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="az">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -33,7 +33,7 @@
 
         html {
             background-color: var(--bg-dark);
-            scroll-behavior: initial;
+            scroll-behavior: smooth;
         }
 
         body {
@@ -107,7 +107,7 @@
             100% { width: 100%; }
         }
 
-        /* ===== NOISE OVERLAY ===== */
+        /* ===== NOISE OVERLAY (yüngül, performans üçün aşağı opacity) ===== */
         .noise-overlay {
             position: fixed;
             inset: 0;
@@ -115,10 +115,11 @@
             height: 100%;
             z-index: 2;
             pointer-events: none;
-            opacity: 0.035;
+            opacity: 0.025;
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
             background-repeat: repeat;
             background-size: 256px 256px;
+            /* Köhnə cihazlarda noise göstərmək optionaldır */
         }
 
         /* ===== BACKGROUND LINE EFFECT ===== */
@@ -131,7 +132,7 @@
             z-index: 1;
             pointer-events: none;
             overflow: hidden;
-            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
             background-size: 10vw 100%;
             mask-image: radial-gradient(ellipse at 50% 30%, black 10%, transparent 80%);
             -webkit-mask-image: radial-gradient(ellipse at 50% 30%, black 10%, transparent 80%);
@@ -143,9 +144,11 @@
             height: 35vh;
             background: linear-gradient(to bottom, transparent, var(--accent-blue), transparent);
             box-shadow: 0 0 15px var(--accent-blue-glow);
-            opacity: 0.5;
+            opacity: 0.4;
             top: -50vh;
             animation: dropLine 12s infinite linear;
+            /* will-change performansı artırır */
+            will-change: transform;
         }
 
         .glowing-line.line-1 { left: 20vw; animation-delay: 0s; animation-duration: 10s; }
@@ -155,8 +158,8 @@
 
         @keyframes dropLine {
             0% { transform: translateY(0); opacity: 0; }
-            10% { opacity: 0.5; }
-            80% { opacity: 0.5; }
+            10% { opacity: 0.35; }
+            80% { opacity: 0.35; }
             100% { transform: translateY(150vh); opacity: 0; }
         }
 
@@ -182,7 +185,7 @@
             position: absolute;
             border-radius: 50%;
             filter: blur(100px);
-            opacity: 0.3;
+            opacity: 0.25;
         }
 
         .glow-blob.blob-1 {
@@ -205,10 +208,9 @@
 
         @keyframes blobFloat {
             0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(40px, -30px) scale(1.1); }
+            100% { transform: translate(40px, -30px) scale(1.05); }
         }
 
-        /* Blue wave effect (replacing red) */
         .blue-wave-effect {
             position: absolute;
             bottom: 0;
@@ -225,7 +227,7 @@
             left: 0;
             width: 100%;
             height: 40%;
-            background: linear-gradient(to top, rgba(26, 107, 255, 0.08), transparent);
+            background: linear-gradient(to top, rgba(26, 107, 255, 0.06), transparent);
         }
 
         .blue-wave-svg {
@@ -236,13 +238,8 @@
             height: auto;
         }
 
-        .blue-wave-svg.wave-layer-1 {
-            bottom: 0;
-        }
-
-        .blue-wave-svg.wave-layer-2 {
-            bottom: 0;
-        }
+        .blue-wave-svg.wave-layer-1 { bottom: 0; }
+        .blue-wave-svg.wave-layer-2 { bottom: 0; }
 
         /* ===== HEADER ===== */
         header {
@@ -259,6 +256,28 @@
             font-weight: 500;
             font-size: 1.2rem;
             color: var(--text-main);
+        }
+
+        .lang-switch {
+            display: flex;
+            gap: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .lang-switch a {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: var(--transition-smooth);
+        }
+
+        .lang-switch a:hover,
+        .lang-switch a.active {
+            color: var(--accent-blue);
+            background: rgba(26, 107, 255, 0.08);
         }
 
         .menu-pill-wrapper {
@@ -482,7 +501,6 @@
             text-shadow: 0 0 40px rgba(26, 107, 255, 0.3);
         }
 
-        /* ===== GIANT TYPOGRAPHY ===== */
         .giant-typography {
             position: absolute;
             bottom: 4vh;
@@ -491,7 +509,7 @@
             text-align: center;
             font-size: 16vw;
             font-weight: 800;
-            color: rgba(26, 107, 255, 0.04);
+            color: rgba(26, 107, 255, 0.035);
             letter-spacing: 0.05em;
             pointer-events: none;
             z-index: 1;
@@ -500,7 +518,6 @@
             line-height: 0.8;
         }
 
-        /* ===== INFO BAR ===== */
         .info-bar {
             display: flex;
             justify-content: space-between;
@@ -535,7 +552,7 @@
             50% { transform: translateY(6px); }
         }
 
-        /* ===== ABOUT SECTION ===== */
+        /* ===== ABOUT ===== */
         .about-section {
             padding: 10rem 3rem;
             position: relative;
@@ -681,6 +698,7 @@
             text-transform: uppercase;
             letter-spacing: 2px;
             color: var(--text-muted);
+            will-change: transform;
         }
 
         .marquee-content .outlined {
@@ -720,15 +738,11 @@
             text-decoration: none;
             color: inherit;
             transition: var(--transition-smooth);
-            cursor: pointer;
+            cursor: default;
         }
 
         .project-row:last-child {
             border-bottom: none;
-        }
-
-        .project-row:hover {
-            border-bottom-color: rgba(26, 107, 255, 0.15);
         }
 
         .project-num {
@@ -743,6 +757,7 @@
             font-weight: 800;
             letter-spacing: -0.02em;
             transition: var(--transition-smooth);
+            color: var(--text-muted);
         }
 
         .project-row:hover .project-title {
@@ -879,40 +894,6 @@
             transform: translateX(4px) rotate(45deg);
         }
 
-        .social-links {
-            display: flex;
-            justify-content: center;
-            gap: 2.5rem;
-        }
-
-        .social-link {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: var(--transition-smooth);
-            position: relative;
-        }
-
-        .social-link::after {
-            content: '';
-            position: absolute;
-            bottom: -4px;
-            left: 0;
-            width: 0;
-            height: 1px;
-            background: var(--accent-blue);
-            transition: width 0.3s ease;
-        }
-
-        .social-link:hover {
-            color: var(--accent-blue);
-        }
-
-        .social-link:hover::after {
-            width: 100%;
-        }
-
         /* ===== FOOTER ===== */
         .footer-area {
             border-top: 1px solid rgba(255, 255, 255, 0.05);
@@ -955,8 +936,8 @@
         .bottom-glass-fade {
             position: fixed;
             bottom: 0; left: 0;
-            width: 100%; height: 12vh;
-            background: linear-gradient(to top, rgba(5, 5, 8, 0.95) 0%, transparent 100%);
+            width: 100%; height: 8vh;
+            background: linear-gradient(to top, rgba(5, 5, 8, 0.9) 0%, transparent 100%);
             pointer-events: none;
             z-index: 90;
         }
@@ -966,6 +947,9 @@
             header {
                 grid-template-columns: 1fr 1fr;
                 padding: 1rem 0;
+            }
+            .lang-switch {
+                display: none;
             }
             .menu-pill-wrapper {
                 position: absolute;
@@ -1113,8 +1097,8 @@
                 <defs>
                     <linearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
                         <stop offset="0%" stop-color="rgba(26,107,255,0)" />
-                        <stop offset="50%" stop-color="rgba(26,107,255,0.12)" />
-                        <stop offset="100%" stop-color="rgba(26,107,255,0.25)" />
+                        <stop offset="50%" stop-color="rgba(26,107,255,0.10)" />
+                        <stop offset="100%" stop-color="rgba(26,107,255,0.20)" />
                     </linearGradient>
                 </defs>
                 <path d="M0,280 C240,340 480,200 720,250 C960,320 1200,200 1440,240 L1440,400 L0,400 Z" fill="url(#grad1)"/>
@@ -1123,7 +1107,7 @@
                 <defs>
                     <linearGradient id="grad2" x1="0%" y1="0%" x2="0%" y2="100%">
                         <stop offset="0%" stop-color="rgba(26,107,255,0)" />
-                        <stop offset="100%" stop-color="rgba(26,107,255,0.12)" />
+                        <stop offset="100%" stop-color="rgba(26,107,255,0.10)" />
                     </linearGradient>
                 </defs>
                 <path d="M0,310 C300,360 660,220 960,280 C1260,350 1440,300 L1440,400 L0,400 Z" fill="url(#grad2)"/>
@@ -1132,6 +1116,14 @@
 
         <header>
             <div class="logo">ElayMammadli</div>
+
+            <!-- Dil seçimi - 4 dil -->
+            <div class="lang-switch" style="justify-content:center;">
+                <a href="#" class="active" data-lang="en">EN</a>
+                <a href="#" data-lang="ru">RU</a>
+                <a href="#" data-lang="tr">TR</a>
+                <a href="#" data-lang="az">AZ</a>
+            </div>
 
             <div class="menu-pill-wrapper">
                 <div class="menu-pill" id="menuPill">
@@ -1148,37 +1140,30 @@
                     <a href="#">
                         <div class="nav-icon">
                             <span class="nav-dot"></span>
-                            Ana Səhifə
+                            <span class="nav-label" data-key="home">Home</span>
                         </div>
                         <span class="nav-arrow">→</span>
                     </a>
                     <a href="#about">
                         <div class="nav-icon">
                             <span class="nav-dot"></span>
-                            Haqqımda
+                            <span class="nav-label" data-key="about">About</span>
                         </div>
                         <span class="nav-arrow">→</span>
                     </a>
                     <a href="#portfolio">
                         <div class="nav-icon">
                             <span class="nav-dot"></span>
-                            Layihələr
+                            <span class="nav-label" data-key="projects">Projects</span>
                         </div>
                         <span class="nav-arrow">→</span>
                     </a>
                     <div class="dropdown-divider"></div>
-                    <div class="dropdown-header" style="margin-top:0.8rem;">Social - Language</div>
-                    <a href="https://github.com/elaymammadli" target="_blank">
+                    <div class="dropdown-header" style="margin-top:0.8rem;">Social</div>
+                    <a href="https://github.com/Vorlixx" target="_blank">
                         <div class="nav-icon">
                             <span class="nav-dot"></span>
                             GitHub
-                        </div>
-                        <span class="nav-arrow">↗</span>
-                    </a>
-                    <a href="https://linkedin.com/in/elaymammadli" target="_blank">
-                        <div class="nav-icon">
-                            <span class="nav-dot"></span>
-                            LinkedIn
                         </div>
                         <span class="nav-arrow">↗</span>
                     </a>
@@ -1186,18 +1171,18 @@
             </div>
 
             <div class="cta-wrapper">
-                <button class="cta-btn" onclick="window.location.href='#contact'">Əlaqə</button>
+                <button class="cta-btn" onclick="window.location.href='#contact'"><span data-key="contactBtn">Contact</span></button>
             </div>
         </header>
 
         <div class="hero-main">
             <div class="availability-badge">
                 <span class="pulse-dot"></span>
-                Open for Collaboration
+                <span data-key="openForCollab">Open for Collaboration</span>
             </div>
             <h1 class="hero-statement">
-                Təhlükəsizlik, kod və <br>
-                <span>yaradıcılığın kəsişməsi</span>
+                <span data-key="heroLine1">Security, code &</span><br>
+                <span data-key="heroLine2">creativity intersect</span>
             </h1>
         </div>
 
@@ -1205,11 +1190,11 @@
 
         <div class="info-bar">
             <div class="info-left">
-                <span>CyberSec Student</span>
+                <span data-key="role">CyberSec Student</span>
                 <span>Baku, AZ</span>
             </div>
             <a href="#about" class="scroll-explore">
-                Scroll to explore ↓
+                <span data-key="scrollExplore">Scroll to explore</span> ↓
             </a>
         </div>
     </section>
@@ -1218,8 +1203,8 @@
     <section class="about-section" id="about">
         <div class="about-container">
             <div class="about-left">
-                <span class="section-label">Haqqımda</span>
-                <h2 class="about-headline">Haqqımda</h2>
+                <span class="section-label"><span data-key="aboutLabel">About</span></span>
+                <h2 class="about-headline"><span data-key="aboutHeadline">About Me</span></h2>
 
                 <div class="about-visual">
                     <div class="code-skeleton">
@@ -1236,7 +1221,7 @@
                         <span class="line">    <span class="syntax-string">'Clean Code'</span>,</span>
                         <span class="line">    <span class="syntax-string">'Curiosity'</span></span>
                         <span class="line">  ],</span>
-                        <span class="line">  goal: <span class="syntax-string">'Build secure software that solves real problems.'</span>,</span>
+                        <span class="line">  goal: <span class="syntax-string">'Build secure software'</span>,</span>
                         <span class="line">  status: <span class="syntax-string">'Coding...'</span></span>
                         <span class="line"><span class="syntax-bracket">};</span></span>
                     </div>
@@ -1244,33 +1229,30 @@
             </div>
 
             <div class="about-right">
-                <p class="about-bio">
-                    Salam, mən Elay. CyberSec tələbəsiyəm və öz layihələrimi dizayn edib 
-                    həyata keçirən bir təhlükəsizlik həvəskarıyam. <br><br>
-                    Layihələrimi açıq mənbə olaraq paylaşıb həm öyrəndiklərimi inkişaf 
-                    etdirir, həm də cəmiyyətə töhfə verməyi hədəfləyirəm. Web texnologiyalarında 
-                    HTML, CSS, JavaScript və Python istifadə edir; bununla yanaşı siber 
-                    təhlükəsizlik və sızma testi sahələrində çalışıram.
+                <p class="about-bio" data-key="bio">
+                    Hi, I'm Elay. A CyberSec student who designs and builds security-focused projects.
+                    I share my work as open source to grow my skills and contribute to the community.
+                    I work with HTML, CSS, JavaScript, Python, and I'm exploring cybersecurity and penetration testing.
                 </p>
 
                 <div class="about-stats">
                     <div class="stat-item">
                         <div class="stat-number">01</div>
-                        <div class="stat-label">Cyber Security<br>Penetration Testing</div>
+                        <div class="stat-label" data-key="stat1">Cyber Security<br>Penetration Testing</div>
                     </div>
                     <div class="stat-item">
                         <div class="stat-number">02</div>
-                        <div class="stat-label">Web &amp;<br>Frontend Development</div>
+                        <div class="stat-label" data-key="stat2">Web &amp;<br>Frontend Development</div>
                     </div>
                     <div class="stat-item">
                         <div class="stat-number">03</div>
-                        <div class="stat-label">Open Source<br>Projects</div>
+                        <div class="stat-label" data-key="stat3">Open Source<br>Projects</div>
                     </div>
                 </div>
 
                 <div class="about-cta-row">
                     <a href="#portfolio" class="about-link">
-                        <span>Layihələrimi İncələ</span>
+                        <span data-key="viewProjects">View My Projects</span>
                         <span class="arrow-icon">→</span>
                     </a>
                 </div>
@@ -1300,55 +1282,55 @@
     <!-- ===== PORTFOLIO ===== -->
     <section class="portfolio-section" id="portfolio">
         <div class="portfolio-container">
-            <span class="section-label" style="margin-bottom: 3rem;">Seçilmiş İşlər</span>
-            <h2 class="about-headline">Ən Yeni Layihələrim</h2>
+            <span class="section-label" style="margin-bottom: 3rem;"><span data-key="selectedWorks">Selected Works</span></span>
+            <h2 class="about-headline"><span data-key="latestProjects">Latest Projects</span></h2>
             <br>
 
             <div class="project-list">
-                <a href="#" class="project-row">
+                <div class="project-row" style="cursor:default;">
                     <span class="project-num">01</span>
-                    <h3 class="project-title">Portfolio Site</h3>
+                    <h3 class="project-title" style="color:var(--text-muted);">···</h3>
                     <div class="project-right">
                         <div class="project-meta">
-                            <span class="project-tech">HTML / CSS / JS</span>
-                            Web Site
+                            <span class="project-tech"><span data-key="comingSoon">Coming Soon</span></span>
+                            <span data-key="futureProject1">Future Project</span>
                         </div>
                         <span class="project-arrow">↗</span>
                     </div>
-                </a>
+                </div>
 
-                <a href="#" class="project-row">
+                <div class="project-row" style="cursor:default;">
                     <span class="project-num">02</span>
-                    <h3 class="project-title">Keylogger Detector</h3>
+                    <h3 class="project-title" style="color:var(--text-muted);">···</h3>
                     <div class="project-right">
                         <div class="project-meta">
-                            <span class="project-tech">Python / Security</span>
-                    CLI Tool
+                            <span class="project-tech"><span data-key="comingSoon">Coming Soon</span></span>
+                            <span data-key="futureProject2">Future Project</span>
                         </div>
                         <span class="project-arrow">↗</span>
                     </div>
-                </a>
+                </div>
 
-                <a href="#" class="project-row">
+                <div class="project-row" style="cursor:default;">
                     <span class="project-num">03</span>
-                    <h3 class="project-title">Network Scanner</h3>
+                    <h3 class="project-title" style="color:var(--text-muted);">···</h3>
                     <div class="project-right">
                         <div class="project-meta">
-                            <span class="project-tech">Python / Socket</span>
-                            Security Tool
+                            <span class="project-tech"><span data-key="comingSoon">Coming Soon</span></span>
+                            <span data-key="futureProject3">Future Project</span>
                         </div>
                         <span class="project-arrow">↗</span>
                     </div>
-                </a>
+                </div>
             </div>
 
             <div class="github-container">
-                <a href="https://github.com/elaymammadli" target="_blank" class="github-btn">
+                <a href="https://github.com/Vorlixx" target="_blank" class="github-btn">
                     <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
                         <path d="M12 .5a12 12 0 0 0-3.79 23.39c.6.11.82-.26.82-.58v-2.04c-3.34.73-4.04-1.42-4.04-1.42-.55-1.37-1.33-1.73-1.33-1.73-1.09-.74.08-.72.08-.72 1.2.08 1.84 1.23 1.84 1.23 1.07 1.82 2.8 1.3 3.48.99.11-.77.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.92 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.53.12-3.18 0 0 1.01-.32 3.3 1.23a11.4 11.4 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.6-2.8 5.62-5.48 5.92.43.37.82 1.09.82 2.2v3.27c0 .32.21.69.83.58A12 12 0 0 0 12 .5z"/>
                     </svg>
-                    <span>GitHub Hesabıma Göz At</span>
-                    <span class="stars"> ★elaymammadli</span>
+                    <span data-key="githubBtn">Check My GitHub</span>
+                    <span class="stars"> ★Vorlixx</span>
                 </a>
             </div>
         </div>
@@ -1357,35 +1339,29 @@
     <!-- ===== CONTACT ===== -->
     <section class="contact-section" id="contact">
         <div class="contact-container">
-            <span class="section-label">Əlaqə</span>
+            <span class="section-label"><span data-key="contactLabel">Contact</span></span>
             <h2 class="contact-headline">
-                Bir fikrin var?<br>
-                <span class="highlight">Birlikdə yaradaq.</span>
+                <span data-key="contactLine1">Got an idea?</span><br>
+                <span class="highlight" data-key="contactLine2">Let's build together.</span>
             </h2>
-            <p class="contact-description">
-                Yeni layihələr, əməkdaşlıq və ya sadəcə salam demək üçün 
-                hər zaman açığam. Rəqəmsal məhsullarınızı həyata keçirmək üçün əlaqə saxlayın.
+            <p class="contact-description" data-key="contactDesc">
+                I'm always open to new projects, collaborations, or just saying hello.
+                Reach out and let's bring your ideas to life.
             </p>
 
-            <a href="mailto:elay.mammadli@email.com" class="contact-email-btn">
-                elay.mammadli@email.com
+            <a href="mailto:elaymemmedli27@gmail.com" class="contact-email-btn">
+                elaymemmedli27@gmail.com
                 <span class="btn-icon">↗</span>
             </a>
-
-            <div class="social-links">
-                <a href="https://github.com/elaymammadli" target="_blank" class="social-link">GitHub</a>
-                <a href="https://linkedin.com/in/elaymammadli" target="_blank" class="social-link">LinkedIn</a>
-                <a href="#" class="social-link">Twitter</a>
-            </div>
         </div>
 
         <div class="footer-area">
             <div class="footer-content">
-                <div class="footer-logo">Elay Mammadli © 2026. Bütün hüquqlar qorunur.</div>
+                <div class="footer-logo">Elay Mammadli © 2026. All rights reserved.</div>
                 <div class="footer-links">
-                    <a href="#about">Haqqımda</a>
-                    <a href="#portfolio">Layihələr</a>
-                    <a href="#">Başa Dön ↑</a>
+                    <a href="#about" data-key="footerAbout">About</a>
+                    <a href="#portfolio" data-key="footerProjects">Projects</a>
+                    <a href="#" data-key="footerTop">Back to Top ↑</a>
                 </div>
             </div>
         </div>
@@ -1393,33 +1369,176 @@
 
     <div class="bottom-glass-fade"></div>
 
-    <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
     <script>
         // === LOADING SCREEN ===
         window.addEventListener('load', () => {
             setTimeout(() => {
                 document.getElementById('loading-screen').classList.add('hidden');
-            }, 2400);
+            }, 2200);
         });
 
-        // === LENIS SMOOTH SCROLL ===
-        const lenis = new Lenis({
-            duration: 1.2,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-            direction: 'vertical',
-            gestureDirection: 'vertical',
-            smooth: true,
-            mouseMultiplier: 1,
-            smoothTouch: false,
-            touchMultiplier: 2,
-            infinite: false,
-        });
+        // === DIL DƏSTƏYİ (Multi-language) ===
+        const translations = {
+            en: {
+                home: 'Home',
+                about: 'About',
+                projects: 'Projects',
+                contactBtn: 'Contact',
+                openForCollab: 'Open for Collaboration',
+                heroLine1: 'Security, code &',
+                heroLine2: 'creativity intersect',
+                role: 'CyberSec Student',
+                scrollExplore: 'Scroll to explore',
+                aboutLabel: 'About',
+                aboutHeadline: 'About Me',
+                bio: "Hi, I'm Elay. A CyberSec student who designs and builds security-focused projects. I share my work as open source to grow my skills and contribute to the community. I work with HTML, CSS, JavaScript, Python, and I'm exploring cybersecurity and penetration testing.",
+                stat1: 'Cyber Security<br>Penetration Testing',
+                stat2: 'Web &amp;<br>Frontend Development',
+                stat3: 'Open Source<br>Projects',
+                viewProjects: 'View My Projects',
+                selectedWorks: 'Selected Works',
+                latestProjects: 'Latest Projects',
+                comingSoon: 'Coming Soon',
+                futureProject1: 'Future Project',
+                futureProject2: 'Future Project',
+                futureProject3: 'Future Project',
+                githubBtn: 'Check My GitHub',
+                contactLabel: 'Contact',
+                contactLine1: 'Got an idea?',
+                contactLine2: "Let's build together.",
+                contactDesc: "I'm always open to new projects, collaborations, or just saying hello. Reach out and let's bring your ideas to life.",
+                footerAbout: 'About',
+                footerProjects: 'Projects',
+                footerTop: 'Back to Top ↑'
+            },
+            ru: {
+                home: 'Главная',
+                about: 'Обо мне',
+                projects: 'Проекты',
+                contactBtn: 'Контакты',
+                openForCollab: 'Открыт к сотрудничеству',
+                heroLine1: 'Безопасность, код и',
+                heroLine2: 'творчество пересекаются',
+                role: 'Студент кибербезопасности',
+                scrollExplore: 'Листайте вниз',
+                aboutLabel: 'Обо мне',
+                aboutHeadline: 'Обо мне',
+                bio: 'Привет, я Элай. Студент кибербезопасности, разрабатываю проекты с фокусом на безопасность. Делюсь своими работами в открытом доступе, чтобы расти и помогать сообществу. Работаю с HTML, CSS, JavaScript, Python, изучаю кибербезопасность и тестирование на проникновение.',
+                stat1: 'Кибербезопасность<br>Тестирование',
+                stat2: 'Веб и<br>Фронтенд разработка',
+                stat3: 'Open Source<br>Проекты',
+                viewProjects: 'Мои проекты',
+                selectedWorks: 'Избранные работы',
+                latestProjects: 'Последние проекты',
+                comingSoon: 'Скоро',
+                futureProject1: 'Будущий проект',
+                futureProject2: 'Будущий проект',
+                futureProject3: 'Будущий проект',
+                githubBtn: 'Мой GitHub',
+                contactLabel: 'Контакты',
+                contactLine1: 'Есть идея?',
+                contactLine2: 'Давайте создадим вместе.',
+                contactDesc: 'Я всегда открыт для новых проектов, сотрудничества или просто приветствия. Свяжитесь со мной, и我们一起 воплотим ваши идеи в жизнь.',
+                footerAbout: 'Обо мне',
+                footerProjects: 'Проекты',
+                footerTop: 'Наверх ↑'
+            },
+            tr: {
+                home: 'Ana Sayfa',
+                about: 'Hakkımda',
+                projects: 'Projeler',
+                contactBtn: 'İletişim',
+                openForCollab: 'İş Birliğine Açık',
+                heroLine1: 'Güvenlik, kod ve',
+                heroLine2: 'yaratıcılığın kesişimi',
+                role: 'Siber Güvenlik Öğrencisi',
+                scrollExplore: 'Aşağı kaydır',
+                aboutLabel: 'Hakkımda',
+                aboutHeadline: 'Hakkımda',
+                bio: 'Merhaba, ben Elay. Siber güvenlik odaklı projeler tasarlayan ve geliştiren bir öğrenciyim. Açık kaynak paylaşımlarıyla hem öğreniyor hem topluluğa katkı sağlıyorum. HTML, CSS, JavaScript, Python ile çalışıyor, siber güvenlik ve sızma testi alanlarında kendimi geliştiriyorum.',
+                stat1: 'Siber Güvenlik<br>Sızma Testi',
+                stat2: 'Web ve<br>Frontend Geliştirme',
+                stat3: 'Açık Kaynak<br>Projeler',
+                viewProjects: 'Projelerimi İncele',
+                selectedWorks: 'Seçilmiş İşler',
+                latestProjects: 'En Yeni Projeler',
+                comingSoon: 'Yakında',
+                futureProject1: 'Gelecek Proje',
+                futureProject2: 'Gelecek Proje',
+                futureProject3: 'Gelecek Proje',
+                githubBtn: 'GitHub\'ımı Gör',
+                contactLabel: 'İletişim',
+                contactLine1: 'Bir fikrin mi var?',
+                contactLine2: 'Birlikte yapalım.',
+                contactDesc: 'Yeni projeler, iş birlikleri veya sadece merhaba demek için her zaman açığım. Ulaşın ve fikirlerinizi hayata geçirelim.',
+                footerAbout: 'Hakkımda',
+                footerProjects: 'Projeler',
+                footerTop: 'Yukarı ↑'
+            },
+            az: {
+                home: 'Ana Səhifə',
+                about: 'Haqqımda',
+                projects: 'Layihələr',
+                contactBtn: 'Əlaqə',
+                openForCollab: 'Əməkdaşlığa Açıq',
+                heroLine1: 'Təhlükəsizlik, kod və',
+                heroLine2: 'yaradıcılığın kəsişməsi',
+                role: 'CyberSec Tələbəsi',
+                scrollExplore: 'Aşağı sürüşdür',
+                aboutLabel: 'Haqqımda',
+                aboutHeadline: 'Haqqımda',
+                bio: 'Salam, mən Elay. Təhlükəsizlik üzrə tələbə və layihələr hazırlayan bir həvəskaram. Açıq mənbə paylaşımları ilə həm öyrənir, həm də cəmiyyətə töhfə verirəm. HTML, CSS, JavaScript, Python ilə işləyir, siber təhlükəsizlik və sızma testi sahələrində təcrübə qazanıram.',
+                stat1: 'Kiber Təhlükəsizlik<br>PenTest',
+                stat2: 'Veb və<br>Frontend İnkişaf',
+                stat3: 'Açıq Mənbə<br>Layihələr',
+                viewProjects: 'Layihələrimi İncələ',
+                selectedWorks: 'Seçilmiş İşlər',
+                latestProjects: 'Ən Son Layihələr',
+                comingSoon: 'Tezliklə',
+                futureProject1: 'Gələcək Layihə',
+                futureProject2: 'Gələcək Layihə',
+                futureProject3: 'Gələcək Layihə',
+                githubBtn: 'GitHub\'ıma Bax',
+                contactLabel: 'Əlaqə',
+                contactLine1: 'Fikrin var?',
+                contactLine2: 'Birlikdə yaradaq.',
+                contactDesc: 'Yeni layihələr, əməkdaşlıq və ya sadəcə salam demək üçün hər zaman açığam. Əlaqə saxlayın və fikirlərinizi həyata keçirək.',
+                footerAbout: 'Haqqımda',
+                footerProjects: 'Layihələr',
+                footerTop: 'Yuxarı ↑'
+            }
+        };
 
-        function raf(time) {
-            lenis.raf(time);
-            requestAnimationFrame(raf);
+        let currentLang = 'en';
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            if (!t) return;
+
+            document.querySelectorAll('[data-key]').forEach(el => {
+                const key = el.getAttribute('data-key');
+                if (t[key]) {
+                    el.innerHTML = t[key];
+                }
+            });
+
+            // HTML lang attr
+            document.documentElement.lang = lang;
+
+            // Active class on lang switches
+            document.querySelectorAll('.lang-switch a').forEach(a => {
+                a.classList.toggle('active', a.getAttribute('data-lang') === lang);
+            });
         }
-        requestAnimationFrame(raf);
+
+        // Lang switch click
+        document.querySelectorAll('.lang-switch a').forEach(a => {
+            a.addEventListener('click', (e) => {
+                e.preventDefault();
+                setLanguage(a.getAttribute('data-lang'));
+            });
+        });
 
         // === MENU TOGGLE ===
         const menuPill = document.getElementById('menuPill');
@@ -1436,23 +1555,25 @@
             }
         });
 
-        // === DROPDOWN LINKS CLOSE MENU ===
         document.querySelectorAll('.dropdown-menu a').forEach(link => {
             link.addEventListener('click', () => {
                 dropdownMenu.classList.remove('active');
             });
         });
 
-        // === SCROLL TO SECTION SMOOTHLY ===
+        // === NATIVE SMOOTH SCROLL (Lenis yox, köhnə cihazlarda donma olmasın deyə) ===
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
                 const target = document.querySelector(this.getAttribute('href'));
                 if (target) {
                     e.preventDefault();
-                    lenis.scrollTo(target, { offset: -80, duration: 1.4 });
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
             });
         });
+
+        // === Initial language ===
+        setLanguage('en');
     </script>
 </body>
 </html>
